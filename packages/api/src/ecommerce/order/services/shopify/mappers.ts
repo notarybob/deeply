@@ -83,9 +83,9 @@ export class ShopifyOrderMapper implements IOrderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceOrderOutput> {
-    const opts: any = {};
+    let opts: any = {};
     if (order.customer && order.customer.id) {
-      const customer_id = await this.utils.getCustomerIdFromRemote(
+      let customer_id = await this.utils.getCustomerIdFromRemote(
         String(order.customer.id),
         connectionId,
       );
