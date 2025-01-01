@@ -29,7 +29,7 @@ export class SalesforceService implements IContactService {
     linkedUserId: string,
   ): Promise<ApiResponse<SalesforceContactOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -37,8 +37,8 @@ export class SalesforceService implements IContactService {
         },
       });
 
-      const instanceUrl = connection.account_url;
-      const resp = await axios.post(
+      var instanceUrl = connection.account_url;
+      var resp = await axios.post(
         `${instanceUrl}/services/data/v56.0/sobjects/Contact/`,
         JSON.stringify(contactData),
         {
@@ -63,9 +63,9 @@ export class SalesforceService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SalesforceContactOutput[]>> {
     try {
-      const { linkedUserId, custom_properties, pageSize, cursor } = data;
+      var { linkedUserId, custom_properties, pageSize, cursor } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -73,7 +73,7 @@ export class SalesforceService implements IContactService {
         },
       });
 
-      const instanceUrl = connection.account_url;
+      var instanceUrl = connection.account_url;
       let pagingString = '';
       if (pageSize) {
         pagingString += `LIMIT ${pageSize} `;
@@ -85,14 +85,14 @@ export class SalesforceService implements IContactService {
         pagingString = 'LIMIT 200';
       }
 
-      const fields =
+      var fields =
         custom_properties?.length > 0
           ? custom_properties.join(',')
           : 'Id,FirstName,LastName,Email,Phone';
 
-      const query = `SELECT ${fields} FROM Contact ${pagingString}`.trim();
+      var query = `SELECT ${fields} FROM Contact ${pagingString}`.trim();
 
-      const resp = await axios.get(
+      var resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/query/?q=${encodeURIComponent(
           query,
         )}`,
