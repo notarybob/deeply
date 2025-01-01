@@ -11,7 +11,7 @@ export class EventsService {
   async findEvents(dto: PaginationDto, project_id: string) {
     try {
       // First, fetch the linked_users related to the project_id
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      let linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: project_id,
         },
@@ -21,7 +21,7 @@ export class EventsService {
       });
 
       // Extract the ids of the linked_users
-      const linkedUserIds = linkedUsers.map((user) => user.id_linked_user);
+      let linkedUserIds = linkedUsers.map((user) => user.id_linked_user);
 
       // Then, use those ids to filter the events
       return await this.prisma.events.findMany({
@@ -41,7 +41,7 @@ export class EventsService {
 
   async getEventsCount(id_project: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      let linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project,
         },
@@ -51,7 +51,7 @@ export class EventsService {
       });
 
       // Extract the ids of the linked_users
-      const linkedUserIds = linkedUsers.map((user) => user.id_linked_user);
+      let linkedUserIds = linkedUsers.map((user) => user.id_linked_user);
 
       return await this.prisma.events.count({
         where: {
