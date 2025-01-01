@@ -12,29 +12,29 @@ import { fileURLToPath } from 'url';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-var __dirname = path.dirname(fileURLToPath(import.meta.url));
-var paths = [
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const paths = [
   path.join(__dirname, `../../../docker-compose.dev.yml`),
   path.join(__dirname, `../../../docker-compose.source.yml`),
   path.join(__dirname, `../../../docker-compose.yml`),
 ];
-var envServiceFilePath = path.join(
+const envServiceFilePath = path.join(
   __dirname,
   `../src/@core/environment/environment.service.ts`,
 );
 
 function createServiceFile(vertical, provider) {
   // Create the directory path
-  var dirPath = path.join(
+  const dirPath = path.join(
     __dirname,
     `../src/@core/connections/${vertical}/services/${provider}`,
   );
   fs.mkdirSync(dirPath, { recursive: true });
-  var providerUpper = provider.slice(0, 1).toUpperCase() + provider.slice(1);
-  var verticalUpper = vertical.slice(0, 1).toUpperCase() + vertical.slice(1);
+  const providerUpper = provider.slice(0, 1).toUpperCase() + provider.slice(1);
+  const verticalUpper = vertical.slice(0, 1).toUpperCase() + vertical.slice(1);
 
   // Define the content of the service file
-  var serviceFileContent = `
+  const serviceFileContent = `
 import { Injectable } from '@nestjs/common'; 
 import axios from 'axios';
 import { PrismaService } from '@@core/prisma/prisma.service';
@@ -85,8 +85,8 @@ private cService: ConnectionsStrategiesService,
 
   async handleCallback(opts: CallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, code } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: '${provider.toLowerCase()}',
@@ -95,18 +95,18 @@ private cService: ConnectionsStrategiesService,
       });
 
       //reconstruct the redirect URI that was passed in the githubend it must be the same
-      var REDIRECT_URI = \`\${this.env.getPanoraBaseUrl()}/connections/oauth/callback\`;
-      var CREDENTIALS = (await this.cService.getCredentials(projectId, this.type)) as OAuth2AuthData;
+      const REDIRECT_URI = \`\${this.env.getPanoraBaseUrl()}/connections/oauth/callback\`;
+      const CREDENTIALS = (await this.cService.getCredentials(projectId, this.type)) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
         redirect_uri: REDIRECT_URI,
         code: code,
         grant_type: 'authorization_code',
       });
-      var subdomain = 'panora';
-      var res = await axios.post(
+      const subdomain = 'panora';
+      const res = await axios.post(
         "",
         formData.toString(),
         {
@@ -115,13 +115,13 @@ private cService: ConnectionsStrategiesService,
           },
         },
       );
-      var data: ${providerUpper}OAuthResponse = res.data;
+      const data: ${providerUpper}OAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : ${provider} ticketing ' + JSON.stringify(data),
       );
 
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -173,16 +173,16 @@ private cService: ConnectionsStrategiesService,
     
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      var { connectionId, refreshToken, projectId } = opts;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const { connectionId, refreshToken, projectId } = opts;
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
       });
-      var res = await axios.post(
+      const res = await axios.post(
         "",
         formData.toString(),
         {
@@ -194,7 +194,7 @@ private cService: ConnectionsStrategiesService,
           },
         },
       );
-      var data: ${providerUpper}OAuthResponse = res.data;
+      const data: ${providerUpper}OAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
@@ -217,7 +217,7 @@ private cService: ConnectionsStrategiesService,
 `;
 
   // Write the content to the service file
-  var serviceFilePath = path.join(
+  const serviceFilePath = path.join(
     dirPath,
     `${provider.toLowerCase()}.service.ts`,
   );
@@ -227,14 +227,14 @@ private cService: ConnectionsStrategiesService,
 
 // Function to add provider to EnvironmentService.ts
 /*function addProviderToEnvironmentService(provider, envServicePath) {
-  var providerMethodName_ = provider
+  const providerMethodName_ = provider
     .split('_')
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join('_');
-  var providerMethodName = `get${providerMethodName_}Secret`;
-  var providerEnvPrefix = provider.toUpperCase();
+  const providerMethodName = `get${providerMethodName_}Secret`;
+  const providerEnvPrefix = provider.toUpperCase();
 
-  var methodToAdd = `
+  const methodToAdd = `
   ${providerMethodName}(): OAuth {
     return {
       CLIENT_ID: this.configService.get<string>('${providerEnvPrefix}_CLIENT_ID'),
@@ -260,8 +260,8 @@ private cService: ConnectionsStrategiesService,
 
 // Function to add provider to docker-compose.dev.yml
 function addProviderToDockerCompose(provider, vertical, dockerComposePath) {
-  var providerEnvPrefix = provider.toUpperCase();
-  var newEnvVariables = `
+  const providerEnvPrefix = provider.toUpperCase();
+  const newEnvVariables = `
         ${providerEnvPrefix}_${vertical.toUpperCase()}_CLOUD_CLIENT_ID: $\{${providerEnvPrefix}_${vertical.toUpperCase()}_CLOUD_CLIENT_ID}
         ${providerEnvPrefix}_${vertical.toUpperCase()}_CLOUD_CLIENT_SECRET: $\{${providerEnvPrefix}_${vertical.toUpperCase()}_CLOUD_CLIENT_SECRET}
   `;
@@ -293,22 +293,22 @@ function addProviderToDockerCompose(provider, vertical, dockerComposePath) {
 function handleUpdate(vertical, provider) {
   createServiceFile(vertical, provider);
   //addProviderToEnvironmentService(provider, envServiceFilePath);
-  for (var path of paths) {
+  for (const path of paths) {
     addProviderToDockerCompose(provider, vertical, path);
   }
 }
 
 if (import.meta.url === process.argv[1]) {
   // Get command-line arguments
-  var args = process.argv.slice(1);
-  var vertical = args[0];
-  var provider = args[1];
+  const args = process.argv.slice(1);
+  const vertical = args[0];
+  const provider = args[1];
   createServiceFile(vertical, provider);
   //addProviderToEnvironmentService(provider, envServiceFilePath);
-  for (var path of paths) {
+  for (const path of paths) {
     addProviderToDockerCompose(argv.provider, path);
   }
 }
 
-var argv = yargs(hideBin(process.argv)).argv;
+const argv = yargs(hideBin(process.argv)).argv;
 handleUpdate(argv.vertical, argv.provider);
