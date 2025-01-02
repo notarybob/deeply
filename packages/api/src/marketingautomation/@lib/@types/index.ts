@@ -84,7 +84,7 @@ export type UnifiedMarketingAutomation =
   | UnifiedMarketingautomationUserInput
   | UnifiedMarketingautomationUserOutput;
 
-/*export const unificationMapping = {
+/*export let unificationMapping = {
   [MarketingAutomationObject.action]: actionUnificationMapping,
   [MarketingAutomationObject.automation]: automationUnificationMapping,
   [MarketingAutomationObject.campaign]: campaignUnificationMapping,
