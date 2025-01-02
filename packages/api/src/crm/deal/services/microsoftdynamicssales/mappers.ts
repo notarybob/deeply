@@ -21,7 +21,7 @@ export class MicrosoftdynamicssalesDealMapper implements IDealMapper {
             remote_id: string;
         }[],
     ): Promise<MicrosoftdynamicssalesDealInput> {
-        var result: MicrosoftdynamicssalesDealInput = {
+        const result: MicrosoftdynamicssalesDealInput = {
             name: source.name,
             description: source.description,
             budgetamount: source.amount
@@ -31,14 +31,14 @@ export class MicrosoftdynamicssalesDealMapper implements IDealMapper {
 
 
         if (source.company_id) {
-            var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+            const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
             result["parentaccountid@odata.bind"] = `/accounts(${id})`;
         }
 
 
         if (customFieldMappings && source.field_mappings) {
-            for (var [k, v] of Object.entries(source.field_mappings)) {
-                var mapping = customFieldMappings.find(
+            for (const [k, v] of Object.entries(source.field_mappings)) {
+                const mapping = customFieldMappings.find(
                     (mapping) => mapping.slug === k,
                 );
                 if (mapping) {
@@ -81,9 +81,9 @@ export class MicrosoftdynamicssalesDealMapper implements IDealMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmDealOutput> {
-        var field_mappings: { [key: string]: any } = {};
+        const field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (var mapping of customFieldMappings) {
+            for (const mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = deal[mapping.remote_id];
             }
         }
@@ -91,7 +91,7 @@ export class MicrosoftdynamicssalesDealMapper implements IDealMapper {
         let opts: any = {};
 
         if (deal._ownerid_value) {
-            var user_id = await this.utils.getUserUuidFromRemoteId(
+            const user_id = await this.utils.getUserUuidFromRemoteId(
                 deal._ownerid_value,
                 connectionId
             );
@@ -104,7 +104,7 @@ export class MicrosoftdynamicssalesDealMapper implements IDealMapper {
         }
 
         if (deal._customerid_value) {
-            var company_id = await this.utils.getCompanyUuidFromRemoteId(
+            const company_id = await this.utils.getCompanyUuidFromRemoteId(
                 deal._customerid_value,
                 connectionId
             );
