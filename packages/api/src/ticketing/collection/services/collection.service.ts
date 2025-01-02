@@ -31,14 +31,14 @@ export class CollectionService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingCollectionOutput> {
     try {
-      const collection = await this.prisma.tcg_collections.findUnique({
+      var collection = await this.prisma.tcg_collections.findUnique({
         where: {
           id_tcg_collection: id_ticketing_collection,
         },
       });
 
       // Transform to UnifiedTicketingCollectionOutput format
-      const unifiedCollection: UnifiedTicketingCollectionOutput = {
+      var unifiedCollection: UnifiedTicketingCollectionOutput = {
         id: collection.id_tcg_collection,
         name: collection.name,
         description: collection.description,
@@ -49,12 +49,12 @@ export class CollectionService {
       };
 
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: collection.id_tcg_collection,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         unifiedCollection.remote_data = remote_data;
       }
@@ -98,7 +98,7 @@ export class CollectionService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.tcg_collections.findFirst({
+        var isCursorPresent = await this.prisma.tcg_collections.findFirst({
           where: {
             id_connection: connection_id,
             id_tcg_collection: cursor,
@@ -109,7 +109,7 @@ export class CollectionService {
         }
       }
 
-      const collections = await this.prisma.tcg_collections.findMany({
+      var collections = await this.prisma.tcg_collections.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -135,7 +135,7 @@ export class CollectionService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedCollections: UnifiedTicketingCollectionOutput[] =
+      var unifiedCollections: UnifiedTicketingCollectionOutput[] =
         await Promise.all(
           collections.map(async (collection) => {
             return {
@@ -153,15 +153,15 @@ export class CollectionService {
       let res: UnifiedTicketingCollectionOutput[] = unifiedCollections;
 
       if (remote_data) {
-        const remote_array_data: UnifiedTicketingCollectionOutput[] =
+        var remote_array_data: UnifiedTicketingCollectionOutput[] =
           await Promise.all(
             res.map(async (collection) => {
-              const resp = await this.prisma.remote_data.findFirst({
+              var resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: collection.id,
                 },
               });
-              const remote_data = JSON.parse(resp.data);
+              var remote_data = JSON.parse(resp.data);
               return { ...collection, remote_data };
             }),
           );
