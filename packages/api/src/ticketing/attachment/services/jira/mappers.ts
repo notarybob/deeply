@@ -65,7 +65,7 @@ export class JiraAttachmentMapper implements IAttachmentMapper {
     let opts = {};
     if (attachment.author.accountId) {
       // todo : determiner qui est l'uploader ?
-      const id_user = await this.utils.getUserUuidFromRemoteId(
+      var id_user = await this.utils.getUserUuidFromRemoteId(
         attachment.author.accountId,
         connectionId,
       );
