@@ -33,7 +33,7 @@ export class GitlabService implements ICommentService {
     remoteIdTicket: string,
   ): Promise<ApiResponse<GitlabCommentOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gitlab',
@@ -42,10 +42,10 @@ export class GitlabService implements ICommentService {
       });
 
       let uploads = [];
-      var uuids = commentData.attachment as any[];
+      const uuids = commentData.attachment as any[];
       if (uuids && uuids.length > 0) {
-        var attachmentPromises = uuids.map(async (uuid) => {
-          var res = await this.prisma.tcg_attachments.findUnique({
+        const attachmentPromises = uuids.map(async (uuid) => {
+          const res = await this.prisma.tcg_attachments.findUnique({
             where: {
               id_tcg_attachment: uuid.extra,
             },
@@ -57,7 +57,7 @@ export class GitlabService implements ICommentService {
           }
           // Assuming you want to construct the right binary attachment here
           // For now, we'll just return the URL
-          var stats = fs.statSync(res.file_url);
+          const stats = fs.statSync(res.file_url);
           return {
             url: res.file_url,
             name: res.file_name,
@@ -70,14 +70,14 @@ export class GitlabService implements ICommentService {
 
       // Assuming you want to modify the comment object here
       // For now, we'll just add the uploads to the comment
-      var data: any = {
+      const data: any = {
         ...commentData,
       };
       if (uploads.length > 0) {
         data.attachments = uploads;
       }
 
-      var ticket = await this.prisma.tcg_tickets.findFirst({
+      const ticket = await this.prisma.tcg_tickets.findFirst({
         where: {
           remote_id: remoteIdTicket,
           id_connection: connection.id_connection,
@@ -88,19 +88,19 @@ export class GitlabService implements ICommentService {
         },
       });
 
-      var remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
+      const remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
         ticket.collections[0],
       );
 
       // Retrieve the uuid of issue from remote_data
-      var remote_data = await this.prisma.remote_data.findFirst({
+      const remote_data = await this.prisma.remote_data.findFirst({
         where: {
           ressource_owner_id: ticket.id_tcg_ticket,
         },
       });
-      var { iid } = JSON.parse(remote_data.data);
+      const { iid } = JSON.parse(remote_data.data);
 
-      var resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v4/projects/${remote_project_id}/issues/${iid}/notes`,
         JSON.stringify(data),
         {
@@ -124,9 +124,9 @@ export class GitlabService implements ICommentService {
   }
   async sync(data: SyncParam): Promise<ApiResponse<GitlabCommentOutput[]>> {
     try {
-      var { linkedUserId, id_ticket } = data;
+      const { linkedUserId, id_ticket } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gitlab',
@@ -134,7 +134,7 @@ export class GitlabService implements ICommentService {
         },
       });
       //retrieve ticket remote id so we can retrieve the comments in the original software
-      var ticket = await this.prisma.tcg_tickets.findUnique({
+      const ticket = await this.prisma.tcg_tickets.findUnique({
         where: {
           id_tcg_ticket: id_ticket as string,
         },
@@ -145,21 +145,21 @@ export class GitlabService implements ICommentService {
       });
 
       // retrieve the remote_id of project from collections
-      var remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
+      const remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
         ticket.collections[0],
       );
 
       // Retrieve the uuid of issue from remote_data
-      var remote_data = await this.prisma.remote_data.findFirst({
+      const remote_data = await this.prisma.remote_data.findFirst({
         where: {
           ressource_owner_id: id_ticket as string,
         },
       });
-      var { iid } = JSON.parse(remote_data.data);
+      const { iid } = JSON.parse(remote_data.data);
 
       let res = [];
       if (remote_project_id) {
-        var resp = await axios.get(
+        const resp = await axios.get(
           `${connection.account_url}/v4/projects/${remote_project_id}/issues/${iid}/notes`,
           {
             headers: {
