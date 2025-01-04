@@ -29,7 +29,7 @@ export class EcommerceUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<EcommerceObjectInput> {
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'ecommerce',
       targetType_,
       providerName,
@@ -59,7 +59,7 @@ export class EcommerceUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<UnifyReturnType> {
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'ecommerce',
       targetType_,
       providerName,
