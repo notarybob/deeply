@@ -42,7 +42,7 @@ type HubspotPropertiesOuput = {
   [key: string]: string;
 };
 
-export let commonHubspotProperties = {
+export const commonHubspotProperties = {
   createdate: '',
   email: '',
   firstname: '',
