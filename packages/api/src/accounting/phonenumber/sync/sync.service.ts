@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IPhoneNumberService =
+      var { integrationId, linkedUserId } = param;
+      var service: IPhoneNumberService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -91,11 +91,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccPhoneNumber[]> {
     try {
-      const phoneNumberResults: AccPhoneNumber[] = [];
+      var phoneNumberResults: AccPhoneNumber[] = [];
 
       for (let i = 0; i < phoneNumbers.length; i++) {
-        const phoneNumber = phoneNumbers[i];
-        const originId = phoneNumber.remote_id;
+        var phoneNumber = phoneNumbers[i];
+        var originId = phoneNumber.remote_id;
 
         let existingPhoneNumber = await this.prisma.acc_phone_numbers.findFirst(
           {
@@ -106,7 +106,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         );
 
-        const phoneNumberData = {
+        var phoneNumberData = {
           number: phoneNumber.number,
           type: phoneNumber.type,
           id_acc_company_info: phoneNumber.company_info_id,
