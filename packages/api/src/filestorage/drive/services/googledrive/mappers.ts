@@ -66,14 +66,14 @@ export class GoogleDriveMapper implements IDriveMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageDriveOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = drive[mapping.remote_id];
       }
     }
 
-    const result: UnifiedFilestorageDriveOutput = {
+    let result: UnifiedFilestorageDriveOutput = {
       remote_id: drive.id,
       remote_data: drive,
       name: drive.name,
