@@ -84,13 +84,13 @@ export class ZohoTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmTaskOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = task[mapping.remote_id];
       }
     }
-    let res: UnifiedCrmTaskOutput = {
+    const res: UnifiedCrmTaskOutput = {
       remote_id: task.id,
       remote_data: task,
       content: task.Description,
