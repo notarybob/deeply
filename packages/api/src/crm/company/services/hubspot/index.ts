@@ -33,17 +33,17 @@ export class HubspotService implements ICompanyService {
     linkedUserId: string,
   ): Promise<ApiResponse<HubspotCompanyOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
           vertical: 'crm',
         },
       });
-      const dataBody = {
+      let dataBody = {
         properties: companyData,
       };
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/crm/v3/objects/companies`,
         JSON.stringify(dataBody),
         {
@@ -67,8 +67,8 @@ export class HubspotService implements ICompanyService {
 
   async sync(data: SyncParam): Promise<ApiResponse<HubspotCompanyOutput[]>> {
     try {
-      const { linkedUserId, custom_properties } = data;
-      const connection = await this.prisma.connections.findFirst({
+      let { linkedUserId, custom_properties } = data;
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
@@ -76,16 +76,16 @@ export class HubspotService implements ICompanyService {
         },
       });
 
-      const commonPropertyNames = Object.keys(commonCompanyHubspotProperties);
-      const allProperties = [...commonPropertyNames, ...custom_properties];
-      const baseURL = `${connection.account_url}/crm/v3/objects/companies`;
-      const queryString = allProperties
+      let commonPropertyNames = Object.keys(commonCompanyHubspotProperties);
+      let allProperties = [...commonPropertyNames, ...custom_properties];
+      let baseURL = `${connection.account_url}/crm/v3/objects/companies`;
+      let queryString = allProperties
         .map((prop) => `properties=${encodeURIComponent(prop)}`)
         .join('&');
 
-      const url = `${baseURL}?${queryString}`;
+      let url = `${baseURL}?${queryString}`;
 
-      const resp = await axios.get(url, {
+      let resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
