@@ -20,7 +20,7 @@ export class CloseTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<CloseTaskInput> {
-    const result: CloseTaskInput = {
+    var result: CloseTaskInput = {
       text: source?.content ?? null,
       is_complete: source.status === 'COMPLETED',
       _type: 'lead',
@@ -30,13 +30,13 @@ export class CloseTaskMapper implements ITaskMapper {
     };
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.assigned_to = owner_id;
       }
     }
     if (source.company_id) {
-      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -45,8 +45,8 @@ export class CloseTaskMapper implements ITaskMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -89,15 +89,15 @@ export class CloseTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmTaskOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = task[mapping.remote_id];
       }
     }
     let opts: any = {};
     if (task.assigned_to) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         task.assigned_to,
         connectionId,
       );
@@ -109,7 +109,7 @@ export class CloseTaskMapper implements ITaskMapper {
       }
     }
     if (task.contact_id) {
-      const contact_id = await this.utils.getContactUuidFromRemoteId(
+      var contact_id = await this.utils.getContactUuidFromRemoteId(
         task.contact_id,
         connectionId,
       );
@@ -121,7 +121,7 @@ export class CloseTaskMapper implements ITaskMapper {
       }
     }
     if (task.lead_id) {
-      const lead_id = await this.utils.getCompanyUuidFromRemoteId(
+      var lead_id = await this.utils.getCompanyUuidFromRemoteId(
         task.lead_id,
         connectionId,
       );
