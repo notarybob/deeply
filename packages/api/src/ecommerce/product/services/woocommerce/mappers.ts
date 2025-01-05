@@ -31,7 +31,7 @@ export class WoocommerceProductMapper implements IProductMapper {
       remote_id: string;
     }[],
   ): Promise<Partial<WoocommerceProductInput>> {
-    const res: Partial<WoocommerceProductInput> = {
+    let res: Partial<WoocommerceProductInput> = {
       name: source.product_url?.split('/').pop() || '',
       description: source.description,
       short_description: source.description?.substring(0, 100),
@@ -107,7 +107,7 @@ export class WoocommerceProductMapper implements IProductMapper {
       remote_id: string;
     }[],
   ): UnifiedEcommerceProductOutput {
-    const unified: UnifiedEcommerceProductOutput = {
+    let unified: UnifiedEcommerceProductOutput = {
       remote_id: product.id.toString(),
       remote_data: product,
       product_url: product.permalink,
@@ -135,7 +135,7 @@ export class WoocommerceProductMapper implements IProductMapper {
     // Handle custom field mappings
     if (customFieldMappings && product.meta_data) {
       unified.field_mappings = product.meta_data.reduce((acc, meta) => {
-        const mapping = customFieldMappings.find((m) => m.slug === meta.key);
+        let mapping = customFieldMappings.find((m) => m.slug === meta.key);
         if (mapping) {
           acc[mapping.remote_id] = meta.value;
         }
