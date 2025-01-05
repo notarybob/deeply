@@ -29,21 +29,21 @@ export class ZendeskService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskUserOutput[]>> {
     try {
-      const { linkedUserId, webhook_remote_identifier } = data;
+      let { linkedUserId, webhook_remote_identifier } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'ticketing',
         },
       });
-      const remote_user_id = webhook_remote_identifier as string;
-      const request_url = remote_user_id
+      let remote_user_id = webhook_remote_identifier as string;
+      let request_url = remote_user_id
         ? `${connection.account_url}/v2/users/${remote_user_id}.json`
         : `${connection.account_url}/v2/users.json`;
 
-      const resp = await axios.get(request_url, {
+      let resp = await axios.get(request_url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -52,10 +52,10 @@ export class ZendeskService implements IUserService {
         },
       });
       this.logger.log(`Synced zendesk users !`);
-      const users: ZendeskUserOutput[] = remote_user_id
+      let users: ZendeskUserOutput[] = remote_user_id
         ? [resp.data.user]
         : resp.data.users;
-      const filteredUsers = users.filter((user) => user.role === 'agent');
+      let filteredUsers = users.filter((user) => user.role === 'agent');
 
       return {
         data: filteredUsers,
