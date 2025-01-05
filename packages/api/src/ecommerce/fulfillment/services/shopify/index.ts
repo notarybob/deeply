@@ -30,9 +30,9 @@ export class ShopifyService implements IFulfillmentService {
     data: SyncParam,
   ): Promise<ApiResponse<ShopifyFulfillmentOutput[]>> {
     try {
-      const { linkedUserId, id_order } = data;
+      let { linkedUserId, id_order } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'shopify',
@@ -40,7 +40,7 @@ export class ShopifyService implements IFulfillmentService {
         },
       });
       //retrieve ticket remote id so we can retrieve the comments in the original software
-      const order = await this.prisma.ecom_orders.findUnique({
+      let order = await this.prisma.ecom_orders.findUnique({
         where: {
           id_ecom_order: id_order as string,
         },
@@ -49,7 +49,7 @@ export class ShopifyService implements IFulfillmentService {
         },
       });
 
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/admin/api/2024-07/orders/${order.remote_id}/fulfillments.json`,
         {
           headers: {
@@ -60,7 +60,7 @@ export class ShopifyService implements IFulfillmentService {
           },
         },
       );
-      const fulfillments: ShopifyFulfillmentOutput[] = resp.data.fulfillments;
+      let fulfillments: ShopifyFulfillmentOutput[] = resp.data.fulfillments;
       this.logger.log(`Synced shopify fulfillments !`);
 
       return {
