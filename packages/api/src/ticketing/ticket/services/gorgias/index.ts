@@ -33,7 +33,7 @@ export class GorgiasService implements ITicketService {
     linkedUserId: string,
   ): Promise<ApiResponse<GorgiasTicketOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gorgias',
@@ -41,14 +41,14 @@ export class GorgiasService implements ITicketService {
         },
       });
 
-      const comments = ticketData.messages;
-      const modifiedComments = await Promise.all(
+      var comments = ticketData.messages;
+      var modifiedComments = await Promise.all(
         comments.map(async (comment) => {
           let uploads = [];
-          const uuids = comment.attachments as string[];
+          var uuids = comment.attachments as string[];
           if (uuids && uuids.length > 0) {
-            const attachmentPromises = uuids.map(async (uuid) => {
-              const res = await this.prisma.tcg_attachments.findUnique({
+            var attachmentPromises = uuids.map(async (uuid) => {
+              var res = await this.prisma.tcg_attachments.findUnique({
                 where: {
                   id_tcg_attachment: uuid,
                 },
@@ -60,7 +60,7 @@ export class GorgiasService implements ITicketService {
               }
               // Assuming you want to construct the right binary attachment here
               // For now, we'll just return the URL
-              const stats = fs.statSync(res.file_url);
+              var stats = fs.statSync(res.file_url);
               return {
                 url: res.file_url,
                 name: res.file_name,
@@ -80,7 +80,7 @@ export class GorgiasService implements ITicketService {
         }),
       );
 
-      const resp = await axios.post(
+      var resp = await axios.post(
         `${connection.account_url}/tickets`,
         JSON.stringify({ ...ticketData, messages: modifiedComments }),
         {
@@ -105,9 +105,9 @@ export class GorgiasService implements ITicketService {
 
   async sync(data: SyncParam): Promise<ApiResponse<GorgiasTicketOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      var { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gorgias',
@@ -115,7 +115,7 @@ export class GorgiasService implements ITicketService {
         },
       });
 
-      const resp = await axios.get(`${connection.account_url}/tickets`, {
+      var resp = await axios.get(`${connection.account_url}/tickets`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
