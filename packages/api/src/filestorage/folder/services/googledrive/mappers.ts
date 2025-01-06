@@ -74,16 +74,16 @@ export class GoogleDriveFolderMapper implements IFolderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageFolderOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] =
           folder[mapping.remote_id as keyof GoogleDriveFolderOutput];
       }
     }
-    const opts: any = {};
+    let opts: any = {};
     if (folder.parents && folder.parents.length > 0) {
-      const folder_id = await this.utils.getFolderIdFromRemote(
+      let folder_id = await this.utils.getFolderIdFromRemote(
         folder.parents[0],
         connectionId,
       );
