@@ -31,14 +31,14 @@ export class CloseService implements ITaskService {
     linkedUserId: string,
   ): Promise<ApiResponse<CloseTaskOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
           vertical: 'crm',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v1/task`,
         JSON.stringify(taskData),
         {
@@ -62,9 +62,9 @@ export class CloseService implements ITaskService {
 
   async sync(data: SyncParam): Promise<ApiResponse<CloseTaskOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -72,9 +72,9 @@ export class CloseService implements ITaskService {
         },
       });
 
-      const baseURL = `${connection.account_url}/v1/task`;
+      let baseURL = `${connection.account_url}/v1/task`;
 
-      const resp = await axios.get(baseURL, {
+      let resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
