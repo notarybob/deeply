@@ -31,10 +31,10 @@ export class AccountService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingAccountOutput> {
     try {
-      const service = this.serviceRegistry.getService(integrationId);
-      const resp = await service.addAccount(unifiedAccountData, linkedUserId);
+      let service = this.serviceRegistry.getService(integrationId);
+      let resp = await service.addAccount(unifiedAccountData, linkedUserId);
 
-      const savedAccount = await this.prisma.acc_accounts.create({
+      let savedAccount = await this.prisma.acc_accounts.create({
         data: {
           id_acc_account: uuidv4(),
           ...unifiedAccountData,
@@ -48,7 +48,7 @@ export class AccountService {
         },
       });
 
-      const result: UnifiedAccountingAccountOutput = {
+      let result: UnifiedAccountingAccountOutput = {
         ...savedAccount,
         currency: savedAccount.currency as CurrencyCode,
         id: savedAccount.id_acc_account,
@@ -76,7 +76,7 @@ export class AccountService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingAccountOutput> {
     try {
-      const account = await this.prisma.acc_accounts.findUnique({
+      let account = await this.prisma.acc_accounts.findUnique({
         where: { id_acc_account: id_acc_account },
       });
 
@@ -84,18 +84,18 @@ export class AccountService {
         throw new Error(`Account with ID ${id_acc_account} not found.`);
       }
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: account.id_acc_account },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedAccount: UnifiedAccountingAccountOutput = {
+      let unifiedAccount: UnifiedAccountingAccountOutput = {
         id: account.id_acc_account,
         name: account.name,
         description: account.description,
@@ -116,7 +116,7 @@ export class AccountService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: account.id_acc_account },
         });
         unifiedAccount.remote_data = remoteDataRecord
@@ -160,30 +160,30 @@ export class AccountService {
     previous_cursor: string | null;
   }> {
     try {
-      const accounts = await this.prisma.acc_accounts.findMany({
+      let accounts = await this.prisma.acc_accounts.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_account: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = accounts.length > limit;
+      let hasNextPage = accounts.length > limit;
       if (hasNextPage) accounts.pop();
 
-      const unifiedAccounts = await Promise.all(
+      let unifiedAccounts = await Promise.all(
         accounts.map(async (account) => {
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: account.id_acc_account },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedAccount: UnifiedAccountingAccountOutput = {
+          let unifiedAccount: UnifiedAccountingAccountOutput = {
             id: account.id_acc_account,
             name: account.name,
             description: account.description,
@@ -204,7 +204,7 @@ export class AccountService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: account.id_acc_account },
             });
             unifiedAccount.remote_data = remoteDataRecord
