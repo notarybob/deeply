@@ -27,9 +27,9 @@ export class GithubService implements ITagService {
 
     async sync(data: SyncParam): Promise<ApiResponse<GithubTagOutput[]>> {
         try {
-            var { linkedUserId } = data;
+            const { linkedUserId } = data;
 
-            var connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'github',
@@ -37,7 +37,7 @@ export class GithubService implements ITagService {
                 },
             });
 
-            var repos = await axios.get(`${connection.account_url}/user/repos`, {
+            const repos = await axios.get(`${connection.account_url}/user/repos`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -46,9 +46,9 @@ export class GithubService implements ITagService {
                 },
             });
             let resp: any = [];
-            for (var repo of repos.data) {
+            for (const repo of repos.data) {
                 if (repo.id) {
-                    var tags = await axios.get(
+                    const tags = await axios.get(
                         `${connection.account_url}/repos/${repo.owner.login}/${repo.name}/labels`,
                         {
                             headers: {
