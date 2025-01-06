@@ -60,9 +60,9 @@ export class OnedriveUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageUserOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         if (user[mapping.slug]) {
           field_mappings[mapping.remote_id] = user[mapping.slug];
         }
