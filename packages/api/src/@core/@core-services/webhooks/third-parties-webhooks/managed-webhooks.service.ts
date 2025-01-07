@@ -64,7 +64,7 @@ export class ManagedWebhooksService {
 
   async createRemoteThirdPartyWebhook(data: RemoteThirdPartyCreationDto) {
     try {
-      const conn = await this.prisma.connections.findFirst({
+      let conn = await this.prisma.connections.findFirst({
         where: {
           id_connection: data.id_connection,
         },
