@@ -46,7 +46,7 @@ export class CoreUnification {
       switch (vertical.toLowerCase()) {
         case ConnectorCategory.Ecommerce:
           targetType_ = targetType as EcommerceObject;
-          var ecommerceRegistry = this.registry.getService('ecommerce');
+          const ecommerceRegistry = this.registry.getService('ecommerce');
           return ecommerceRegistry.unify({
             sourceObject,
             targetType_,
@@ -57,7 +57,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.Crm:
           targetType_ = targetType as CrmObject;
-          var crmRegistry = this.registry.getService('crm');
+          const crmRegistry = this.registry.getService('crm');
           return crmRegistry.unify({
             sourceObject,
             targetType_,
@@ -68,7 +68,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.Accounting:
           targetType_ = targetType as AccountingObject;
-          var accountingRegistry = this.registry.getService('accounting');
+          const accountingRegistry = this.registry.getService('accounting');
           return accountingRegistry.unify({
             sourceObject,
             targetType_,
@@ -78,7 +78,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.FileStorage:
           targetType_ = targetType as FileStorageObject;
-          var filestorageRegistry = this.registry.getService('filestorage');
+          const filestorageRegistry = this.registry.getService('filestorage');
           return filestorageRegistry.unify({
             sourceObject,
             targetType_,
@@ -88,7 +88,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.MarketingAutomation:
           targetType_ = targetType as MarketingAutomationObject;
-          var marketingautomationRegistry = this.registry.getService(
+          const marketingautomationRegistry = this.registry.getService(
             'marketingautomation',
           );
           return marketingautomationRegistry.unify({
@@ -100,7 +100,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.Ticketing:
           targetType_ = targetType as TicketingObject;
-          var ticketingRegistry = this.registry.getService('ticketing');
+          const ticketingRegistry = this.registry.getService('ticketing');
           return ticketingRegistry.unify({
             sourceObject,
             targetType_,
@@ -143,7 +143,7 @@ export class CoreUnification {
       switch (vertical.toLowerCase()) {
         case ConnectorCategory.Ecommerce:
           targetType_ = targetType as EcommerceObject;
-          var ecommerceRegistry = this.registry.getService('ecommerce');
+          const ecommerceRegistry = this.registry.getService('ecommerce');
           return ecommerceRegistry.desunify({
             sourceObject,
             targetType_,
@@ -152,7 +152,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.Crm:
           targetType_ = targetType as CrmObject;
-          var crmRegistry = this.registry.getService('crm');
+          const crmRegistry = this.registry.getService('crm');
           return crmRegistry.desunify({
             sourceObject,
             targetType_,
@@ -162,7 +162,7 @@ export class CoreUnification {
 
         case ConnectorCategory.Accounting:
           targetType_ = targetType as AccountingObject;
-          var accountingRegistry = this.registry.getService('accounting');
+          const accountingRegistry = this.registry.getService('accounting');
           return accountingRegistry.desunify({
             sourceObject,
             targetType_,
@@ -171,7 +171,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.FileStorage:
           targetType_ = targetType as FileStorageObject;
-          var filestorageRegistry = this.registry.getService('filestorage');
+          const filestorageRegistry = this.registry.getService('filestorage');
           return filestorageRegistry.desunify({
             sourceObject,
             targetType_,
@@ -180,7 +180,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.MarketingAutomation:
           targetType_ = targetType as MarketingAutomationObject;
-          var marketingautomationRegistry = this.registry.getService(
+          const marketingautomationRegistry = this.registry.getService(
             'marketingautomation',
           );
           return marketingautomationRegistry.desunify({
@@ -191,7 +191,7 @@ export class CoreUnification {
           });
         case ConnectorCategory.Ticketing:
           targetType_ = targetType as TicketingObject;
-          var ticketingRegistry = this.registry.getService('ticketing');
+          const ticketingRegistry = this.registry.getService('ticketing');
           return ticketingRegistry.desunify({
             sourceObject,
             targetType_,
