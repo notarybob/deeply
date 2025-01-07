@@ -29,10 +29,10 @@ export class OnedriveService implements ISharedLinkService {
     data: SyncParam,
   ): Promise<ApiResponse<OnedriveSharedLinkOutput[]>> {
     try {
-      const { linkedUserId, extra } = data;
+      var { linkedUserId, extra } = data;
       //  TODO: where it comes from ??  extra?: { object_name: 'folder' | 'file'; value: string },
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'onedrive',
@@ -41,7 +41,7 @@ export class OnedriveService implements ISharedLinkService {
       });
       let remote_id;
       if (extra.object_name == 'folder') {
-        const a = await this.prisma.fs_folders.findUnique({
+        var a = await this.prisma.fs_folders.findUnique({
           where: {
             id_fs_folder: extra.value,
           },
@@ -49,7 +49,7 @@ export class OnedriveService implements ISharedLinkService {
         remote_id = a.remote_id;
       }
       if (extra.object_name == 'file') {
-        const a = await this.prisma.fs_files.findUnique({
+        var a = await this.prisma.fs_files.findUnique({
           where: {
             id_fs_file: extra.value,
           },
@@ -57,7 +57,7 @@ export class OnedriveService implements ISharedLinkService {
         remote_id = a.remote_id;
       }
 
-      const resp = await axios.get(
+      var resp = await axios.get(
         `${connection.account_url}/v1.0/drive/items/${remote_id}/permissions`,
         // Same url as onedrive permissions
         // We might use POST /drives/{driveId}/items/{itemId}/createLink later
