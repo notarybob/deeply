@@ -56,10 +56,10 @@ export class CapsuleConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -91,8 +91,8 @@ export class CapsuleConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: `capsule`,
@@ -101,18 +101,18 @@ export class CapsuleConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the githubend it must be the same
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
         code: code,
         grant_type: 'authorization_code',
       });
-      const res = await axios.post(
+      var res = await axios.post(
         'https://api.capsulecrm.com/oauth/token',
         formData.toString(),
         {
@@ -121,13 +121,13 @@ export class CapsuleConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: CapsuleOAuthResponse = res.data;
+      var data: CapsuleOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : capsule ticketing ' + JSON.stringify(data),
       );
 
       let db_res;
-      const connection_token = uuidv4();
+      var connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -185,19 +185,19 @@ export class CapsuleConnectionService extends AbstractBaseConnectionService {
 
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      const { connectionId, refreshToken, projectId } = opts;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var { connectionId, refreshToken, projectId } = opts;
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
       });
-      const res = await axios.post(
+      var res = await axios.post(
         'https://api.capsulecrm.com/oauth/token',
         formData.toString(),
         {
@@ -206,7 +206,7 @@ export class CapsuleConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: CapsuleOAuthResponse = res.data;
+      var data: CapsuleOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
