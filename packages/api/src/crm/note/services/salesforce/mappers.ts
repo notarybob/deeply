@@ -21,32 +21,32 @@ export class SalesforceNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<SalesforceNoteInput> {
-    var result: SalesforceNoteInput = {
+    const result: SalesforceNoteInput = {
       Content: source.content,
       Title: source.content, // TODO: source.title || 'Note',
     };
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.OwnerId = owner_id;
       }
     }
 
     if (source.deal_id) {
-      var id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      const id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       result.ParentId = id;
     } else if (source.contact_id) {
-      var id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
+      const id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
       result.ParentId = id;
     } else if (source.company_id) {
-      var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+      const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
       result.ParentId = id;
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -89,16 +89,16 @@ export class SalesforceNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmNoteOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = note[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (note.OwnerId) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         note.OwnerId,
         connectionId,
       );
