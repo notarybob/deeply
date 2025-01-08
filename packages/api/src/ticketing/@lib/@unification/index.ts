@@ -31,7 +31,7 @@ export class TicketingUnificationService implements IUnification {
     }[];
     connectionId?: string;
   }): Promise<TicketingObjectInput> {
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'ticketing',
       targetType_,
       providerName,
@@ -62,7 +62,7 @@ export class TicketingUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<UnifyReturnType> {
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'ticketing',
       targetType_,
       providerName,
