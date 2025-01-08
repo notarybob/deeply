@@ -63,15 +63,15 @@ export class BoxFileMapper implements IFileMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageFileOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = file[mapping.remote_id];
       }
     }
     let opts: any = {};
     if (file.shared_link) {
-      const sharedLinks = (await this.coreUnificationService.unify<
+      var sharedLinks = (await this.coreUnificationService.unify<
         OriginalSharedLinkOutput[]
       >({
         sourceObject: [file.shared_link],
