@@ -40,15 +40,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = ECOMMERCE_PROVIDERS;
-          for (var provider of providers) {
+          const providers = ECOMMERCE_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -69,8 +69,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IOrderService =
+      const { integrationId, linkedUserId } = param;
+      const service: IOrderService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -92,9 +92,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<EcommerceOrder[]> {
     try {
-      var orders_results: EcommerceOrder[] = [];
+      const orders_results: EcommerceOrder[] = [];
 
-      var updateOrCreateOrder = async (
+      const updateOrCreateOrder = async (
         order: UnifiedEcommerceOrderOutput,
         originId: string,
       ) => {
@@ -115,7 +115,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        var baseData: any = {
+        const baseData: any = {
           order_status: order.order_status ?? null,
           order_number: order.order_number ?? null,
           payment_status: order.payment_status ?? null,
@@ -151,11 +151,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < orders.length; i++) {
-        var order = orders[i];
-        var originId = order.remote_id;
+        const order = orders[i];
+        const originId = order.remote_id;
 
-        var res = await updateOrCreateOrder(order, originId);
-        var order_id = res.id_ecom_order;
+        const res = await updateOrCreateOrder(order, originId);
+        const order_id = res.id_ecom_order;
         orders_results.push(res);
 
         // Process field mappings
