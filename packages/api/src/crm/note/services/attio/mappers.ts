@@ -24,7 +24,7 @@ export class AttioNoteMapper implements INoteMapper {
     let parent_object = '';
     let parent_record_id = '';
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         parent_object = 'users';
         parent_record_id = owner_id;
@@ -32,7 +32,7 @@ export class AttioNoteMapper implements INoteMapper {
     }
 
     if (source.company_id) {
-      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -42,7 +42,7 @@ export class AttioNoteMapper implements INoteMapper {
     }
 
     if (source.deal_id) {
-      const id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      var id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       if (id) {
         parent_object = 'deals';
         parent_record_id = id;
@@ -50,13 +50,13 @@ export class AttioNoteMapper implements INoteMapper {
     }
 
     if (source.contact_id) {
-      const id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
+      var id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
       if (id) {
         parent_object = 'people';
         parent_record_id = id;
       }
     }
-    const result: AttioNoteInput = {
+    var result: AttioNoteInput = {
       data: {
         title: source.content,
         content: source.content,
@@ -100,16 +100,16 @@ export class AttioNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmNoteOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = note[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (note.created_by_actor.id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         note.created_by_actor.id,
         connectionId,
       );
@@ -123,7 +123,7 @@ export class AttioNoteMapper implements INoteMapper {
     if (note.parent_object) {
       switch (note.parent_object) {
         case 'people':
-          const contact_id = await this.utils.getContactUuidFromRemoteId(
+          var contact_id = await this.utils.getContactUuidFromRemoteId(
             note.parent_record_id,
             connectionId,
           );
@@ -135,7 +135,7 @@ export class AttioNoteMapper implements INoteMapper {
           }
           break;
         case 'companies':
-          const company_id = await this.utils.getCompanyUuidFromRemoteId(
+          var company_id = await this.utils.getCompanyUuidFromRemoteId(
             note.parent_record_id,
             connectionId,
           );
@@ -147,7 +147,7 @@ export class AttioNoteMapper implements INoteMapper {
           }
           break;
         case 'deals':
-          const deal_id = await this.utils.getDealUuidFromRemoteId(
+          var deal_id = await this.utils.getDealUuidFromRemoteId(
             note.parent_record_id,
             connectionId,
           );
