@@ -33,7 +33,7 @@ export class SalesforceService implements INoteService {
     linkedUserId: string,
   ): Promise<ApiResponse<SalesforceNoteOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -41,8 +41,8 @@ export class SalesforceService implements INoteService {
         },
       });
 
-      const instanceUrl = connection.account_url;
-      const resp = await axios.post(
+      var instanceUrl = connection.account_url;
+      var resp = await axios.post(
         `${instanceUrl}/services/data/v56.0/sobjects/Note/`,
         JSON.stringify(noteData),
         {
@@ -56,8 +56,8 @@ export class SalesforceService implements INoteService {
       );
 
       // Fetch the created note to get all details
-      const noteId = resp.data.id;
-      const final_resp = await axios.get(
+      var noteId = resp.data.id;
+      var final_resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/sobjects/Note/${noteId}`,
         {
           headers: {
@@ -81,9 +81,9 @@ export class SalesforceService implements INoteService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SalesforceNoteOutput[]>> {
     try {
-      const { linkedUserId, custom_properties, pageSize, cursor } = data;
+      var { linkedUserId, custom_properties, pageSize, cursor } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -91,7 +91,7 @@ export class SalesforceService implements INoteService {
         },
       });
 
-      const instanceUrl = connection.account_url;
+      var instanceUrl = connection.account_url;
       let pagingString = '';
       if (pageSize) {
         pagingString += `LIMIT ${pageSize} `;
@@ -103,14 +103,14 @@ export class SalesforceService implements INoteService {
         pagingString = 'LIMIT 200';
       }
 
-      const fields =
+      var fields =
         custom_properties?.length > 0
           ? custom_properties.join(',')
           : 'Id,Title,Body,OwnerId,ParentId,CreatedDate,LastModifiedDate';
 
-      const query = `SELECT ${fields} FROM Note ${pagingString}`.trim();
+      var query = `SELECT ${fields} FROM Note ${pagingString}`.trim();
 
-      const resp = await axios.get(
+      var resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/query/?q=${encodeURIComponent(
           query,
         )}`,
