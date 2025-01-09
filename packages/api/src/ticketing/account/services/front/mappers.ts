@@ -32,7 +32,7 @@ export class FrontAccountMapper implements IAccountMapper {
     }[],
   ): UnifiedTicketingAccountOutput | UnifiedTicketingAccountOutput[] {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    let sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((account) =>
       this.mapSingleAccountToUnified(
@@ -51,14 +51,14 @@ export class FrontAccountMapper implements IAccountMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingAccountOutput {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = account.custom_fields[mapping.remote_id];
       }
     }
 
-    const unifiedAccount: UnifiedTicketingAccountOutput = {
+    let unifiedAccount: UnifiedTicketingAccountOutput = {
       remote_id: account.id,
       name: account.name,
       domains: account.domains.flat(),
