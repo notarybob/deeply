@@ -37,10 +37,10 @@ export class DixaConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -76,8 +76,8 @@ export class DixaConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: APIKeyCallbackParams) {
     try {
-      var { linkedUserId, projectId, body } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, body } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'dixa',
@@ -86,7 +86,7 @@ export class DixaConnectionService extends AbstractBaseConnectionService {
       });
 
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
