@@ -32,7 +32,7 @@ export class JiraUserMapper implements IUserMapper {
     }[],
   ): Promise<UnifiedTicketingUserOutput | UnifiedTicketingUserOutput[]> {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    let sourcesArray = Array.isArray(source) ? source : [source];
 
     return Promise.all(
       sourcesArray.map((user) =>
@@ -49,7 +49,7 @@ export class JiraUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingUserOutput {
-    const unifiedUser: UnifiedTicketingUserOutput = {
+    let unifiedUser: UnifiedTicketingUserOutput = {
       remote_id: user.accountId,
       remote_data: user,
       name: `${user.displayName}`,
