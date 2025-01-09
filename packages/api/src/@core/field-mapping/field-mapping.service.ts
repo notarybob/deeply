@@ -73,10 +73,10 @@ export class FieldMappingService {
 
   async defineTargetField(dto: DefineTargetFieldDto, projectId: string) {
     // Create a new attribute in your system representing the target field
-    //const id_entity = await this.getEntityId(dto.object_type_owner);
+    //let id_entity = await this.getEntityId(dto.object_type_owner);
     //this.logger.log('id entity is ' + id_entity);
     try {
-      const attribute = await this.prisma.attribute.create({
+      let attribute = await this.prisma.attribute.create({
         data: {
           id_attribute: uuidv4(),
           id_project: projectId,
@@ -103,7 +103,7 @@ export class FieldMappingService {
 
   async mapFieldToProvider(dto: MapFieldToProviderDto) {
     try {
-      const updatedAttribute = await this.prisma.attribute.update({
+      let updatedAttribute = await this.prisma.attribute.update({
         where: {
           id_attribute: dto.attributeId.trim(),
         },
@@ -123,7 +123,7 @@ export class FieldMappingService {
 
   async createCustomField(dto: CustomFieldCreateDto, projectId: string) {
     try {
-      const attribute = await this.prisma.attribute.create({
+      let attribute = await this.prisma.attribute.create({
         data: {
           id_attribute: uuidv4(),
           id_project: projectId,
@@ -141,7 +141,7 @@ export class FieldMappingService {
           modified_at: new Date(),
         },
       });
-      const updatedAttribute = await this.prisma.attribute.update({
+      let updatedAttribute = await this.prisma.attribute.update({
         where: {
           id_attribute: attribute.id_attribute.trim(),
         },
@@ -173,18 +173,18 @@ export class FieldMappingService {
             vertical,
           }),
       );
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: providerId.toLowerCase(),
           vertical: vertical.toLowerCase(),
         },
       });
-      const provider = CONNECTORS_METADATA[vertical][providerId.toLowerCase()];
+      let provider = CONNECTORS_METADATA[vertical][providerId.toLowerCase()];
       if (!provider.urls.apiUrl || !provider.urls.customPropertiesUrl)
         throw new Error('proivder urls are invalid');
 
-      const resp = await axios.get(provider.urls.customPropertiesUrl, {
+      let resp = await axios.get(provider.urls.customPropertiesUrl, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
