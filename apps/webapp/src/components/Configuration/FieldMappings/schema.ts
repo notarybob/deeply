@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export let mappingSchema = z.object({
+export const mappingSchema = z.object({
   standard_object: z.string(),
   source_app: z.string(),
   status: z.string(),
