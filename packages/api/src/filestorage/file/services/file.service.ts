@@ -38,15 +38,15 @@ export class FileService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestorageFileOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
-      var customFieldMappings =
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
+      const customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           'filestorage.file',
         );
 
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedFilestorageFileInput>({
           sourceObject: unifiedFileData,
           targetType: FileStorageObject.file,
@@ -61,13 +61,13 @@ export class FileService {
         'desunified object is ' + JSON.stringify(desunifiedObject),
       );
 
-      var service = this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalFileOutput> = await service.addFile(
+      const service = this.serviceRegistry.getService(integrationId);
+      const resp: ApiResponse<OriginalFileOutput> = await service.addFile(
         desunifiedObject,
         linkedUserId,
       );
 
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalFileOutput[]
       >({
         sourceObject: [resp.data],
@@ -78,10 +78,10 @@ export class FileService {
         customFieldMappings: customFieldMappings,
       })) as UnifiedFilestorageFileOutput[];
 
-      var source_file = resp.data;
-      var target_file = unifiedObject[0];
+      const source_file = resp.data;
+      const target_file = unifiedObject[0];
 
-      var unique_fs_file_id = await this.saveOrUpdateFile(
+      const unique_fs_file_id = await this.saveOrUpdateFile(
         target_file,
         connection_id,
       );
@@ -98,7 +98,7 @@ export class FileService {
         source_file,
       );
 
-      var result_file = await this.getFile(
+      const result_file = await this.getFile(
         unique_fs_file_id,
         undefined,
         undefined,
@@ -107,8 +107,8 @@ export class FileService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: projectId,
@@ -136,7 +136,7 @@ export class FileService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -147,11 +147,11 @@ export class FileService {
     file: UnifiedFilestorageFileOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingFile = await this.prisma.fs_files.findFirst({
+    const existingFile = await this.prisma.fs_files.findFirst({
       where: { remote_id: file.remote_id, id_connection: connection_id },
     });
 
-    var data: any = {
+    const data: any = {
       name: file.name,
       file_url: file.file_url,
       mime_type: file.mime_type,
@@ -162,7 +162,7 @@ export class FileService {
     };
 
     if (existingFile) {
-      var res = await this.prisma.fs_files.update({
+      const res = await this.prisma.fs_files.update({
         where: { id_fs_file: existingFile.id_fs_file },
         data: data,
       });
@@ -173,7 +173,7 @@ export class FileService {
       data.id_connection = connection_id;
       data.id_fs_file = uuidv4();
 
-      var newFile = await this.prisma.fs_files.create({ data: data });
+      const newFile = await this.prisma.fs_files.create({ data: data });
       return newFile.id_fs_file;
     }
   }
@@ -187,14 +187,14 @@ export class FileService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestorageFileOutput> {
     try {
-      var file = await this.prisma.fs_files.findUnique({
+      const file = await this.prisma.fs_files.findUnique({
         where: {
           id_fs_file: id_fs_file,
         },
       });
 
       // Fetch field mappings for the file
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: file.id_fs_file,
@@ -206,18 +206,18 @@ export class FileService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       let permissions;
       if (file.id_fs_permissions?.length > 0) {
-        var perms = await this.prisma.fs_permissions.findMany({
+        const perms = await this.prisma.fs_permissions.findMany({
           where: {
             id_fs_permission: {
               in: file.id_fs_permissions,
@@ -227,13 +227,13 @@ export class FileService {
         permissions = perms;
       }
 
-      var sharedLink = await this.prisma.fs_shared_links.findFirst({
+      const sharedLink = await this.prisma.fs_shared_links.findFirst({
         where: {
           id_fs_file: file.id_fs_file,
         },
       });
       // Transform to UnifiedFilestorageFileOutput format
-      var unifiedFile: UnifiedFilestorageFileOutput = {
+      const unifiedFile: UnifiedFilestorageFileOutput = {
         id: file.id_fs_file,
         name: file.name,
         file_url: file.file_url,
@@ -254,12 +254,12 @@ export class FileService {
 
       let res: UnifiedFilestorageFileOutput = unifiedFile;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: file.id_fs_file,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -307,7 +307,7 @@ export class FileService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.fs_files.findFirst({
+        const isCursorPresent = await this.prisma.fs_files.findFirst({
           where: {
             id_connection: connection_id,
             id_fs_file: cursor,
@@ -318,7 +318,7 @@ export class FileService {
         }
       }
 
-      var files = await this.prisma.fs_files.findMany({
+      const files = await this.prisma.fs_files.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -344,10 +344,10 @@ export class FileService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedFiles: UnifiedFilestorageFileOutput[] = await Promise.all(
+      const unifiedFiles: UnifiedFilestorageFileOutput[] = await Promise.all(
         files.map(async (file) => {
           // Fetch field mappings for the file
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: file.id_fs_file,
@@ -359,7 +359,7 @@ export class FileService {
           });
 
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -367,11 +367,11 @@ export class FileService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-          var field_mappings = Object.fromEntries(fieldMappingsMap);
+          const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           let permissions;
           if (file.id_fs_permissions?.length > 0) {
-            var perms = await this.prisma.fs_permissions.findMany({
+            const perms = await this.prisma.fs_permissions.findMany({
               where: {
                 id_fs_permission: {
                   in: file.id_fs_permissions,
@@ -381,7 +381,7 @@ export class FileService {
             permissions = perms;
           }
 
-          var sharedLink = await this.prisma.fs_shared_links.findFirst({
+          const sharedLink = await this.prisma.fs_shared_links.findFirst({
             where: {
               id_fs_file: file.id_fs_file,
             },
@@ -412,15 +412,15 @@ export class FileService {
       let res: UnifiedFilestorageFileOutput[] = unifiedFiles;
 
       if (remote_data) {
-        var remote_array_data: UnifiedFilestorageFileOutput[] =
+        const remote_array_data: UnifiedFilestorageFileOutput[] =
           await Promise.all(
             res.map(async (file) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: file.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...file, remote_data };
             }),
           );
@@ -454,7 +454,7 @@ export class FileService {
   }
   /*async getCountFiles(connection_id: string): Promise<number> {
     try {
-      var fileCount = await this.prisma.fs_files.count({
+      const fileCount = await this.prisma.fs_files.count({
         where: {
           id_connection: connection_id,
         },
