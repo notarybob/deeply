@@ -28,9 +28,9 @@ export class CloseService implements IStageService {
 
   async sync(data: SyncParam): Promise<ApiResponse<CloseStageOutput[]>> {
     try {
-      let { linkedUserId, deal_id } = data;
+      const { linkedUserId, deal_id } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -38,12 +38,12 @@ export class CloseService implements IStageService {
         },
       });
 
-      let res = await this.prisma.crm_deals.findUnique({
+      const res = await this.prisma.crm_deals.findUnique({
         where: { id_crm_deal: deal_id as string },
       });
-      let baseURL = `${connection.account_url}/v1/activity/status_change/opportunity/?opportunity_id=${res.remote_id}`;
+      const baseURL = `${connection.account_url}/v1/activity/status_change/opportunity/?opportunity_id=${res.remote_id}`;
 
-      let resp = await axios.get(baseURL, {
+      const resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
