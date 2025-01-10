@@ -46,7 +46,7 @@ class Panora {
   }
 
   async connect(options: ConnectOptions): Promise<Window | null> {
-    let { providerName, vertical, linkedUserId, credentials, options: {onSuccess, onError, overrideReturnUrl} = {} } = options;
+    const { providerName, vertical, linkedUserId, credentials, options: {onSuccess, onError, overrideReturnUrl} = {} } = options;
 
     try {
       if(!this.projectId) throw new ReferenceError("ProjectId is invalid or undefined")
@@ -75,7 +75,7 @@ class Panora {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ): Promise<null> {
-    let connectionData: IGConnectionDto = {
+    const connectionData: IGConnectionDto = {
       query: {
         providerName,
         vertical,
@@ -86,7 +86,7 @@ class Panora {
     };
 
     try {
-      let response = await fetch(
+      const response = await fetch(
         `${this.apiUrl}/connections/basicorapikey/callback?state=${encodeURIComponent(JSON.stringify(connectionData.query))}`,
         {
           method: 'POST',
@@ -98,7 +98,7 @@ class Panora {
       );
 
       if (!response.ok) {
-        let errorData = await response.json();
+        const errorData = await response.json();
         throw new Error(errorData.message || "Unknown error occurred");
       }
 
@@ -123,9 +123,9 @@ class Panora {
     onSuccess?: () => void,
     onError?: (error: Error) => void
   ): Promise<Window | null> {
-    let returnUrl = overrideReturnUrl || `${window.location.origin}`;
+    const returnUrl = overrideReturnUrl || `${window.location.origin}`;
 
-    let authUrl = await constructAuthUrl({
+    const authUrl = await constructAuthUrl({
       projectId,
       linkedUserId,
       providerName,
@@ -138,10 +138,10 @@ class Panora {
       throw new Error(`Auth URL is invalid: ${authUrl}`);
     }
 
-    let width = 600, height = 600;
-    let left = (window.innerWidth - width) / 2;
-    let top = (window.innerHeight - height) / 2;
-    let authWindow = window.open(authUrl, 'OAuth', `width=${width},height=${height},top=${top},left=${left}`);
+    const width = 600, height = 600;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    const authWindow = window.open(authUrl, 'OAuth', `width=${width},height=${height},top=${top},left=${left}`);
 
     if (authWindow) {
       this.pollForRedirect(authWindow, returnUrl, onSuccess, onError);
@@ -151,9 +151,9 @@ class Panora {
   }
 
   private pollForRedirect(authWindow: Window, returnUrl: string, onSuccess?: () => void, onError?: (error: Error) => void) {
-    let interval = setInterval(() => {
+    const interval = setInterval(() => {
       try {
-        let redirectedURL = authWindow.location.href;
+        const redirectedURL = authWindow.location.href;
         if (redirectedURL.startsWith(returnUrl)) {
           if (onSuccess) {
             onSuccess();
