@@ -21,7 +21,7 @@ export class PipedriveCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<PipedriveCompanyInput> {
-    var result: PipedriveCompanyInput = {
+    const result: PipedriveCompanyInput = {
       name: source.name,
     };
 
@@ -30,7 +30,7 @@ export class PipedriveCompanyMapper implements ICompanyMapper {
     }
 
     if (source.user_id) {
-      var owner = await this.utils.getUser(source.user_id);
+      const owner = await this.utils.getUser(source.user_id);
       if (owner) {
         result.owner_id = {
           id: Number(owner.remote_id),
@@ -44,8 +44,8 @@ export class PipedriveCompanyMapper implements ICompanyMapper {
       }
     }
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -92,16 +92,16 @@ export class PipedriveCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmCompanyOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = company[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (company.owner_id.id) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         String(company.owner_id.id),
         connectionId,
       );
@@ -112,10 +112,10 @@ export class PipedriveCompanyMapper implements ICompanyMapper {
       }
     }
     if (company.address) {
-      var addressRegex = /^(.*?), (\d{5}) (.*?), (.*)$/;
-      var match = company.address.match(addressRegex);
+      const addressRegex = /^(.*?), (\d{5}) (.*?), (.*)$/;
+      const match = company.address.match(addressRegex);
 
-      var [, street, postalCode, city, country] = match;
+      const [, street, postalCode, city, country] = match;
       opts.addresses = [
         {
           street_1: street,
