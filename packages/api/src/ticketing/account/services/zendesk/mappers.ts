@@ -56,7 +56,7 @@ export class ZendeskAccountMapper implements IAccountMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingAccountOutput {
-    let unifiedAccount: UnifiedTicketingAccountOutput = {
+    const unifiedAccount: UnifiedTicketingAccountOutput = {
       remote_id: String(account.id),
       name: account.name,
       domains: account.domain_names,
