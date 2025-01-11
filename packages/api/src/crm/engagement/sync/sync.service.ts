@@ -45,15 +45,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = CRM_PROVIDERS;
-          for (const provider of providers) {
+          var providers = CRM_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -76,8 +76,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   // todo engagement type
   async syncForLinkedUser(data: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId, engagement_type } = data;
-      const service: IEngagementService =
+      var { integrationId, linkedUserId, engagement_type } = data;
+      var service: IEngagementService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -111,9 +111,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<CrmEngagement[]> {
     try {
-      const engagements_results: CrmEngagement[] = [];
+      var engagements_results: CrmEngagement[] = [];
 
-      const updateOrCreateEngagement = async (
+      var updateOrCreateEngagement = async (
         engagement: UnifiedCrmEngagementOutput,
         originId: string,
       ) => {
@@ -134,7 +134,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        const baseData: any = {
+        var baseData: any = {
           content: engagement.content ?? null,
           direction: engagement.direction ?? null,
           subject: engagement.subject ?? null,
@@ -174,11 +174,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        const engagement = data[i];
-        const originId = engagement.remote_id;
+        var engagement = data[i];
+        var originId = engagement.remote_id;
 
-        const res = await updateOrCreateEngagement(engagement, originId);
-        const engagement_id = res.id_crm_engagement;
+        var res = await updateOrCreateEngagement(engagement, originId);
+        var engagement_id = res.id_crm_engagement;
         engagements_results.push(res);
 
         // Process field mappings
