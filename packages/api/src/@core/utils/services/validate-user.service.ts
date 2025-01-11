@@ -8,7 +8,7 @@ export class ValidateUserService {
 
   async validate(user_id: string, project_id: string) {
     try {
-      const project = await this.prisma.projects.findUnique({
+      let project = await this.prisma.projects.findUnique({
         where: {
           id_project: project_id,
         },
