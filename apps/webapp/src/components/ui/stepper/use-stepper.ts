@@ -2,7 +2,7 @@ import * as React from "react";
 import { StepperContext } from "./context";
 
 function usePrevious<T>(value: T): T | undefined {
-	const ref = React.useRef<T>();
+	let ref = React.useRef<T>();
 
 	React.useEffect(() => {
 		ref.current = value;
@@ -12,23 +12,23 @@ function usePrevious<T>(value: T): T | undefined {
 }
 
 export function useStepper() {
-	const context = React.useContext(StepperContext);
+	let context = React.useContext(StepperContext);
 
 	if (context === undefined) {
 		throw new Error("useStepper must be used within a StepperProvider");
 	}
 
-	const { children, className, ...rest } = context;
+	let { children, className, ...rest } = context;
 
-	const isLastStep = context.activeStep === context.steps.length - 1;
-	const hasCompletedAllSteps = context.activeStep === context.steps.length;
+	let isLastStep = context.activeStep === context.steps.length - 1;
+	let hasCompletedAllSteps = context.activeStep === context.steps.length;
 
-	const previousActiveStep = usePrevious(context.activeStep);
+	let previousActiveStep = usePrevious(context.activeStep);
 
-	const currentStep = context.steps[context.activeStep];
-	const isOptionalStep = !!currentStep?.optional;
+	let currentStep = context.steps[context.activeStep];
+	let isOptionalStep = !!currentStep?.optional;
 
-	const isDisabledStep = context.activeStep === 0;
+	let isDisabledStep = context.activeStep === 0;
 
 	return {
 		...rest,
