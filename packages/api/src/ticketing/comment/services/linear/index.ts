@@ -32,7 +32,7 @@ export class LinearService implements ICommentService {
     remoteIdTicket: string,
   ): Promise<ApiResponse<LinearCommentOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'linear',
@@ -42,11 +42,11 @@ export class LinearService implements ICommentService {
 
       // Skipping Storing the attachment in unified object as Linear stores attachment as link in Markdown Format
 
-      let createCommentMutation = {
+      const createCommentMutation = {
         query: `mutation { commentCreate( input: { body: \"${commentData.body}\" issueId: \"${remoteIdTicket}\" } ) { comment { body issue { id } user { id } } }}`,
       };
 
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}`,
         createCommentMutation,
         {
@@ -71,9 +71,9 @@ export class LinearService implements ICommentService {
   }
   async sync(data: SyncParam): Promise<ApiResponse<LinearCommentOutput[]>> {
     try {
-      let { linkedUserId, id_ticket } = data;
+      const { linkedUserId, id_ticket } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'linear',
@@ -81,7 +81,7 @@ export class LinearService implements ICommentService {
         },
       });
 
-      let ticket = await this.prisma.tcg_tickets.findUnique({
+      const ticket = await this.prisma.tcg_tickets.findUnique({
         where: {
           id_tcg_ticket: id_ticket as string,
         },
@@ -90,11 +90,11 @@ export class LinearService implements ICommentService {
         },
       });
 
-      let commentQuery = {
+      const commentQuery = {
         query: `query { issue(id: \"${ticket.remote_id}\") { comments { nodes { id body user { id } issue { id } } } }}`,
       };
 
-      let resp = await axios.post(`${connection.account_url}`, commentQuery, {
+      const resp = await axios.post(`${connection.account_url}`, commentQuery, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
