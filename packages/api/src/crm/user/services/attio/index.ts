@@ -26,9 +26,9 @@ export class AttioService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<AttioUserOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
@@ -36,8 +36,8 @@ export class AttioService implements IUserService {
         },
       });
 
-      let baseURL = `${connection.account_url}/v2/workspace_members`;
-      let resp = await axios.get(baseURL, {
+      const baseURL = `${connection.account_url}/v2/workspace_members`;
+      const resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
