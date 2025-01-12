@@ -41,8 +41,8 @@ export class BullQueueService {
   }
 
   async removeRepeatableJob(jobName: string) {
-    const jobs = await this.syncJobsQueue.getRepeatableJobs();
-    for (const job of jobs) {
+    let jobs = await this.syncJobsQueue.getRepeatableJobs();
+    for (let job of jobs) {
       if (job.name === jobName) {
         await this.syncJobsQueue.removeRepeatableByKey(job.key);
       }
@@ -51,7 +51,7 @@ export class BullQueueService {
 
   async queueSyncJob(jobName: string, jobData: any, cron: string) {
     await this.removeRepeatableJob(jobName);
-    const res = await this.syncJobsQueue.add(jobName, jobData, {
+    let res = await this.syncJobsQueue.add(jobName, jobData, {
       repeat: { cron },
       jobId: jobName,
     });
