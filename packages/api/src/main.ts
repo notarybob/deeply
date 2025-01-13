@@ -11,8 +11,8 @@ import { generatePanoraParamsSpec } from '@@core/utils/decorators/utils';
 import { AllExceptionsFilter } from '@@core/utils/exception.filter';
 
 function addSpeakeasyGroup(document: any) {
-  for (var path in document.paths) {
-    var pathParts = path.split('/').filter((part) => part);
+  for (const path in document.paths) {
+    const pathParts = path.split('/').filter((part) => part);
     let groupName;
 
     if (pathParts[0] === 'passthrough') {
@@ -31,7 +31,7 @@ function addSpeakeasyGroup(document: any) {
     }
 
     if (groupName) {
-      for (var method in document.paths[path]) {
+      for (const method in document.paths[path]) {
         if (groupName === 'rag.query') {
           groupName = 'rag';
         }
@@ -62,8 +62,8 @@ function addSpeakeasyGroup(document: any) {
 }
 
 async function bootstrap() {
-  var app = await NestFactory.create(AppModule);
-  var config = new DocumentBuilder()
+  const app = await NestFactory.create(AppModule);
+  const config = new DocumentBuilder()
     .setTitle('Panora API')
     .setDescription('A unified API to ship integrations')
     .setVersion('1.0')
@@ -79,11 +79,11 @@ async function bootstrap() {
       'api_key',
     )
     .build();
-  var document = SwaggerModule.createDocument(app, config);
+  const document = SwaggerModule.createDocument(app, config);
   document.security = [{ api_key: [] }];
 
   // Dynamically add extended specs
-  var extendedSpecs = {
+  const extendedSpecs = {
     'x-speakeasy-name-override': [
       { operationId: '^retrieve.*', methodNameOverride: 'retrieve' },
       { operationId: '^list.*', methodNameOverride: 'list' },
@@ -109,7 +109,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
   app.use(cookieParser());
 
-  var httpAdapter = app.get(HttpAdapterHost);
+  const httpAdapter = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   await app.listen(3000);
