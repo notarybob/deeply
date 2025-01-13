@@ -32,7 +32,7 @@ export interface HubspotEngagementCallOutput {
   archived: boolean;
 }
 
-export const commonCallHubspotProperties = {
+export let commonCallHubspotProperties = {
   createdate: '',
   hs_call_body: '',
   hs_call_duration: '',
@@ -81,7 +81,7 @@ export interface HubspotEngagementMeetingOutput {
   archived: boolean;
 }
 
-export const commonMeetingHubspotProperties = {
+export let commonMeetingHubspotProperties = {
   createdate: '',
   hs_internal_meeting_notes: '',
   hs_lastmodifieddate: '',
@@ -134,7 +134,7 @@ export interface HubspotEngagementEmailOutput {
   archived: boolean;
 }
 
-export const commonEmailHubspotProperties = {
+export let commonEmailHubspotProperties = {
   createdate: '',
   hs_email_direction: '',
   hs_email_sender_email: '',
