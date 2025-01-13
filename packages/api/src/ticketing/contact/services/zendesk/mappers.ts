@@ -56,14 +56,14 @@ export class ZendeskContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingContactOutput {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact.user_fields[mapping.remote_id];
       }
     }
 
-    const unifiedContact: UnifiedTicketingContactOutput = {
+    let unifiedContact: UnifiedTicketingContactOutput = {
       remote_id: String(contact.id),
       remote_data: contact,
       name: contact.name,
