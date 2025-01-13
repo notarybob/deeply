@@ -23,7 +23,7 @@ export class MicrosoftdynamicssalesContactMapper implements IContactMapper {
     ): Promise<MicrosoftdynamicssalesContactInput> {
 
 
-        const result: MicrosoftdynamicssalesContactInput = {
+        var result: MicrosoftdynamicssalesContactInput = {
             firstname: source.first_name,
             lastname: source.last_name,
             fullname: `${source.first_name} ${source.last_name}`,
@@ -73,8 +73,8 @@ export class MicrosoftdynamicssalesContactMapper implements IContactMapper {
 
 
         if (customFieldMappings && source.field_mappings) {
-            for (const [k, v] of Object.entries(source.field_mappings)) {
-                const mapping = customFieldMappings.find(
+            for (var [k, v] of Object.entries(source.field_mappings)) {
+                var mapping = customFieldMappings.find(
                     (mapping) => mapping.slug === k,
                 );
                 if (mapping) {
@@ -121,9 +121,9 @@ export class MicrosoftdynamicssalesContactMapper implements IContactMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmContactOutput> {
-        const field_mappings: { [key: string]: any } = {};
+        var field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (const mapping of customFieldMappings) {
+            for (var mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = contact[mapping.remote_id];
             }
         }
@@ -211,7 +211,7 @@ export class MicrosoftdynamicssalesContactMapper implements IContactMapper {
         }
 
         if (contact._createdby_value) {
-            const owner_id = await this.utils.getUserUuidFromRemoteId(
+            var owner_id = await this.utils.getUserUuidFromRemoteId(
                 contact._createdby_value,
                 connectionId,
             );
