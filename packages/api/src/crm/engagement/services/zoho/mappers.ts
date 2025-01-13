@@ -119,21 +119,21 @@ export class ZohoEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
     // Assuming there is a method to map direction and type correctly
-    var direction = engagement.Call_Type
+    const direction = engagement.Call_Type
       ? (engagement.Call_Type.toUpperCase() as EngagementType)
       : null;
 
-    var contacts = [];
+    const contacts = [];
     if (engagement.Who_Id && engagement.Who_Id.id) {
-      var contact_id = await this.utils.getContactUuidFromRemoteId(
+      const contact_id = await this.utils.getContactUuidFromRemoteId(
         engagement.Who_Id.id,
         connectionId,
       );
@@ -141,9 +141,9 @@ export class ZohoEngagementMapper implements IEngagementMapper {
         contacts[0] = contact_id;
       }
     }
-    var opts: any = {};
+    const opts: any = {};
     if (engagement.Owner) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         engagement.Owner.id,
         connectionId,
       );
@@ -152,13 +152,13 @@ export class ZohoEngagementMapper implements IEngagementMapper {
       }
     }
     // Add the call duration to the call start time
-    var startTime = new Date(engagement.Call_Start_Time);
+    const startTime = new Date(engagement.Call_Start_Time);
     let endTime;
 
     if (engagement.Call_Duration) {
-      var [minutes, seconds] =
+      const [minutes, seconds] =
         engagement.Call_Duration.split(':').map(Number);
-      var callDurationInMs = (minutes * 60 + seconds) * 1000;
+      const callDurationInMs = (minutes * 60 + seconds) * 1000;
       endTime = new Date(startTime.getTime() + callDurationInMs);
     }
 
@@ -185,16 +185,16 @@ export class ZohoEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
-    var contacts = [];
+    const contacts = [];
     if (engagement.Who_Id && engagement.Who_Id.id) {
-      var contact_id = await this.utils.getContactUuidFromRemoteId(
+      const contact_id = await this.utils.getContactUuidFromRemoteId(
         engagement.Who_Id.id,
         connectionId,
       );
@@ -204,8 +204,8 @@ export class ZohoEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.Participants && engagement.Participants.length > 0) {
-      for (var p of engagement.Participants) {
-        var contact_id = await this.utils.getContactUuidFromRemoteId(
+      for (const p of engagement.Participants) {
+        const contact_id = await this.utils.getContactUuidFromRemoteId(
           p.participant,
           connectionId,
         );
@@ -215,9 +215,9 @@ export class ZohoEngagementMapper implements IEngagementMapper {
       }
     }
 
-    var opts: any = {};
+    const opts: any = {};
     if (engagement.Owner) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         engagement.Owner.id,
         connectionId,
       );
@@ -227,7 +227,7 @@ export class ZohoEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.What_Id && engagement.What_Id.id) {
-      var id = await this.utils.getCompanyUuidFromRemoteId(
+      const id = await this.utils.getCompanyUuidFromRemoteId(
         engagement.What_Id.id,
         connectionId,
       );
