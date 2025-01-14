@@ -32,7 +32,7 @@ export class GithubTagMapper implements ITagMapper {
         }[],
     ): UnifiedTicketingTagOutput | UnifiedTicketingTagOutput[] {
         // If the source is not an array, convert it to an array for mapping
-        const sourcesArray = Array.isArray(source) ? source : [source];
+        let sourcesArray = Array.isArray(source) ? source : [source];
 
         return sourcesArray.map((tag) =>
             this.mapSingleTagToUnified(tag, connectionId, customFieldMappings),
@@ -47,7 +47,7 @@ export class GithubTagMapper implements ITagMapper {
             remote_id: string;
         }[],
     ): UnifiedTicketingTagOutput {
-        const unifiedTag: UnifiedTicketingTagOutput = {
+        let unifiedTag: UnifiedTicketingTagOutput = {
             remote_id: tag.id ? String(tag.id) : null,
             remote_data: tag,
             name: tag.name,
