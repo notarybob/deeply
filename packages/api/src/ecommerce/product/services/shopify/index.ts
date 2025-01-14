@@ -31,14 +31,14 @@ export class ShopifyService implements IProductService {
     linkedUserId: string,
   ): Promise<ApiResponse<ShopifyProductOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'shopify',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/admin/api/2024-07/products.json`,
         {
           product: productData,
@@ -65,16 +65,16 @@ export class ShopifyService implements IProductService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ShopifyProductOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'shopify',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/admin/api/2024-07/products.json`,
         {
           headers: {
@@ -85,7 +85,7 @@ export class ShopifyService implements IProductService {
           },
         },
       );
-      let products: ShopifyProductOutput[] = resp.data.products;
+      const products: ShopifyProductOutput[] = resp.data.products;
       this.logger.log(`Synced shopify products !`);
 
       return {
