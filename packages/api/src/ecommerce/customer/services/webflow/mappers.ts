@@ -71,7 +71,7 @@ export class WebflowCustomerMapper implements ICustomerMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceCustomerOutput> {
-    const result = {
+    let result = {
       remote_id: customer.id,
       remote_data: customer,
       email: customer.data.email,
