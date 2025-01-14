@@ -26,9 +26,9 @@ export class WebflowService implements ICustomerService {
 
   async sync(data: SyncParam): Promise<ApiResponse<WebflowCustomerOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'webflow',
@@ -36,7 +36,7 @@ export class WebflowService implements ICustomerService {
         },
       });
 
-      const resp = await axios.get(`${connection.account_url}/users`, {
+      let resp = await axios.get(`${connection.account_url}/users`, {
         headers: {
           'Content-Type': 'application/json',
           authorization: `Bearer ${this.cryptoService.decrypt(
@@ -44,7 +44,7 @@ export class WebflowService implements ICustomerService {
           )}`,
         },
       });
-      const customers: WebflowCustomerOutput[] = resp.data.users;
+      let customers: WebflowCustomerOutput[] = resp.data.users;
 
       this.logger.log(`Synced webflow customers !`);
 
