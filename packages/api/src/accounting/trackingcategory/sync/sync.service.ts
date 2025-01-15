@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: ITrackingCategoryService =
+      var { integrationId, linkedUserId } = param;
+      var service: ITrackingCategoryService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -98,11 +98,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccTrackingCategory[]> {
     try {
-      const trackingCategoryResults: AccTrackingCategory[] = [];
+      var trackingCategoryResults: AccTrackingCategory[] = [];
 
       for (let i = 0; i < trackingCategories.length; i++) {
-        const trackingCategory = trackingCategories[i];
-        const originId = trackingCategory.remote_id;
+        var trackingCategory = trackingCategories[i];
+        var originId = trackingCategory.remote_id;
 
         let existingTrackingCategory =
           await this.prisma.acc_tracking_categories.findFirst({
@@ -112,7 +112,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
             },
           });
 
-        const trackingCategoryData = {
+        var trackingCategoryData = {
           name: trackingCategory.name,
           status: trackingCategory.status,
           category_type: trackingCategory.category_type,
