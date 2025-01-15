@@ -37,33 +37,33 @@ export class ProjectsService {
 
   async createProject(data: CreateProjectDto) {
     try {
-      let user = await this.prisma.users.findUnique({
+      const user = await this.prisma.users.findUnique({
         where: {
           id_user: data.id_user,
         },
       });
       if (!user) throw ReferenceError('User undefined');
-      let ACTIVE_CONNECTORS = providersArray();
+      const ACTIVE_CONNECTORS = providersArray();
       // update project-connectors table for the project
-      let updateData: any = {
+      const updateData: any = {
         id_connector_set: uuidv4(),
       };
 
       ACTIVE_CONNECTORS.forEach((connector) => {
         if (connector.vertical) {
           // Construct the property name using the vertical name
-          let propertyName = `${slugFromCategory(
+          const propertyName = `${slugFromCategory(
             connector.vertical as ConnectorCategory,
           )}_`;
           // Add the property to updateData with a value of true
           updateData[propertyName + connector.name] = true;
         }
       });
-      let cSet = await this.prisma.connector_sets.create({
+      const cSet = await this.prisma.connector_sets.create({
         data: updateData,
       });
 
-      let res = await this.prisma.projects.create({
+      const res = await this.prisma.projects.create({
         data: {
           name: data.name,
           sync_mode: 'pull',
