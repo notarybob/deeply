@@ -34,14 +34,14 @@ export class BoxService implements IFolderService {
     linkedUserId: string,
   ): Promise<ApiResponse<BoxFolderOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'box',
           vertical: 'filestorage',
         },
       });
-      var resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/2.0/folders`,
         JSON.stringify(folderData),
         {
@@ -69,14 +69,14 @@ export class BoxService implements IFolderService {
     linkedUserId: string,
   ): Promise<BoxFolderOutput[]> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'box',
           vertical: 'filestorage',
         },
       });
-      var resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/2.0/folders/${remote_folder_id}/items`,
         {
           headers: {
@@ -87,8 +87,8 @@ export class BoxService implements IFolderService {
           },
         },
       );
-      var folders = resp.data.entries.filter((elem) => elem.type == 'folder');
-      var files = resp.data.entries.filter((elem) => elem.type == 'file');
+      const folders = resp.data.entries.filter((elem) => elem.type == 'folder');
+      const files = resp.data.entries.filter((elem) => elem.type == 'file');
       await this.ingestService.ingestData<UnifiedFilestorageFileOutput, BoxFileOutput>(
         files,
         'box',
@@ -98,9 +98,9 @@ export class BoxService implements IFolderService {
       );
 
       let results: BoxFolderOutput[] = folders;
-      for (var folder of folders) {
+      for (const folder of folders) {
         // Recursively get subfolders
-        var subFolders = await this.recursiveGetBoxFolders(
+        const subFolders = await this.recursiveGetBoxFolders(
           folder.id,
           linkedUserId,
         );
@@ -114,9 +114,9 @@ export class BoxService implements IFolderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<BoxFolderOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
       // to sync all folders we start from root folder ("0") and recurse through it
-      var results = await this.recursiveGetBoxFolders('0', linkedUserId);
+      const results = await this.recursiveGetBoxFolders('0', linkedUserId);
       this.logger.log(`Synced box folders !`);
 
       return {
