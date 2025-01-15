@@ -24,9 +24,9 @@ interface GoogleDriveListResponse {
   };
 }
 
-var RATE_LIMIT_DELAY = 100; // ms between requests to avoid quota issues
-var MAX_API_RETRIES = 3;
-var BASE_BACKOFF_MS = 1000;
+const RATE_LIMIT_DELAY = 100; // ms between requests to avoid quota issues
+const MAX_API_RETRIES = 3;
+const BASE_BACKOFF_MS = 1000;
 
 @Injectable()
 export class GoogleDriveFolderService implements IFolderService {
@@ -51,7 +51,7 @@ export class GoogleDriveFolderService implements IFolderService {
     linkedUserId: string,
   ): Promise<ApiResponse<GoogleDriveFolderOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'googledrive',
@@ -67,23 +67,23 @@ export class GoogleDriveFolderService implements IFolderService {
         };
       }
 
-      var auth = new OAuth2Client();
+      const auth = new OAuth2Client();
       auth.setCredentials({
         access_token: this.cryptoService.decrypt(connection.access_token),
       });
-      var drive = google.drive({ version: 'v3', auth });
+      const drive = google.drive({ version: 'v3', auth });
 
-      var fileMetadata = {
+      const fileMetadata = {
         name: folderData.name,
         mimeType: 'application/vnd.google-apps.folder',
         parents: folderData.parents,
       };
-      var response = await drive.files.create({
+      const response = await drive.files.create({
         requestBody: fileMetadata,
         fields: 'id, name, mimeType, createdTime, modifiedTime, parents',
       });
 
-      var createdFolder: GoogleDriveFolderOutput = {
+      const createdFolder: GoogleDriveFolderOutput = {
         id: response.data.id!,
         name: response.data.name!,
         mimeType: response.data.mimeType!,
@@ -105,9 +105,9 @@ export class GoogleDriveFolderService implements IFolderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<GoogleDriveFolderOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'googledrive',
@@ -123,14 +123,14 @@ export class GoogleDriveFolderService implements IFolderService {
         };
       }
 
-      var auth = new OAuth2Client();
+      const auth = new OAuth2Client();
       auth.setCredentials({
         access_token: this.cryptoService.decrypt(connection.access_token),
       });
 
-      var lastSyncTime = await this.getLastSyncTime(connection.id_connection);
-      var isFirstSync = !lastSyncTime;
-      var folders = !isFirstSync
+      const lastSyncTime = await this.getLastSyncTime(connection.id_connection);
+      const isFirstSync = !lastSyncTime;
+      const folders = !isFirstSync
         ? await this.getFoldersIncremental(auth, connection.id_connection)
         : await this.recursiveGetGoogleDriveFolders(
             auth,
@@ -147,7 +147,7 @@ export class GoogleDriveFolderService implements IFolderService {
       this.logger.log(`Synced ${folders.length} Google Drive folders!`);
 
       if (isFirstSync) {
-        var drive = google.drive({ version: 'v3', auth });
+        const drive = google.drive({ version: 'v3', auth });
         await this.createAndSetRemoteCursor(drive, connection.id_connection);
       }
 
@@ -167,9 +167,9 @@ export class GoogleDriveFolderService implements IFolderService {
     auth: OAuth2Client,
     connectionId: string,
   ): Promise<GoogleDriveFolderOutput[]> {
-    var drive = google.drive({ version: 'v3', auth });
+    const drive = google.drive({ version: 'v3', auth });
 
-    var rootDriveId = await this.executeWithRetry(() =>
+    const rootDriveId = await this.executeWithRetry(() =>
       drive.files
         .get({
           fileId: 'root',
@@ -179,15 +179,15 @@ export class GoogleDriveFolderService implements IFolderService {
     );
 
     // Helper function to fetch folders for a specific parent ID or root
-    var fetchFoldersForParent = async (
+    const fetchFoldersForParent = async (
       parentId: string | null = null,
       driveId: string,
     ): Promise<GoogleDriveFolderOutput[]> => {
-      var folders: GoogleDriveFolderOutput[] = [];
+      const folders: GoogleDriveFolderOutput[] = [];
       let pageToken: string | null = null;
 
-      var buildQuery = (parentId: string | null, driveId: string): string => {
-        var baseQuery = `mimeType='application/vnd.google-apps.folder'`;
+      const buildQuery = (parentId: string | null, driveId: string): string => {
+        const baseQuery = `mimeType='application/vnd.google-apps.folder'`;
         return parentId
           ? `${baseQuery} and '${parentId}' in parents`
           : `${baseQuery} and '${driveId}' in parents`;
@@ -195,7 +195,7 @@ export class GoogleDriveFolderService implements IFolderService {
 
       try {
         do {
-          var response = (await this.executeWithRetry(() =>
+          const response = (await this.executeWithRetry(() =>
             drive.files.list({
               q: buildQuery(parentId, driveId),
               fields:
@@ -239,7 +239,7 @@ export class GoogleDriveFolderService implements IFolderService {
       allFolders: GoogleDriveFolderOutput[] = [],
       driveId: string,
     ): Promise<void> {
-      var currentLevelFolders = await fetchFoldersForParent(
+      const currentLevelFolders = await fetchFoldersForParent(
         parentId,
         driveId,
       );
@@ -266,10 +266,10 @@ export class GoogleDriveFolderService implements IFolderService {
 
     // main logic
     try {
-      var driveIds = await this.fetchDriveIds(auth);
-      var googleDriveFolders: GoogleDriveFolderOutput[] = [];
+      const driveIds = await this.fetchDriveIds(auth);
+      const googleDriveFolders: GoogleDriveFolderOutput[] = [];
 
-      for (var driveId of driveIds) {
+      for (const driveId of driveIds) {
         await populateFolders(null, null, 0, googleDriveFolders, driveId);
       }
 
@@ -281,19 +281,19 @@ export class GoogleDriveFolderService implements IFolderService {
   }
 
   private async fetchDriveIds(auth: OAuth2Client): Promise<string[]> {
-    var drive = google.drive({ version: 'v3', auth });
-    var driveIds: string[] = [];
+    const drive = google.drive({ version: 'v3', auth });
+    const driveIds: string[] = [];
     let pageToken: string | null = null;
 
     do {
-      var response = await drive.drives.list({
+      const response = await drive.drives.list({
         pageToken,
         pageSize: 100,
         fields: 'nextPageToken, drives(id, name)',
       });
 
       if (response.data.drives) {
-        var ids = response.data.drives.map((drive) => drive.id);
+        const ids = response.data.drives.map((drive) => drive.id);
         driveIds.push(...ids);
       }
 
@@ -301,7 +301,7 @@ export class GoogleDriveFolderService implements IFolderService {
     } while (pageToken);
 
     // add root drive id
-    var rootDrive = await drive.files.get({
+    const rootDrive = await drive.files.get({
       fileId: 'root',
       fields: 'id',
     });
@@ -325,7 +325,7 @@ export class GoogleDriveFolderService implements IFolderService {
 
     try {
       // Extract all permissions from the folders
-      var permissionsIds: string[] = Array.from(
+      const permissionsIds: string[] = Array.from(
         new Set(
           folders.reduce<string[]>((accumulator, folder) => {
             if (folder.permissionIds?.length) {
@@ -341,14 +341,14 @@ export class GoogleDriveFolderService implements IFolderService {
         return folders;
       }
 
-      var uniquePermissions = await this.fetchPermissions(
+      const uniquePermissions = await this.fetchPermissions(
         permissionsIds,
         folders,
         auth,
       );
 
       // Ingest permissions using the ingestService
-      var syncedPermissions = await this.ingestService.ingestData<
+      const syncedPermissions = await this.ingestService.ingestData<
         UnifiedFilestoragePermissionOutput,
         GoogledrivePermissionOutput
       >(
@@ -360,7 +360,7 @@ export class GoogleDriveFolderService implements IFolderService {
       );
 
       // Create a map of original permission ID to synced permission ID
-      var permissionIdMap: Map<string, string> = new Map(
+      const permissionIdMap: Map<string, string> = new Map(
         syncedPermissions.map((permission) => [
           permission.remote_id,
           permission.id_fs_permission,
@@ -400,10 +400,10 @@ export class GoogleDriveFolderService implements IFolderService {
     connectionId: string,
   ): Promise<GoogleDriveFolderOutput[]> {
     try {
-      var drive = google.drive({ version: 'v3', auth });
-      var driveIds = await this.fetchDriveIds(auth);
+      const drive = google.drive({ version: 'v3', auth });
+      const driveIds = await this.fetchDriveIds(auth);
 
-      var modifiedFolders = await this.getModifiedFolders(
+      const modifiedFolders = await this.getModifiedFolders(
         drive,
         connectionId,
       );
@@ -432,8 +432,8 @@ export class GoogleDriveFolderService implements IFolderService {
     folders: GoogleDriveFolderOutput[],
     auth: OAuth2Client,
   ): Promise<GoogleDriveFolderOutput[]> {
-    var drive = google.drive({ version: 'v3', auth });
-    var rootDriveId = await this.executeWithRetry(() =>
+    const drive = google.drive({ version: 'v3', auth });
+    const rootDriveId = await this.executeWithRetry(() =>
       drive.files
         .get({
           fileId: 'root',
@@ -459,17 +459,17 @@ export class GoogleDriveFolderService implements IFolderService {
     driveIds: string[],
     drive: any,
   ): Promise<GoogleDriveFolderOutput[]> {
-    var folderIdToInternalIdMap = new Map<string, string>();
-    var foldersToSync: GoogleDriveFolderOutput[] = [];
+    const folderIdToInternalIdMap = new Map<string, string>();
+    const foldersToSync: GoogleDriveFolderOutput[] = [];
     let remainingFolders = folders;
-    var parentLookupCache = new Map<string, string | null>();
+    const parentLookupCache = new Map<string, string | null>();
 
     while (remainingFolders.length > 0) {
-      var foldersStillPending = [];
+      const foldersStillPending = [];
 
-      for (var folder of remainingFolders) {
-        var parentId = folder.parents?.[0] || 'root';
-        var internalParentId = await this.resolveParentId(
+      for (const folder of remainingFolders) {
+        const parentId = folder.parents?.[0] || 'root';
+        const internalParentId = await this.resolveParentId(
           parentId,
           folderIdToInternalIdMap,
           driveIds,
@@ -479,7 +479,7 @@ export class GoogleDriveFolderService implements IFolderService {
 
         if (internalParentId) {
           // Found parent
-          var folder_internal_id = await this.getIntenalIdForFolder(
+          const folder_internal_id = await this.getIntenalIdForFolder(
             folder.id,
             connectionId,
           );
@@ -498,7 +498,7 @@ export class GoogleDriveFolderService implements IFolderService {
       }
 
       if (this.isStuckInLoop(foldersStillPending, remainingFolders)) {
-        var remote_folders = new Map(
+        const remote_folders = new Map(
           foldersToSync.map((folder) => [folder.id, folder]),
         );
         await this.handleUnresolvedFolders(
@@ -524,7 +524,7 @@ export class GoogleDriveFolderService implements IFolderService {
     folderId: string,
     connectionId: string,
   ): Promise<string> {
-    var folder = await this.prisma.fs_folders.findFirst({
+    const folder = await this.prisma.fs_folders.findFirst({
       where: { remote_id: folderId, id_connection: connectionId },
       select: { id_fs_folder: true },
     });
@@ -552,12 +552,12 @@ export class GoogleDriveFolderService implements IFolderService {
   }
 
   private async fetchPermissions(permissionIds, folders, auth) {
-    var drive = google.drive({ version: 'v3', auth });
-    var permissionIdToFolders = new Map<string, string[]>();
+    const drive = google.drive({ version: 'v3', auth });
+    const permissionIdToFolders = new Map<string, string[]>();
 
-    for (var folder of folders) {
+    for (const folder of folders) {
       if (folder.permissionIds?.length) {
-        for (var permissionId of folder.permissionIds) {
+        for (const permissionId of folder.permissionIds) {
           if (permissionIdToFolders.has(permissionId)) {
             permissionIdToFolders.get(permissionId)?.push(folder.id);
           } else {
@@ -567,13 +567,13 @@ export class GoogleDriveFolderService implements IFolderService {
       }
     }
 
-    var permissions: GoogledrivePermissionOutput[] = [];
-    var entries = Array.from(permissionIdToFolders.entries());
+    const permissions: GoogledrivePermissionOutput[] = [];
+    const entries = Array.from(permissionIdToFolders.entries());
 
     // do in batches of 10
     for (let i = 0; i < entries.length; i += 10) {
-      var batch = entries.slice(i, i + 10);
-      var batchPromises = batch.map(([permissionId, folderIds]) =>
+      const batch = entries.slice(i, i + 10);
+      const batchPromises = batch.map(([permissionId, folderIds]) =>
         drive.permissions.get({
           permissionId,
           fileId: folderIds[0],
@@ -581,7 +581,7 @@ export class GoogleDriveFolderService implements IFolderService {
         }),
       );
 
-      var batchResults = await Promise.all(batchPromises);
+      const batchResults = await Promise.all(batchPromises);
       permissions.push(
         ...batchResults.map(
           (result) => result.data as unknown as GoogledrivePermissionOutput,
@@ -606,11 +606,11 @@ export class GoogleDriveFolderService implements IFolderService {
       `Found ${pending.length} unresolved folders. Resolving them...`,
     );
 
-    var getInternalParentRecursive = async (
+    const getInternalParentRecursive = async (
       folder: GoogleDriveFolderOutput,
       visitedIds: Set<string> = new Set(),
     ): Promise<string | null> => {
-      var remote_parent_id = folder.parents?.[0] || 'root';
+      const remote_parent_id = folder.parents?.[0] || 'root';
 
       // Prevent infinite loops
       if (visitedIds.has(remote_parent_id)) {
@@ -620,7 +620,7 @@ export class GoogleDriveFolderService implements IFolderService {
       visitedIds.add(remote_parent_id);
 
       // Check cache first
-      var internal_parent_id = await this.resolveParentId(
+      const internal_parent_id = await this.resolveParentId(
         remote_parent_id,
         idCache,
         driveIds,
@@ -634,7 +634,7 @@ export class GoogleDriveFolderService implements IFolderService {
 
       // Try to get parent from remote folders map or API
       try {
-        var parentFolder =
+        const parentFolder =
           remote_folders.get(remote_parent_id) ||
           (await this.executeWithRetry(() =>
             drive.files
@@ -661,8 +661,8 @@ export class GoogleDriveFolderService implements IFolderService {
 
     await Promise.all(
       pending.map(async (folder) => {
-        var internal_parent_id = await getInternalParentRecursive(folder);
-        var folder_internal_id = uuidv4();
+        const internal_parent_id = await getInternalParentRecursive(folder);
+        const folder_internal_id = uuidv4();
         idCache.set(folder.id, folder_internal_id);
         output.push({
           ...folder,
@@ -692,7 +692,7 @@ export class GoogleDriveFolderService implements IFolderService {
       return cache.get(parentId);
     }
 
-    var parent = await this.prisma.fs_folders.findFirst({
+    const parent = await this.prisma.fs_folders.findFirst({
       where: {
         remote_id: parentId,
         id_connection: connectionId,
@@ -700,7 +700,7 @@ export class GoogleDriveFolderService implements IFolderService {
       select: { id_fs_folder: true },
     });
 
-    var result = parent?.id_fs_folder || null;
+    const result = parent?.id_fs_folder || null;
     cache.set(parentId, result);
     return result;
   }
@@ -717,11 +717,11 @@ export class GoogleDriveFolderService implements IFolderService {
     drive: ReturnType<typeof google.drive>,
     connectionId: string,
   ): Promise<GoogleDriveFolderOutput[]> {
-    var folders: GoogleDriveFolderOutput[] = [];
+    const folders: GoogleDriveFolderOutput[] = [];
     let remoteCursor = await this.getRemoteCursor(drive, connectionId);
 
     do {
-      var response = await drive.changes.list({
+      const response = await drive.changes.list({
         pageToken: remoteCursor,
         includeItemsFromAllDrives: true,
         supportsAllDrives: true,
@@ -730,7 +730,7 @@ export class GoogleDriveFolderService implements IFolderService {
           'nextPageToken, newStartPageToken, changes(file(id,name,mimeType,createdTime,modifiedTime,size,parents,webViewLink,driveId,trashed,permissionIds))',
       });
 
-      var batchFolders = response.data.changes
+      const batchFolders = response.data.changes
         .filter(
           (change) =>
             change.file?.mimeType === 'application/vnd.google-apps.folder',
@@ -750,7 +750,7 @@ export class GoogleDriveFolderService implements IFolderService {
     drive: ReturnType<typeof google.drive>,
     connectionId: string,
   ): Promise<string> {
-    var internalDrive = await this.prisma.fs_drives.findFirst({
+    const internalDrive = await this.prisma.fs_drives.findFirst({
       where: { id_connection: connectionId }, // all drives share the same cursor for now
       select: { id_fs_drive: true, remote_cursor: true },
     });
@@ -765,7 +765,7 @@ export class GoogleDriveFolderService implements IFolderService {
     drive: ReturnType<typeof google.drive>,
     connectionId: string,
   ): Promise<string> {
-    var startPageToken = await this.executeWithRetry(() =>
+    const startPageToken = await this.executeWithRetry(() =>
       drive.changes.getStartPageToken({ supportsAllDrives: true }),
     );
     await this.updateRemoteCursor(
@@ -786,7 +786,7 @@ export class GoogleDriveFolderService implements IFolderService {
   }
 
   private async getLastSyncTime(connectionId: string): Promise<Date | null> {
-    var lastSync = await this.prisma.fs_folders.findFirst({
+    const lastSync = await this.prisma.fs_folders.findFirst({
       where: { id_connection: connectionId },
       orderBy: { remote_modified_at: 'desc' },
     });
@@ -811,7 +811,7 @@ export class GoogleDriveFolderService implements IFolderService {
         );
       }
 
-      var backoffTime = BASE_BACKOFF_MS * Math.pow(2, retryCount);
+      const backoffTime = BASE_BACKOFF_MS * Math.pow(2, retryCount);
       await this.delay(backoffTime);
       return this.executeWithRetry(operation, retryCount + 1);
     }
