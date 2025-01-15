@@ -28,7 +28,7 @@ export class ZendeskService implements ITaskService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZendeskTaskOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -36,7 +36,7 @@ export class ZendeskService implements ITaskService {
         },
       });
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v2/tasks`,
         {
           data: taskData,
@@ -66,16 +66,16 @@ export class ZendeskService implements ITaskService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskTaskOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      const resp = await axios.get(`${connection.account_url}/v2/tasks`, {
+      let resp = await axios.get(`${connection.account_url}/v2/tasks`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -83,7 +83,7 @@ export class ZendeskService implements ITaskService {
           )}`,
         },
       });
-      const finalData = resp.data.items.map((item) => {
+      let finalData = resp.data.items.map((item) => {
         return item.data;
       });
       this.logger.log(`Synced zendesk tasks !`);
