@@ -32,10 +32,10 @@ export class InvoiceService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingInvoiceOutput> {
     try {
-      const service = this.serviceRegistry.getService(integrationId);
-      const resp = await service.addInvoice(unifiedInvoiceData, linkedUserId);
+      let service = this.serviceRegistry.getService(integrationId);
+      let resp = await service.addInvoice(unifiedInvoiceData, linkedUserId);
 
-      const savedInvoice = await this.prisma.acc_invoices.create({
+      let savedInvoice = await this.prisma.acc_invoices.create({
         data: {
           id_acc_invoice: uuidv4(),
           ...unifiedInvoiceData,
@@ -87,7 +87,7 @@ export class InvoiceService {
         );
       }
 
-      const result: UnifiedAccountingInvoiceOutput = {
+      let result: UnifiedAccountingInvoiceOutput = {
         ...savedInvoice,
         currency: savedInvoice.currency as CurrencyCode,
         id: savedInvoice.id_acc_invoice,
@@ -128,7 +128,7 @@ export class InvoiceService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingInvoiceOutput> {
     try {
-      const invoice = await this.prisma.acc_invoices.findUnique({
+      let invoice = await this.prisma.acc_invoices.findUnique({
         where: { id_acc_invoice: id_acc_invoice },
       });
 
@@ -136,22 +136,22 @@ export class InvoiceService {
         throw new Error(`Invoice with ID ${id_acc_invoice} not found.`);
       }
 
-      const lineItems = await this.prisma.acc_invoices_line_items.findMany({
+      let lineItems = await this.prisma.acc_invoices_line_items.findMany({
         where: { id_acc_invoice: id_acc_invoice },
       });
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: invoice.id_acc_invoice },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedInvoice: UnifiedAccountingInvoiceOutput = {
+      let unifiedInvoice: UnifiedAccountingInvoiceOutput = {
         id: invoice.id_acc_invoice,
         type: invoice.type,
         number: invoice.number,
@@ -200,7 +200,7 @@ export class InvoiceService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: invoice.id_acc_invoice },
         });
         unifiedInvoice.remote_data = remoteDataRecord
@@ -244,34 +244,34 @@ export class InvoiceService {
     previous_cursor: string | null;
   }> {
     try {
-      const invoices = await this.prisma.acc_invoices.findMany({
+      let invoices = await this.prisma.acc_invoices.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_invoice: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = invoices.length > limit;
+      let hasNextPage = invoices.length > limit;
       if (hasNextPage) invoices.pop();
 
-      const unifiedInvoices = await Promise.all(
+      let unifiedInvoices = await Promise.all(
         invoices.map(async (invoice) => {
-          const lineItems = await this.prisma.acc_invoices_line_items.findMany({
+          let lineItems = await this.prisma.acc_invoices_line_items.findMany({
             where: { id_acc_invoice: invoice.id_acc_invoice },
           });
 
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: invoice.id_acc_invoice },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedInvoice: UnifiedAccountingInvoiceOutput = {
+          let unifiedInvoice: UnifiedAccountingInvoiceOutput = {
             id: invoice.id_acc_invoice,
             type: invoice.type,
             number: invoice.number,
@@ -322,7 +322,7 @@ export class InvoiceService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: invoice.id_acc_invoice },
             });
             unifiedInvoice.remote_data = remoteDataRecord
