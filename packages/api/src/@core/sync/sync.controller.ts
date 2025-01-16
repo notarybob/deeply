@@ -132,7 +132,7 @@ export class SyncController {
   async resync(
     @Body() data: { vertical: string; provider: string; linkedUserId: string },
   ) {
-    const { vertical, provider, linkedUserId } = data;
+    let { vertical, provider, linkedUserId } = data;
     return await this.syncService.resync(vertical, provider, linkedUserId);
   }
 
@@ -151,11 +151,11 @@ export class SyncController {
     @Request() req: any,
     @Body() data: UpdatePullFrequencyDto,
   ) {
-    const projectId = req.user.id_project;
-    const result = await this.syncService.updatePullFrequency(data, projectId);
+    let projectId = req.user.id_project;
+    let result = await this.syncService.updatePullFrequency(data, projectId);
 
     // Convert BigInt values to numbers or strings
-    const serializedResult = JSON.parse(
+    let serializedResult = JSON.parse(
       JSON.stringify(result, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value,
       ),
@@ -178,11 +178,11 @@ export class SyncController {
     @Request() req: any,
     @Body() data: UpdatePullFrequencyDto,
   ) {
-    const projectId = req.user.id_project;
-    const result = await this.syncService.updatePullFrequency(data, projectId);
+    let projectId = req.user.id_project;
+    let result = await this.syncService.updatePullFrequency(data, projectId);
 
     // Convert BigInt values to numbers or strings
-    const serializedResult = JSON.parse(
+    let serializedResult = JSON.parse(
       JSON.stringify(result, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value,
       ),
@@ -200,10 +200,10 @@ export class SyncController {
   @ApiExcludeEndpoint()
   @Get('internal/pull_frequencies')
   async getInternalPullFrequency(@Request() req: any) {
-    const projectId = req.user.id_project;
-    const result = await this.syncService.getPullFrequency(projectId);
+    let projectId = req.user.id_project;
+    let result = await this.syncService.getPullFrequency(projectId);
     // Convert BigInt values to numbers or strings
-    const serializedResult = JSON.parse(
+    let serializedResult = JSON.parse(
       JSON.stringify(result, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value,
       ),
@@ -220,10 +220,10 @@ export class SyncController {
   @UseGuards(ApiKeyAuthGuard)
   @Get('pull_frequencies')
   async getPullFrequency(@Request() req: any) {
-    const projectId = req.user.id_project;
-    const result = await this.syncService.getPullFrequency(projectId);
+    let projectId = req.user.id_project;
+    let result = await this.syncService.getPullFrequency(projectId);
     // Convert BigInt values to numbers or strings
-    const serializedResult = JSON.parse(
+    let serializedResult = JSON.parse(
       JSON.stringify(result, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value,
       ),
