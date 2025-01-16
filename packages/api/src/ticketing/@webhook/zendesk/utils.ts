@@ -1,4 +1,4 @@
-export let mapToRemoteEvent = (unified_event: string) => {
+export const mapToRemoteEvent = (unified_event: string) => {
   switch (unified_event) {
     case 'ticketing.accounts.events':
       return [
