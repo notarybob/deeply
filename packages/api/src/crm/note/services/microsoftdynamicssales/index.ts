@@ -29,14 +29,14 @@ export class MicrosoftdynamicssalesService implements INoteService {
         linkedUserId: string,
     ): Promise<ApiResponse<MicrosoftdynamicssalesNoteOutput>> {
         try {
-            let connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
                     vertical: 'crm',
                 },
             });
-            let respToPost = await axios.post(
+            const respToPost = await axios.post(
                 `${connection.account_url}/api/data/v9.2/annotations`,
                 JSON.stringify(noteData),
                 {
@@ -49,9 +49,9 @@ export class MicrosoftdynamicssalesService implements INoteService {
                 },
             );
 
-            let postNoteId = respToPost.headers['location'].split("/").pop();
+            const postNoteId = respToPost.headers['location'].split("/").pop();
 
-            let resp = await axios.get(
+            const resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/${postNoteId}`
                 , {
                     headers: {
@@ -76,9 +76,9 @@ export class MicrosoftdynamicssalesService implements INoteService {
 
     async sync(data: SyncParam): Promise<ApiResponse<MicrosoftdynamicssalesNoteOutput[]>> {
         try {
-            let { linkedUserId } = data;
+            const { linkedUserId } = data;
 
-            let connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -86,9 +86,9 @@ export class MicrosoftdynamicssalesService implements INoteService {
                 },
             });
 
-            let baseURL = `${connection.account_url}/api/data/v9.2/annotations`;
+            const baseURL = `${connection.account_url}/api/data/v9.2/annotations`;
 
-            let resp = await axios.get(baseURL, {
+            const resp = await axios.get(baseURL, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${this.cryptoService.decrypt(
