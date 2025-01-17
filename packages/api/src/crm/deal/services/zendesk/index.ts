@@ -28,7 +28,7 @@ export class ZendeskService implements IDealService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZendeskDealOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -36,7 +36,7 @@ export class ZendeskService implements IDealService {
         },
       });
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v2/deals`,
         {
           data: dealData,
@@ -63,16 +63,16 @@ export class ZendeskService implements IDealService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskDealOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      const resp = await axios.get(`${connection.account_url}/v2/deals`, {
+      let resp = await axios.get(`${connection.account_url}/v2/deals`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -80,7 +80,7 @@ export class ZendeskService implements IDealService {
           )}`,
         },
       });
-      const finalData = resp.data.items.map((item) => {
+      let finalData = resp.data.items.map((item) => {
         return item.data;
       });
       this.logger.log(`Synced zendesk deals !`);
