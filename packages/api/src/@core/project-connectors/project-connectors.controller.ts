@@ -42,8 +42,8 @@ export class ProjectConnectorsController {
     @Body() projectConnectorsDto: ProjectConnectorsDto,
     @Request() req: any,
   ) {
-    let { id_project } = req.user;
-    let { column, status } = projectConnectorsDto;
+    const { id_project } = req.user;
+    const { column, status } = projectConnectorsDto;
     return await this.projectConnectorsService.updateProjectConnectors(
       column,
       status,
