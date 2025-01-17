@@ -102,7 +102,7 @@ export class AuthController {
   @ApiExcludeEndpoint()
   @Get('api_keys')
   async getApiKeys(@Request() req: any) {
-    let { id_project } = req.user;
+    const { id_project } = req.user;
     return this.authService.getApiKeys(id_project);
   }
 
@@ -146,8 +146,8 @@ export class AuthController {
   @ApiExcludeEndpoint()
   @Post('refresh_token')
   refreshAccessToken(@Request() req: any, @Body() body: RefreshDto) {
-    let { projectId } = body;
-    let { id_user, email, first_name, last_name } = req.user;
+    const { projectId } = body;
+    const { id_user, email, first_name, last_name } = req.user;
     return this.authService.refreshAccessToken(
       projectId,
       id_user,
