@@ -32,7 +32,7 @@ export class ZohoService implements INoteService {
     try {
       if (!noteData.Parent_Id.module.api_name)
         throw new Error('You must attach a parent module to your note in Zoho');
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
@@ -51,7 +51,7 @@ export class ZohoService implements INoteService {
           url = `${connection.account_url}/v5/Deals/${noteData.Parent_Id.id}/Notes`;
           break;
       }
-      const resp = await axios.post(
+      var resp = await axios.post(
         url,
         { data: [noteData] },
         {
@@ -64,7 +64,7 @@ export class ZohoService implements INoteService {
         },
       );
 
-      const final_res = await axios.get(
+      var final_res = await axios.get(
         `${connection.account_url}/v5/Notes/${resp.data.data[0].details.id}?fields=Parent_Id,Owner,Created_Time,Note_Content`,
         {
           headers: {
@@ -87,17 +87,17 @@ export class ZohoService implements INoteService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZohoNoteOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      var { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      const fields = 'Note_Title,Note_Content,Owner,ParentId';
-      const resp = await axios.get(
+      var fields = 'Note_Title,Note_Content,Owner,ParentId';
+      var resp = await axios.get(
         `${connection.account_url}/v5/Notes?fields=${fields}`,
         {
           headers: {
