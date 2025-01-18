@@ -42,15 +42,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = ACCOUNTING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = ACCOUNTING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -70,8 +70,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   }
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: ICashflowStatementService =
+      const { integrationId, linkedUserId } = param;
+      const service: ICashflowStatementService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -100,11 +100,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccCashFlowStatement[]> {
     try {
-      var cashFlowStatementResults: AccCashFlowStatement[] = [];
+      const cashFlowStatementResults: AccCashFlowStatement[] = [];
 
       for (let i = 0; i < cashFlowStatements.length; i++) {
-        var cashFlowStatement = cashFlowStatements[i];
-        var originId = cashFlowStatement.remote_id;
+        const cashFlowStatement = cashFlowStatements[i];
+        const originId = cashFlowStatement.remote_id;
 
         let existingCashFlowStatement =
           await this.prisma.acc_cash_flow_statements.findFirst({
@@ -114,7 +114,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
             },
           });
 
-        var cashFlowStatementData = {
+        const cashFlowStatementData = {
           name: cashFlowStatement.name,
           currency: cashFlowStatement.currency as CurrencyCode,
           company: cashFlowStatement.company_id,
@@ -191,8 +191,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
     cashFlowStatementId: string,
     reportItems: LineItem[],
   ): Promise<void> {
-    for (var reportItem of reportItems) {
-      var reportItemData = {
+    for (const reportItem of reportItems) {
+      const reportItemData = {
         name: reportItem.name,
         value: reportItem.value ? Number(reportItem.value) : null,
         type: reportItem.type,
@@ -203,7 +203,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         id_acc_cash_flow_statement: cashFlowStatementId,
       };
 
-      var existingReportItem =
+      const existingReportItem =
         await this.prisma.acc_cash_flow_statement_report_items.findFirst({
           where: {
             remote_id: reportItem.remote_id,
@@ -231,7 +231,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
     }
 
     // Remove any existing report items that are not in the current set
-    var currentRemoteIds = reportItems.map((item) => item.remote_id);
+    const currentRemoteIds = reportItems.map((item) => item.remote_id);
     await this.prisma.acc_cash_flow_statement_report_items.deleteMany({
       where: {
         id_acc_cash_flow_statement: cashFlowStatementId,
