@@ -32,10 +32,10 @@ export class PaymentService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingPaymentOutput> {
     try {
-      const service = this.serviceRegistry.getService(integrationId);
-      const resp = await service.addPayment(unifiedPaymentData, linkedUserId);
+      let service = this.serviceRegistry.getService(integrationId);
+      let resp = await service.addPayment(unifiedPaymentData, linkedUserId);
 
-      const savedPayment = await this.prisma.acc_payments.create({
+      let savedPayment = await this.prisma.acc_payments.create({
         data: {
           id_acc_payment: uuidv4(),
           ...unifiedPaymentData,
@@ -70,7 +70,7 @@ export class PaymentService {
         );
       }
 
-      const result: UnifiedAccountingPaymentOutput = {
+      let result: UnifiedAccountingPaymentOutput = {
         ...savedPayment,
         currency: savedPayment.currency as CurrencyCode,
         id: savedPayment.id_acc_payment,
@@ -99,7 +99,7 @@ export class PaymentService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingPaymentOutput> {
     try {
-      const payment = await this.prisma.acc_payments.findUnique({
+      let payment = await this.prisma.acc_payments.findUnique({
         where: { id_acc_payment: id_acc_payment },
       });
 
@@ -107,22 +107,22 @@ export class PaymentService {
         throw new Error(`Payment with ID ${id_acc_payment} not found.`);
       }
 
-      const lineItems = await this.prisma.acc_payments_line_items.findMany({
+      let lineItems = await this.prisma.acc_payments_line_items.findMany({
         where: { id_acc_payment: id_acc_payment },
       });
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: payment.id_acc_payment },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedPayment: UnifiedAccountingPaymentOutput = {
+      let unifiedPayment: UnifiedAccountingPaymentOutput = {
         id: payment.id_acc_payment,
         invoice_id: payment.id_acc_invoice,
         transaction_date: payment.transaction_date,
@@ -157,7 +157,7 @@ export class PaymentService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: payment.id_acc_payment },
         });
         unifiedPayment.remote_data = remoteDataRecord
@@ -201,34 +201,34 @@ export class PaymentService {
     previous_cursor: string | null;
   }> {
     try {
-      const payments = await this.prisma.acc_payments.findMany({
+      let payments = await this.prisma.acc_payments.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_payment: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = payments.length > limit;
+      let hasNextPage = payments.length > limit;
       if (hasNextPage) payments.pop();
 
-      const unifiedPayments = await Promise.all(
+      let unifiedPayments = await Promise.all(
         payments.map(async (payment) => {
-          const lineItems = await this.prisma.acc_payments_line_items.findMany({
+          let lineItems = await this.prisma.acc_payments_line_items.findMany({
             where: { id_acc_payment: payment.id_acc_payment },
           });
 
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: payment.id_acc_payment },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedPayment: UnifiedAccountingPaymentOutput = {
+          let unifiedPayment: UnifiedAccountingPaymentOutput = {
             id: payment.id_acc_payment,
             invoice_id: payment.id_acc_invoice,
             transaction_date: payment.transaction_date,
@@ -263,7 +263,7 @@ export class PaymentService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: payment.id_acc_payment },
             });
             unifiedPayment.remote_data = remoteDataRecord
