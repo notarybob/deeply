@@ -15,12 +15,12 @@ export class ApiKeyStrategy extends PassportStrategy(
       true,
       async (apikey: string, done, req) => {
         try {
-          const isValid = await this.authService.validateApiKey(apikey);
+          let isValid = await this.authService.validateApiKey(apikey);
           if (!isValid) {
             return done(new UnauthorizedException('Invalid API Key'), null);
           }
-          const hashed_api_key = crypto.createHash('sha256').update(apikey).digest('hex');
-          const projectId = await this.authService.getProjectIdForApiKey(
+          let hashed_api_key = crypto.createHash('sha256').update(apikey).digest('hex');
+          let projectId = await this.authService.getProjectIdForApiKey(
             hashed_api_key,
           );
           //console.log('validating api request...  : ' + req.user);
