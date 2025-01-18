@@ -26,7 +26,7 @@ export interface HubspotDealOutput {
   archived: boolean;
 }
 
-export const commonDealHubspotProperties = {
+export let commonDealHubspotProperties = {
   amount: '',
   closedate: '',
   createdate: '',
