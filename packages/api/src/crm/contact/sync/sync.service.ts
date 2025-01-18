@@ -42,15 +42,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = CRM_PROVIDERS;
-          for (var provider of providers) {
+          const providers = CRM_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -72,8 +72,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IContactService =
+      const { integrationId, linkedUserId } = param;
+      const service: IContactService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -100,13 +100,13 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<CrmContact[]> {
     try {
-      var contacts_results: CrmContact[] = [];
+      const contacts_results: CrmContact[] = [];
 
-      var updateOrCreateContact = async (
+      const updateOrCreateContact = async (
         contact: UnifiedCrmContactOutput,
         originId: string,
       ) => {
-        var existingContact = await this.prisma.crm_contacts.findFirst({
+        const existingContact = await this.prisma.crm_contacts.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
@@ -118,17 +118,17 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        var { normalizedEmails, normalizedPhones } =
+        const { normalizedEmails, normalizedPhones } =
           this.utils.normalizeEmailsAndNumbers(
             contact.email_addresses,
             contact.phone_numbers,
           );
 
-        var normalizedAddresses = this.utils.normalizeAddresses(
+        const normalizedAddresses = this.utils.normalizeAddresses(
           contact.addresses,
         );
 
-        var baseData: any = {
+        const baseData: any = {
           first_name: contact.first_name ?? null,
           last_name: contact.last_name ?? null,
           id_crm_user: contact.user_id ?? null,
@@ -136,7 +136,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         };
 
         if (existingContact) {
-          var res = await this.prisma.crm_contacts.update({
+          const res = await this.prisma.crm_contacts.update({
             where: {
               id_crm_contact: existingContact.id_crm_contact,
             },
@@ -221,8 +221,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
           }
           return res;
         } else {
-          var uuid = uuidv4();
-          var newContact = await this.prisma.crm_contacts.create({
+          const uuid = uuidv4();
+          const newContact = await this.prisma.crm_contacts.create({
             data: {
               ...baseData,
               id_crm_contact: uuid,
@@ -278,15 +278,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        var contact = data[i];
-        var originId = contact.remote_id;
+        const contact = data[i];
+        const originId = contact.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateContact(contact, originId);
-        var contact_id = res.id_crm_contact;
+        const res = await updateOrCreateContact(contact, originId);
+        const contact_id = res.id_crm_contact;
         contacts_results.push(res);
 
         // Process field mappings
