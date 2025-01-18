@@ -49,7 +49,7 @@ export class WebhookController {
   @UseGuards(ApiKeyAuthGuard)
   @Get()
   listWebhooks(@Request() req: any) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.webhookService.getWebhookEndpoints(projectId);
   }
 
@@ -62,7 +62,7 @@ export class WebhookController {
   @Get('internal')
   @ApiExcludeEndpoint()
   listInternalWebhooks(@Request() req: any) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.webhookService.getWebhookEndpoints(projectId);
   }
 
@@ -78,7 +78,7 @@ export class WebhookController {
   @Delete(':id')
   @UseGuards(ApiKeyAuthGuard)
   async deleteWebhook(@Request() req: any, @Param('id') whId: string) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return await this.webhookService.deleteWebhook(whId, projectId);
   }
 
@@ -88,7 +88,7 @@ export class WebhookController {
   @ApiExcludeEndpoint()
   @UseGuards(JwtAuthGuard)
   async deleteInternalWebhook(@Request() req: any, @Param('id') whId: string) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return await this.webhookService.deleteWebhook(whId, projectId);
   }
 
@@ -111,7 +111,7 @@ export class WebhookController {
     @Param('id') id: string,
     @Body('active') active: boolean,
   ) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.webhookService.updateStatusWebhookEndpoint(
       id,
       active,
@@ -132,7 +132,7 @@ export class WebhookController {
     @Param('id') id: string,
     @Body('active') active: boolean,
   ) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.webhookService.updateStatusWebhookEndpoint(
       id,
       active,
@@ -149,7 +149,7 @@ export class WebhookController {
   @UseGuards(ApiKeyAuthGuard)
   @Post()
   async addWebhook(@Request() req: any, @Body() data: WebhookDto) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.webhookService.createWebhookEndpoint(data, projectId);
   }
 
@@ -163,7 +163,7 @@ export class WebhookController {
   @UseGuards(JwtAuthGuard)
   @Post('internal')
   async addInternalWebhook(@Request() req: any, @Body() data: WebhookDto) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.webhookService.createWebhookEndpoint(data, projectId);
   }
 
@@ -176,8 +176,8 @@ export class WebhookController {
   @UseGuards(ApiKeyAuthGuard)
   @Post('verifyEvent')
   async verifyPayloadSignature(@Body() data: SignatureVerificationDto) {
-    const { payload, signature, secret } = data;
-    const resp = await this.webhookService.verifyPayloadSignature(
+    let { payload, signature, secret } = data;
+    let resp = await this.webhookService.verifyPayloadSignature(
       payload,
       signature,
       secret,
