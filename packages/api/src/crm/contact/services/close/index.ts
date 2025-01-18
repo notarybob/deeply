@@ -29,7 +29,7 @@ export class CloseService implements IContactService {
     linkedUserId: string,
   ): Promise<ApiResponse<CloseContactOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -37,7 +37,7 @@ export class CloseService implements IContactService {
         },
       });
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v1/contact`,
         JSON.stringify(contactData),
         {
@@ -61,9 +61,9 @@ export class CloseService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<CloseContactOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -71,9 +71,9 @@ export class CloseService implements IContactService {
         },
       });
 
-      const baseURL = `${connection.account_url}/v1/contact`;
+      let baseURL = `${connection.account_url}/v1/contact`;
 
-      const resp = await axios.get(baseURL, {
+      let resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
