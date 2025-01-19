@@ -29,7 +29,7 @@ export class FileStorageUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<FileStorageObjectInput> {
-    let mapping = this.mappersRegistry.getService(
+    const mapping = this.mappersRegistry.getService(
       'filestorage',
       targetType_,
       providerName,
@@ -60,7 +60,7 @@ export class FileStorageUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<UnifyReturnType> {
-    let mapping = this.mappersRegistry.getService(
+    const mapping = this.mappersRegistry.getService(
       'filestorage',
       targetType_,
       providerName,
