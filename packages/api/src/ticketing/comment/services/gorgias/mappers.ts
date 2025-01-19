@@ -39,10 +39,10 @@ export class GorgiasCommentMapper implements ICommentMapper {
   ): Promise<GorgiasCommentInput> {
     let uploads = [];
     if (source.attachments) {
-      const uuids = source.attachments as string[];
+      var uuids = source.attachments as string[];
       if (uuids && uuids.length > 0) {
-        const attachmentPromises = uuids.map(async (uuid) => {
-          const res = await this.prisma.tcg_attachments.findUnique({
+        var attachmentPromises = uuids.map(async (uuid) => {
+          var res = await this.prisma.tcg_attachments.findUnique({
             where: {
               id_tcg_attachment: uuid,
             },
@@ -54,7 +54,7 @@ export class GorgiasCommentMapper implements ICommentMapper {
           }
           // Assuming you want to construct the right binary attachment here
           // For now, we'll just return the URL
-          const stats = fs.statSync(res.file_url);
+          var stats = fs.statSync(res.file_url);
           return {
             url: res.file_url,
             name: res.file_name,
@@ -65,7 +65,7 @@ export class GorgiasCommentMapper implements ICommentMapper {
         uploads = await Promise.all(attachmentPromises);
       }
     }
-    const result: GorgiasCommentInput = {
+    var result: GorgiasCommentInput = {
       sender: {
         id:
           Number(await this.utils.getUserRemoteIdFromUuid(source.user_id)) ||
@@ -124,7 +124,7 @@ export class GorgiasCommentMapper implements ICommentMapper {
     let opts: any = {};
 
     if (comment.attachments && comment.attachments.length > 0) {
-      const attachments = (await this.coreUnificationService.unify<
+      var attachments = (await this.coreUnificationService.unify<
         OriginalAttachmentOutput[]
       >({
         sourceObject: comment.attachments,
@@ -141,7 +141,7 @@ export class GorgiasCommentMapper implements ICommentMapper {
     }
 
     if (comment.sender.id) {
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(comment.sender.id),
         connectionId,
       );
@@ -149,7 +149,7 @@ export class GorgiasCommentMapper implements ICommentMapper {
       if (user_id) {
         opts = { ...opts, user_id: user_id, creator_type: 'USER' };
       } else {
-        const contact_id = await this.utils.getContactUuidFromRemoteId(
+        var contact_id = await this.utils.getContactUuidFromRemoteId(
           String(comment.sender.id),
           connectionId,
         );
