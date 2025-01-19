@@ -19,7 +19,7 @@ export class FulfillmentService {
     remote_data?: boolean,
   ): Promise<UnifiedEcommerceFulfillmentOutput> {
     try {
-      var fulfillment = await this.prisma.ecom_fulfilments.findUnique({
+      const fulfillment = await this.prisma.ecom_fulfilments.findUnique({
         where: {
           id_ecom_fulfilment: id_ecom_fulfilment,
         },
@@ -30,7 +30,7 @@ export class FulfillmentService {
       }
 
       // Fetch field mappings for the fulfillment
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: fulfillment.id_ecom_fulfilment,
@@ -42,17 +42,17 @@ export class FulfillmentService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedEcommerceFulfillmentOutput format
-      var UnifiedEcommerceFulfillment: UnifiedEcommerceFulfillmentOutput = {
+      const UnifiedEcommerceFulfillment: UnifiedEcommerceFulfillmentOutput = {
         id: fulfillment.id_ecom_fulfilment,
         carrier: fulfillment.carrier,
         tracking_urls: fulfillment.tracking_urls,
@@ -67,12 +67,12 @@ export class FulfillmentService {
 
       let res: UnifiedEcommerceFulfillmentOutput = UnifiedEcommerceFulfillment;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: fulfillment.id_ecom_fulfilment,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -119,7 +119,7 @@ export class FulfillmentService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.ecom_fulfilments.findFirst({
+        const isCursorPresent = await this.prisma.ecom_fulfilments.findFirst({
           where: {
             id_connection: connection_id,
             id_ecom_fulfilment: cursor,
@@ -130,7 +130,7 @@ export class FulfillmentService {
         }
       }
 
-      var fulfillments = await this.prisma.ecom_fulfilments.findMany({
+      const fulfillments = await this.prisma.ecom_fulfilments.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -156,10 +156,10 @@ export class FulfillmentService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var UnifiedEcommerceFulfillments: UnifiedEcommerceFulfillmentOutput[] = await Promise.all(
+      const UnifiedEcommerceFulfillments: UnifiedEcommerceFulfillmentOutput[] = await Promise.all(
         fulfillments.map(async (fulfillment) => {
           // Fetch field mappings for the fulfillment
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: fulfillment.id_ecom_fulfilment,
@@ -171,14 +171,14 @@ export class FulfillmentService {
           });
 
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
           });
 
           // Convert the map to an array of objects
-          var field_mappings = Object.fromEntries(fieldMappingsMap);
+          const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedEcommerceFulfillmentOutput format
           return {
@@ -199,14 +199,14 @@ export class FulfillmentService {
       let res: UnifiedEcommerceFulfillmentOutput[] = UnifiedEcommerceFulfillments;
 
       if (remote_data) {
-        var remote_array_data: UnifiedEcommerceFulfillmentOutput[] = await Promise.all(
+        const remote_array_data: UnifiedEcommerceFulfillmentOutput[] = await Promise.all(
           res.map(async (fulfillment) => {
-            var resp = await this.prisma.remote_data.findFirst({
+            const resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: fulfillment.id,
               },
             });
-            var remote_data = JSON.parse(resp.data);
+            const remote_data = JSON.parse(resp.data);
             return { ...fulfillment, remote_data };
           }),
         );
