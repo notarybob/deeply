@@ -45,7 +45,7 @@ export class GorgiasTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<GorgiasTicketInput> {
-    var result: GorgiasTicketInput = {
+    const result: GorgiasTicketInput = {
       channel: source.type ?? 'email', // Assuming 'email' as default channel
       subject: source.name,
       created_datetime:
@@ -77,7 +77,7 @@ export class GorgiasTicketMapper implements ITicketMapper {
     }
 
     if (source.assigned_to && source.assigned_to.length > 0) {
-      var data = await this.utils.getAsigneeRemoteIdFromUserUuid(
+      const data = await this.utils.getAsigneeRemoteIdFromUserUuid(
         source.assigned_to[0],
       );
       result.assignee_user = {
@@ -91,8 +91,8 @@ export class GorgiasTicketMapper implements ITicketMapper {
 
     if (customFieldMappings && source.field_mappings) {
       result.meta = {}; // Ensure meta exists
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -112,7 +112,7 @@ export class GorgiasTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingTicketOutput | UnifiedTicketingTicketOutput[]> {
-    var sourcesArray = Array.isArray(source) ? source : [source];
+    const sourcesArray = Array.isArray(source) ? source : [source];
     return Promise.all(
       sourcesArray.map(async (ticket) =>
         this.mapSingleTicketToUnified(
@@ -132,9 +132,9 @@ export class GorgiasTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingTicketOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = ticket.meta[mapping.remote_id];
       }
     }
@@ -143,7 +143,7 @@ export class GorgiasTicketMapper implements ITicketMapper {
 
     if (ticket.assignee_user) {
       //fetch the right assignee uuid from remote id
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         String(ticket.assignee_user.id),
         connectionId,
       );
@@ -155,7 +155,7 @@ export class GorgiasTicketMapper implements ITicketMapper {
       }
     }
     if (ticket.tags) {
-      var tags = (await this.coreUnificationService.unify<
+      const tags = (await this.coreUnificationService.unify<
         OriginalTagOutput[]
       >({
         sourceObject: ticket.tags as GorgiasTagOutput[],
@@ -171,7 +171,7 @@ export class GorgiasTicketMapper implements ITicketMapper {
       };
     }
 
-    var unifiedTicket: UnifiedTicketingTicketOutput = {
+    const unifiedTicket: UnifiedTicketingTicketOutput = {
       remote_id: String(ticket.id),
       remote_data: ticket,
       name: ticket.subject,
