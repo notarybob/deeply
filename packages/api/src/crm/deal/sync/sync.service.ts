@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = CRM_PROVIDERS;
-          for (var provider of providers) {
+          const providers = CRM_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -69,8 +69,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IDealService =
+      const { integrationId, linkedUserId } = param;
+      const service: IDealService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -97,20 +97,20 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<CrmDeal[]> {
     try {
-      var deals_results: CrmDeal[] = [];
+      const deals_results: CrmDeal[] = [];
 
-      var updateOrCreateDeal = async (
+      const updateOrCreateDeal = async (
         deal: UnifiedCrmDealOutput,
         originId: string,
       ) => {
-        var existingDeal = await this.prisma.crm_deals.findFirst({
+        const existingDeal = await this.prisma.crm_deals.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        var baseData: any = {
+        const baseData: any = {
           name: deal.name ?? null,
           description: deal.description ?? null,
           amount: deal.amount ?? 0,
@@ -141,15 +141,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        var deal = data[i];
-        var originId = deal.remote_id;
+        const deal = data[i];
+        const originId = deal.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateDeal(deal, originId);
-        var deal_id = res.id_crm_deal;
+        const res = await updateOrCreateDeal(deal, originId);
+        const deal_id = res.id_crm_deal;
         deals_results.push(res);
 
         // Process field mappings
