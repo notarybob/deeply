@@ -56,10 +56,10 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -95,8 +95,8 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -105,13 +105,13 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         grant_type: 'authorization_code',
         redirect_uri: REDIRECT_URI,
         code: code,
@@ -122,7 +122,7 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
 
       this.logger.log('Data Form is ' + JSON.stringify(formData));
 
-      const res = await axios.post(
+      var res = await axios.post(
         `https://${CREDENTIALS.SUBDOMAIN}.zendesk.com/oauth/tokens`,
         formData.toString(),
         {
@@ -131,14 +131,14 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: ZendeskOAuthResponse = res.data;
+      var data: ZendeskOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : zendesk ticketing ' + JSON.stringify(data),
       );
 
       let db_res;
-      const connection_token = uuidv4();
-      const BASE_API_URL = (
+      var connection_token = uuidv4();
+      var BASE_API_URL = (
         CONNECTORS_METADATA['ticketing']['zendesk'].urls.apiUrl as DynamicApiUrl
       )(CREDENTIALS.SUBDOMAIN);
 
@@ -189,10 +189,10 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
         CONNECTORS_METADATA['ticketing']['zendesk'].realTimeWebhookMetadata
           .method == 'API'
       ) {
-        const scopes =
+        var scopes =
           CONNECTORS_METADATA['ticketing']['zendesk'].realTimeWebhookMetadata
             .events;
-        const exclude: string[] = [
+        var exclude: string[] = [
           'ticketing.tickets.events',
           'ticketing.comments.events',
           'ticketing.tags.events',
@@ -200,15 +200,15 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
         ];
 
         // Filter the array to exclude specified elements
-        const filteredEvents = scopes.filter(
+        var filteredEvents = scopes.filter(
           (event) => !exclude.includes(event),
         );
 
-        const basic_mw = await this.mwService.createManagedWebhook({
+        var basic_mw = await this.mwService.createManagedWebhook({
           id_connection: db_res.id_connection,
           scopes: filteredEvents,
         });
-        const trigger_mw = await this.mwService.createManagedWebhook({
+        var trigger_mw = await this.mwService.createManagedWebhook({
           id_connection: db_res.id_connection,
           scopes: exclude,
         });
@@ -229,14 +229,14 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
 
   async revokeAccessTokens(linkedUserId: string) {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'ticketing',
         },
       });
-      const res_ = await axios.get(
+      var res_ = await axios.get(
         `https://d3v-panora3441.zendesk.com/api/v2/oauth/tokens`,
         {
           headers: {
@@ -247,9 +247,9 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      for (const obj of res_.data.tokens) {
+      for (var obj of res_.data.tokens) {
         try {
-          const res = await axios.delete(
+          var res = await axios.delete(
             `https://d3v-panora3441.zendesk.com/api/v2/oauth/tokens/${obj.id}.json`,
             {
               headers: {
