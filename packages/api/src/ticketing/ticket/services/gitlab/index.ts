@@ -29,19 +29,19 @@ export class GitlabService implements ITicketService {
     linkedUserId: string,
   ): Promise<ApiResponse<GitlabTicketOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gitlab',
           vertical: 'ticketing',
         },
       });
-      const { comment, ...ticketD } = ticketData;
-      const DATA = {
+      let { comment, ...ticketD } = ticketData;
+      let DATA = {
         ...ticketD,
       };
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v4/projects/${ticketData.project_id}/issues`,
         JSON.stringify(DATA),
         {
@@ -55,7 +55,7 @@ export class GitlabService implements ITicketService {
       );
       //insert comment
       if (comment) {
-        const resp_ = await axios.post(
+        let resp_ = await axios.post(
           `${connection.account_url}/v4/projects/${ticketData.project_id}/issues/${resp.data.iid}/notes`,
           JSON.stringify(comment),
           {
@@ -79,9 +79,9 @@ export class GitlabService implements ITicketService {
   }
   async sync(data: SyncParam): Promise<ApiResponse<GitlabTicketOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gitlab',
@@ -89,7 +89,7 @@ export class GitlabService implements ITicketService {
         },
       });
 
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/v4/issues?scope=created_by_me&scope=assigned_to_me`,
         {
           headers: {
