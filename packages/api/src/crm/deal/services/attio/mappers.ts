@@ -21,13 +21,13 @@ export class AttioDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<AttioDealInput> {
-    const result: any = {
+    var result: any = {
       values: {
         name: source.name,
       },
     };
     if (source.stage_id) {
-      const stage_name = await this.utils.getStageNameFromStageUuid(
+      var stage_name = await this.utils.getStageNameFromStageUuid(
         source.stage_id,
       );
       if (stage_name) {
@@ -37,7 +37,7 @@ export class AttioDealMapper implements IDealMapper {
       result.values.stage = 'In Progress'; // todo
     }
     if (source.company_id) {
-      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -48,7 +48,7 @@ export class AttioDealMapper implements IDealMapper {
       }
     }
     if (source.user_id) {
-      const email = await this.utils.getEmailFromUserUuid(source.user_id);
+      var email = await this.utils.getEmailFromUserUuid(source.user_id);
       if (email) {
         result.values.owner! = email;
       }
@@ -58,8 +58,8 @@ export class AttioDealMapper implements IDealMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -102,16 +102,16 @@ export class AttioDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmDealOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = deal.values[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (deal.values.owner && deal.values.owner.length > 0) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         deal.values.owner[0].referenced_actor_id,
         connectionId,
       );
@@ -127,7 +127,7 @@ export class AttioDealMapper implements IDealMapper {
       deal.values.associated_company &&
       deal.values.associated_company.length > 0
     ) {
-      const company_id = await this.utils.getCompanyUuidFromRemoteId(
+      var company_id = await this.utils.getCompanyUuidFromRemoteId(
         deal.values.associated_company[0].target_record_id,
         connectionId,
       );
@@ -147,7 +147,7 @@ export class AttioDealMapper implements IDealMapper {
     }
 
     if (deal.values.stage && deal.values.stage.length > 0) {
-      const stage_id = await this.utils.getStageUuidFromStageName(
+      var stage_id = await this.utils.getStageUuidFromStageName(
         deal.values.stage[0].status.title,
         connectionId,
       );
