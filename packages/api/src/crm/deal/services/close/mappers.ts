@@ -21,7 +21,7 @@ export class CloseDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<CloseDealInput> {
-    const result: CloseDealInput = {
+    var result: CloseDealInput = {
       note: source.description,
       confidence: 0,
       value: source.amount || 0,
@@ -31,7 +31,7 @@ export class CloseDealMapper implements IDealMapper {
     };
 
     if (source.company_id) {
-      const lead_id = await this.utils.getRemoteIdFromCompanyUuid(
+      var lead_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (lead_id) {
@@ -39,7 +39,7 @@ export class CloseDealMapper implements IDealMapper {
       }
     }
     if (source.stage_id) {
-      const stage_id = await this.utils.getStageIdFromStageUuid(
+      var stage_id = await this.utils.getStageIdFromStageUuid(
         source.company_id,
       );
       if (stage_id) {
@@ -48,8 +48,8 @@ export class CloseDealMapper implements IDealMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -91,16 +91,16 @@ export class CloseDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmDealOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = deal.custom[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (deal.user_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         deal.user_id,
         connectionId,
       );
@@ -112,7 +112,7 @@ export class CloseDealMapper implements IDealMapper {
       }
     }
     if (deal.lead_id) {
-      const lead_id = await this.utils.getCompanyUuidFromRemoteId(
+      var lead_id = await this.utils.getCompanyUuidFromRemoteId(
         deal.lead_id,
         connectionId,
       );
@@ -124,7 +124,7 @@ export class CloseDealMapper implements IDealMapper {
       }
     }
     if (deal.contact_id) {
-      const contact_id = await this.utils.getContactUuidFromRemoteId(
+      var contact_id = await this.utils.getContactUuidFromRemoteId(
         deal.contact_id,
         connectionId,
       );
@@ -136,7 +136,7 @@ export class CloseDealMapper implements IDealMapper {
       }
     }
     if (deal.status_id) {
-      const stage_id = await this.utils.getStageUuidFromRemoteId(
+      var stage_id = await this.utils.getStageUuidFromRemoteId(
         deal.status_id,
         connectionId,
       );
