@@ -90,7 +90,7 @@ interface Attendee {
 
 export type CloseEngagementMeetingOutput = Partial<Meeting>;
 
-export const commonMeetingCloseProperties = {
+export let commonMeetingCloseProperties = {
   createdate: '',
   hs_internal_meeting_notes: '',
   hs_lastmodifieddate: '',
@@ -194,7 +194,7 @@ interface BodyTextQuoted {
 
 export type CloseEngagementEmailOutput = Partial<EmailOuput>;
 
-export const commonEmailCloseProperties = {
+export let commonEmailCloseProperties = {
   createdate: '',
   hs_email_direction: '',
   hs_email_sender_email: '',
