@@ -21,7 +21,7 @@ export class PipedriveTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<PipedriveTaskInput> {
-    /*var result: PipedriveTaskInput = {
+    /*const result: PipedriveTaskInput = {
       subject: source.subject || null,
       public_description: source.content || null,
       done: source.status === 'COMPLETED',
@@ -34,13 +34,13 @@ export class PipedriveTaskMapper implements ITaskMapper {
     };
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.user_id = Number(owner_id);
       }
     }
     if (source.company_id) {
-      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -48,15 +48,15 @@ export class PipedriveTaskMapper implements ITaskMapper {
       }
     }
     if (source.deal_id) {
-      var deal_id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      const deal_id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       if (deal_id) {
         result.deal_id = Number(deal_id);
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -99,9 +99,9 @@ export class PipedriveTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmTaskOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = task[mapping.remote_id];
       }
     }
@@ -109,7 +109,7 @@ export class PipedriveTaskMapper implements ITaskMapper {
     let opts: any = {};
 
     if (task.user_id) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         String(task.user_id),
         connectionId,
       );
@@ -122,7 +122,7 @@ export class PipedriveTaskMapper implements ITaskMapper {
     }
 
     if (task.org_id) {
-      var company_id = await this.utils.getCompanyUuidFromRemoteId(
+      const company_id = await this.utils.getCompanyUuidFromRemoteId(
         String(task.org_id),
         connectionId,
       );
@@ -134,7 +134,7 @@ export class PipedriveTaskMapper implements ITaskMapper {
       }
     }
     if (task.deal_id) {
-      var deal_id = await this.utils.getDealUuidFromRemoteId(
+      const deal_id = await this.utils.getDealUuidFromRemoteId(
         String(task.deal_id),
         connectionId,
       );
