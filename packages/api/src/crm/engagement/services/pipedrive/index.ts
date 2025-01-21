@@ -29,14 +29,14 @@ export class PipedriveService implements IEngagementService {
     engagement_type?: string,
   ): Promise<ApiResponse<PipedriveEngagementOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v1/activities`,
         JSON.stringify(engagementData),
         {
@@ -62,7 +62,7 @@ export class PipedriveService implements IEngagementService {
     data: SyncParam,
   ): Promise<ApiResponse<PipedriveEngagementOutput[]>> {
     try {
-      let { linkedUserId, engagement_type } = data;
+      const { linkedUserId, engagement_type } = data;
 
       switch (engagement_type as string) {
         case 'CALL':
@@ -81,7 +81,7 @@ export class PipedriveService implements IEngagementService {
 
   private async syncCalls(linkedUserId: string) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
@@ -89,7 +89,7 @@ export class PipedriveService implements IEngagementService {
         },
       });
 
-      let resp = await axios.get(`${connection.account_url}/v1/activities`, {
+      const resp = await axios.get(`${connection.account_url}/v1/activities`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -98,7 +98,7 @@ export class PipedriveService implements IEngagementService {
         },
       });
       //filter only calls
-      let finalData = resp.data.data.filter(
+      const finalData = resp.data.data.filter(
         (item) => item.key_string == 'call',
       );
       this.logger.log(`Synced pipedrive engagements calls !`);
@@ -114,7 +114,7 @@ export class PipedriveService implements IEngagementService {
   }
   private async syncMeetings(linkedUserId: string) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
@@ -122,7 +122,7 @@ export class PipedriveService implements IEngagementService {
         },
       });
 
-      let resp = await axios.get(`${connection.account_url}/v1/activities`, {
+      const resp = await axios.get(`${connection.account_url}/v1/activities`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -131,7 +131,7 @@ export class PipedriveService implements IEngagementService {
         },
       });
       //filter only calls
-      let finalData = resp.data.data.filter(
+      const finalData = resp.data.data.filter(
         (item) => item.key_string == 'meeting',
       );
       this.logger.log(`Synced pipedrive engagements meetings !`);
@@ -147,7 +147,7 @@ export class PipedriveService implements IEngagementService {
   }
   private async syncEmails(linkedUserId: string) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
@@ -155,7 +155,7 @@ export class PipedriveService implements IEngagementService {
         },
       });
 
-      let resp = await axios.get(`${connection.account_url}/v1/activities`, {
+      const resp = await axios.get(`${connection.account_url}/v1/activities`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -164,7 +164,7 @@ export class PipedriveService implements IEngagementService {
         },
       });
       //filter only calls
-      let finalData = resp.data.data.filter(
+      const finalData = resp.data.data.filter(
         (item) => item.key_string == 'email',
       );
       this.logger.log(`Synced pipedrive engagements emails !`);
