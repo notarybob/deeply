@@ -37,15 +37,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = TICKETING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = TICKETING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -67,8 +67,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId, wh_real_time_trigger } = param;
-      var service: IUserService =
+      const { integrationId, linkedUserId, wh_real_time_trigger } = param;
+      const service: IUserService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -103,21 +103,21 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<TicketingUser[]> {
     try {
-      var users_results: TicketingUser[] = [];
+      const users_results: TicketingUser[] = [];
 
-      var updateOrCreateUser = async (
+      const updateOrCreateUser = async (
         user: UnifiedTicketingUserOutput,
         originId: string,
         connection_id: string,
       ) => {
-        var existingUser = await this.prisma.tcg_users.findFirst({
+        const existingUser = await this.prisma.tcg_users.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        var baseData: any = {
+        const baseData: any = {
           name: user.name ?? null,
           email_address: user.email_address ?? null,
           teams: user.teams ?? [],
@@ -145,15 +145,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        var user = data[i];
-        var originId = user.remote_id;
+        const user = data[i];
+        const originId = user.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateUser(user, originId, connection_id);
-        var user_id = res.id_tcg_user;
+        const res = await updateOrCreateUser(user, originId, connection_id);
+        const user_id = res.id_tcg_user;
         users_results.push(res);
 
         // Process field mappings
@@ -174,7 +174,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
   }
 
   async removeInDb(connection_id: string, remote_id: string) {
-    var existingUser = await this.prisma.tcg_users.findFirst({
+    const existingUser = await this.prisma.tcg_users.findFirst({
       where: {
         remote_id: remote_id,
         id_connection: connection_id,
