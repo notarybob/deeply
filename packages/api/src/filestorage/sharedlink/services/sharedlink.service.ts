@@ -30,14 +30,14 @@ export class SharedLinkService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestorageSharedlinkOutput> {
     try {
-      var sharedlink = await this.prisma.fs_shared_links.findUnique({
+      const sharedlink = await this.prisma.fs_shared_links.findUnique({
         where: {
           id_fs_shared_link: id_fs_shared_link,
         },
       });
 
       // Fetch field mappings for the shared link
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: sharedlink.id_fs_shared_link,
@@ -49,17 +49,17 @@ export class SharedLinkService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedFilestorageSharedlinkOutput format
-      var unifiedSharedLink: UnifiedFilestorageSharedlinkOutput = {
+      const unifiedSharedLink: UnifiedFilestorageSharedlinkOutput = {
         id: sharedlink.id_fs_shared_link,
         url: sharedlink.url,
         download_url: sharedlink.download_url,
@@ -75,12 +75,12 @@ export class SharedLinkService {
 
       let res: UnifiedFilestorageSharedlinkOutput = unifiedSharedLink;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: sharedlink.id_fs_shared_link,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -128,7 +128,7 @@ export class SharedLinkService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.fs_shared_links.findFirst({
+        const isCursorPresent = await this.prisma.fs_shared_links.findFirst({
           where: {
             id_connection: connection_id,
             id_fs_shared_link: cursor,
@@ -139,7 +139,7 @@ export class SharedLinkService {
         }
       }
 
-      var sharedlinks = await this.prisma.fs_shared_links.findMany({
+      const sharedlinks = await this.prisma.fs_shared_links.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -165,11 +165,11 @@ export class SharedLinkService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedSharedLinks: UnifiedFilestorageSharedlinkOutput[] =
+      const unifiedSharedLinks: UnifiedFilestorageSharedlinkOutput[] =
         await Promise.all(
           sharedlinks.map(async (sharedlink) => {
             // Fetch field mappings for the shared link
-            var values = await this.prisma.value.findMany({
+            const values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id: sharedlink.id_fs_shared_link,
@@ -181,14 +181,14 @@ export class SharedLinkService {
             });
 
             // Create a map to store unique field mappings
-            var fieldMappingsMap = new Map();
+            const fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            var field_mappings = Array.from(
+            const field_mappings = Array.from(
               fieldMappingsMap,
               ([key, value]) => ({ [key]: value }),
             );
@@ -213,15 +213,15 @@ export class SharedLinkService {
       let res: UnifiedFilestorageSharedlinkOutput[] = unifiedSharedLinks;
 
       if (remote_data) {
-        var remote_array_data: UnifiedFilestorageSharedlinkOutput[] =
+        const remote_array_data: UnifiedFilestorageSharedlinkOutput[] =
           await Promise.all(
             res.map(async (sharedlink) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: sharedlink.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...sharedlink, remote_data };
             }),
           );
