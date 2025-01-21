@@ -67,11 +67,11 @@ export class CommentController {
     @Query() query: QueryDto,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
-      let { remote_data, limit, cursor } = query;
+      const { remote_data, limit, cursor } = query;
       return this.commentService.getComments(
         connectionId,
         projectId,
@@ -118,7 +118,7 @@ export class CommentController {
     @Param('id') id: string,
     @Query('remote_data') remote_data?: boolean,
   ) {
-    let { linkedUserId, remoteSource, connectionId, projectId } =
+    const { linkedUserId, remoteSource, connectionId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionToken(
         connection_token,
       );
@@ -160,7 +160,7 @@ export class CommentController {
     @Query('remote_data') remote_data?: boolean,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
