@@ -33,7 +33,7 @@ export class AddressService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingAddressOutput> {
     try {
-      let address = await this.prisma.acc_addresses.findUnique({
+      const address = await this.prisma.acc_addresses.findUnique({
         where: { id_acc_address: id_acc_address },
       });
 
@@ -41,18 +41,18 @@ export class AddressService {
         throw new Error(`Address with ID ${id_acc_address} not found.`);
       }
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: address.id_acc_address },
         },
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedAddress: UnifiedAccountingAddressOutput = {
+      const unifiedAddress: UnifiedAccountingAddressOutput = {
         id: address.id_acc_address,
         type: address.type,
         street_1: address.street_1,
@@ -70,7 +70,7 @@ export class AddressService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: address.id_acc_address },
         });
         unifiedAddress.remote_data = remoteDataRecord
@@ -114,30 +114,30 @@ export class AddressService {
     previous_cursor: string | null;
   }> {
     try {
-      let addresses = await this.prisma.acc_addresses.findMany({
+      const addresses = await this.prisma.acc_addresses.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_address: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      let hasNextPage = addresses.length > limit;
+      const hasNextPage = addresses.length > limit;
       if (hasNextPage) addresses.pop();
 
-      let unifiedAddresses = await Promise.all(
+      const unifiedAddresses = await Promise.all(
         addresses.map(async (address) => {
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: address.id_acc_address },
             },
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedAddress: UnifiedAccountingAddressOutput = {
+          const unifiedAddress: UnifiedAccountingAddressOutput = {
             id: address.id_acc_address,
             type: address.type,
             street_1: address.street_1,
@@ -155,7 +155,7 @@ export class AddressService {
           };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: address.id_acc_address },
             });
             unifiedAddress.remote_data = remoteDataRecord
