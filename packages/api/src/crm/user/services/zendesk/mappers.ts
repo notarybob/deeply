@@ -20,14 +20,14 @@ export class ZendeskUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): ZendeskUserInput {
-    const result: ZendeskUserInput = {
+    let result: ZendeskUserInput = {
       name: source.name,
       email: source.email,
     };
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (let [k, v] of Object.entries(source.field_mappings)) {
+        let mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -71,9 +71,9 @@ export class ZendeskUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): UnifiedCrmUserOutput {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = user[mapping.remote_id];
       }
     }
