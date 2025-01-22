@@ -27,10 +27,10 @@ export class BoxService implements ISharedLinkService {
 
   async sync(data: SyncParam): Promise<ApiResponse<BoxSharedLinkOutput[]>> {
     try {
-      const { linkedUserId, extra } = data;
+      var { linkedUserId, extra } = data;
       //  TODO: where it comes from ??  extra?: { object_name: 'folder' | 'file'; value: string },
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'box',
@@ -39,7 +39,7 @@ export class BoxService implements ISharedLinkService {
       });
       let remote_id;
       if (extra.object_name == 'folder') {
-        const a = await this.prisma.fs_folders.findUnique({
+        var a = await this.prisma.fs_folders.findUnique({
           where: {
             id_fs_folder: extra.value,
           },
@@ -47,14 +47,14 @@ export class BoxService implements ISharedLinkService {
         remote_id = a.remote_id;
       }
       if (extra.object_name == 'file') {
-        const a = await this.prisma.fs_files.findUnique({
+        var a = await this.prisma.fs_files.findUnique({
           where: {
             id_fs_file: extra.value,
           },
         });
         remote_id = a.remote_id;
       }
-      const resp = await axios.get(
+      var resp = await axios.get(
         `${connection.account_url}/${extra.object_name}s/${remote_id}?fields=shared_link`,
         {
           headers: {
