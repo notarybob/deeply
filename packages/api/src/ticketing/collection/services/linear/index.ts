@@ -27,9 +27,9 @@ export class LinearService implements ICollectionService {
 
   async sync(data: SyncParam): Promise<ApiResponse<LinearCollectionOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'linear',
@@ -37,7 +37,7 @@ export class LinearService implements ICollectionService {
         },
       });
 
-      var projectQuery = {
+      const projectQuery = {
         "query": "query { projects { nodes { id, name, description } }}"
       };
 
