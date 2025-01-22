@@ -42,15 +42,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ECOMMERCE_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ECOMMERCE_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -71,8 +71,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: ICustomerService =
+      var { integrationId, linkedUserId } = param;
+      var service: ICustomerService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -94,9 +94,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<EcommerceCustomer[]> {
     try {
-      const customers_results: EcommerceCustomer[] = [];
+      var customers_results: EcommerceCustomer[] = [];
 
-      const updateOrCreateCustomer = async (
+      var updateOrCreateCustomer = async (
         customer: UnifiedEcommerceCustomerOutput,
         originId: string,
       ) => {
@@ -125,11 +125,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        const normalizedAddresses = this.utils.normalizeAddresses(
+        var normalizedAddresses = this.utils.normalizeAddresses(
           customer.addresses,
         );
 
-        const baseData: any = {
+        var baseData: any = {
           email: customer.email ?? null,
           first_name: customer.first_name ?? null,
           last_name: customer.last_name ?? null,
@@ -138,7 +138,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         };
 
         if (existingCustomer) {
-          const res = await this.prisma.ecom_customers.update({
+          var res = await this.prisma.ecom_customers.update({
             where: {
               id_ecom_customer: existingCustomer.id_ecom_customer,
             },
@@ -175,7 +175,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           }
           return res;
         } else {
-          const newCus = await this.prisma.ecom_customers.create({
+          var newCus = await this.prisma.ecom_customers.create({
             data: {
               ...baseData,
               id_ecom_customer: uuidv4(),
@@ -207,11 +207,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < customers.length; i++) {
-        const customer = customers[i];
-        const originId = customer.remote_id;
+        var customer = customers[i];
+        var originId = customer.remote_id;
 
-        const res = await updateOrCreateCustomer(customer, originId);
-        const customer_id = res.id_ecom_customer;
+        var res = await updateOrCreateCustomer(customer, originId);
+        var customer_id = res.id_ecom_customer;
         customers_results.push(res);
 
         // Process field mappings
