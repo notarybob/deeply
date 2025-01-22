@@ -58,11 +58,11 @@ export class UserController {
     @Query() query: QueryDto,
   ) {
     try {
-      const { linkedUserId, remoteSource, connectionId, projectId } =
+      let { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
-      const { remote_data, limit, cursor } = query;
+      let { remote_data, limit, cursor } = query;
       return await this.permissionService.getUsers(
         connectionId,
         projectId,
@@ -111,7 +111,7 @@ export class UserController {
     @Param('id') id: string,
     @Query('remote_data') remote_data?: boolean,
   ) {
-    const { linkedUserId, remoteSource, connectionId, projectId } =
+    let { linkedUserId, remoteSource, connectionId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionToken(
         connection_token,
       );
