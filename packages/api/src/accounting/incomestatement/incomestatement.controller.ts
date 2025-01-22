@@ -65,11 +65,11 @@ export class IncomeStatementController {
     @Query() query: QueryDto,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
-      let { remote_data, limit, cursor } = query;
+      const { remote_data, limit, cursor } = query;
       return this.incomestatementService.getIncomeStatements(
         connectionId,
         projectId,
@@ -119,7 +119,7 @@ export class IncomeStatementController {
     @Param('id') id: string,
     @Query('remote_data') remote_data?: boolean,
   ) {
-    let { linkedUserId, remoteSource, connectionId, projectId } =
+    const { linkedUserId, remoteSource, connectionId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionToken(
         connection_token,
       );
