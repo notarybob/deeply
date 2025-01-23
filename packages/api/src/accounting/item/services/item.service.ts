@@ -33,7 +33,7 @@ export class ItemService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingItemOutput> {
     try {
-      const item = await this.prisma.acc_items.findUnique({
+      let item = await this.prisma.acc_items.findUnique({
         where: { id_acc_item: id_acc_item },
       });
 
@@ -41,18 +41,18 @@ export class ItemService {
         throw new Error(`Item with ID ${id_acc_item} not found.`);
       }
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: item.id_acc_item },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedItem: UnifiedAccountingItemOutput = {
+      let unifiedItem: UnifiedAccountingItemOutput = {
         id: item.id_acc_item,
         name: item.name,
         status: item.status,
@@ -71,7 +71,7 @@ export class ItemService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: item.id_acc_item },
         });
         unifiedItem.remote_data = remoteDataRecord
@@ -114,30 +114,30 @@ export class ItemService {
     previous_cursor: string | null;
   }> {
     try {
-      const items = await this.prisma.acc_items.findMany({
+      let items = await this.prisma.acc_items.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_item: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = items.length > limit;
+      let hasNextPage = items.length > limit;
       if (hasNextPage) items.pop();
 
-      const unifiedItems = await Promise.all(
+      let unifiedItems = await Promise.all(
         items.map(async (item) => {
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: item.id_acc_item },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedItem: UnifiedAccountingItemOutput = {
+          let unifiedItem: UnifiedAccountingItemOutput = {
             id: item.id_acc_item,
             name: item.name,
             status: item.status,
@@ -156,7 +156,7 @@ export class ItemService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: item.id_acc_item },
             });
             unifiedItem.remote_data = remoteDataRecord
