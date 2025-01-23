@@ -252,7 +252,7 @@ export class ThirdPartyApiServiceError extends Error {
 }
 
 export function throwTypedError(error: TypedError, logger?: LoggerService) {
-  let errorMessage = error.message;
+  const errorMessage = error.message;
   if (logger) {
     logger.error('Error message: ', errorMessage);
   }
