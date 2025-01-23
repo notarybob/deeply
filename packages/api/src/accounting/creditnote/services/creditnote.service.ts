@@ -33,7 +33,7 @@ export class CreditNoteService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingCreditnoteOutput> {
     try {
-      const creditNote = await this.prisma.acc_credit_notes.findUnique({
+      let creditNote = await this.prisma.acc_credit_notes.findUnique({
         where: { id_acc_credit_note: id_acc_credit_note },
       });
 
@@ -41,18 +41,18 @@ export class CreditNoteService {
         throw new Error(`Credit note with ID ${id_acc_credit_note} not found.`);
       }
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: creditNote.id_acc_credit_note },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedCreditNote: UnifiedAccountingCreditnoteOutput = {
+      let unifiedCreditNote: UnifiedAccountingCreditnoteOutput = {
         id: creditNote.id_acc_credit_note,
         transaction_date: creditNote.transaction_date?.toISOString(),
         status: creditNote.status,
@@ -80,7 +80,7 @@ export class CreditNoteService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: creditNote.id_acc_credit_note },
         });
         unifiedCreditNote.remote_data = remoteDataRecord
@@ -124,30 +124,30 @@ export class CreditNoteService {
     previous_cursor: string | null;
   }> {
     try {
-      const creditNotes = await this.prisma.acc_credit_notes.findMany({
+      let creditNotes = await this.prisma.acc_credit_notes.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_credit_note: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = creditNotes.length > limit;
+      let hasNextPage = creditNotes.length > limit;
       if (hasNextPage) creditNotes.pop();
 
-      const unifiedCreditNotes = await Promise.all(
+      let unifiedCreditNotes = await Promise.all(
         creditNotes.map(async (creditNote) => {
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: creditNote.id_acc_credit_note },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedCreditNote: UnifiedAccountingCreditnoteOutput = {
+          let unifiedCreditNote: UnifiedAccountingCreditnoteOutput = {
             id: creditNote.id_acc_credit_note,
             transaction_date: creditNote.transaction_date?.toISOString(),
             status: creditNote.status,
@@ -175,7 +175,7 @@ export class CreditNoteService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: creditNote.id_acc_credit_note },
             });
             unifiedCreditNote.remote_data = remoteDataRecord
