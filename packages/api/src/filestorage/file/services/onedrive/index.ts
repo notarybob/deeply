@@ -45,10 +45,10 @@ export class OnedriveService implements IFileService {
     deltaLink?: string,
   ): Promise<ApiResponse<OnedriveFileOutput[]>> {
     try {
-      const { linkedUserId, custom_field_mappings, ingestParams, id_folder } =
+      var { linkedUserId, custom_field_mappings, ingestParams, id_folder } =
         data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'onedrive',
@@ -58,7 +58,7 @@ export class OnedriveService implements IFileService {
 
       // if id_folder is provided, sync only the files in the specified folder
       if (id_folder) {
-        const folder = await this.prisma.fs_folders.findUnique({
+        var folder = await this.prisma.fs_folders.findUnique({
           where: {
             id_fs_folder: id_folder as string,
           },
@@ -67,7 +67,7 @@ export class OnedriveService implements IFileService {
           },
         });
         if (folder) {
-          const files = await this.syncFolder(connection, folder.remote_id);
+          var files = await this.syncFolder(connection, folder.remote_id);
           return {
             data: files,
             message: 'OneDrive files retrieved from specified folder',
@@ -83,7 +83,7 @@ export class OnedriveService implements IFileService {
         let files: OnedriveFileOutput[] = [];
         let nextDeltaLink: string | null = null;
         try {
-          const { files: batchFiles, nextDeltaLink: batchNextDeltaLink } =
+          var { files: batchFiles, nextDeltaLink: batchNextDeltaLink } =
             await this.getFilesToSync(connection, deltaLink, 10);
 
           files = batchFiles;
@@ -91,7 +91,7 @@ export class OnedriveService implements IFileService {
         } catch (error: any) {
           if (error.response?.status === 410) {
             // Delta token expired, start fresh sync
-            const newDeltaLink = `${connection.account_url}/v1.0/me/drive/root/delta?$top=1000`;
+            var newDeltaLink = `${connection.account_url}/v1.0/me/drive/root/delta?$top=1000`;
             return this.sync(data, newDeltaLink);
           }
           await this.bullQueueService
@@ -109,7 +109,7 @@ export class OnedriveService implements IFileService {
         }
 
         if (files.length > 0) {
-          const ingestedFiles = await this.ingestFiles(
+          var ingestedFiles = await this.ingestFiles(
             files,
             connection,
             custom_field_mappings,
@@ -134,10 +134,10 @@ export class OnedriveService implements IFileService {
           this.logger.log(`No more files to sync from OneDrive.`);
         }
       } else {
-        const lastSyncTime = await this.getLastSyncTime(
+        var lastSyncTime = await this.getLastSyncTime(
           connection.id_connection,
         );
-        const deltaLink = lastSyncTime
+        var deltaLink = lastSyncTime
           ? `${
               connection.account_url
             }/v1.0/me/drive/root/delta?$top=1000&token=${lastSyncTime.toISOString()}`
@@ -166,11 +166,11 @@ export class OnedriveService implements IFileService {
     deltaLink: string,
     maxApiCalls: number, // number of times to call the API
   ) {
-    const files: OnedriveFileOutput[] = [];
+    var files: OnedriveFileOutput[] = [];
     let nextDeltaLink: string | null = deltaLink;
 
     for (let i = 0; i < maxApiCalls; i++) {
-      const resp = await this.makeRequestWithRetry({
+      var resp = await this.makeRequestWithRetry({
         timeout: 30000,
         method: 'get',
         url: deltaLink,
@@ -181,7 +181,7 @@ export class OnedriveService implements IFileService {
         },
       });
 
-      const batchFiles = resp.data.value?.filter((elem: any) => !elem.folder);
+      var batchFiles = resp.data.value?.filter((elem: any) => !elem.folder);
       files.push(...batchFiles);
       nextDeltaLink = resp.data['@odata.nextLink'];
 
@@ -195,7 +195,7 @@ export class OnedriveService implements IFileService {
   }
 
   async processBatch(job: any) {
-    const {
+    var {
       linkedUserId,
       deltaLink,
       connectionId,
@@ -224,14 +224,14 @@ export class OnedriveService implements IFileService {
     extraParams?: { [key: string]: any },
   ) {
     // Sort files by lastModifiedDateTime in descending order (newest first)
-    const sortedFiles = [...files].sort((a, b) => {
-      const dateA = new Date(a.lastModifiedDateTime).getTime();
-      const dateB = new Date(b.lastModifiedDateTime).getTime();
+    var sortedFiles = [...files].sort((a, b) => {
+      var dateA = new Date(a.lastModifiedDateTime).getTime();
+      var dateB = new Date(b.lastModifiedDateTime).getTime();
       return dateB - dateA;
     });
 
     // Deduplicate files by remote_id, keeping only the first occurrence (which will be the latest version)
-    const uniqueFiles = sortedFiles.reduce((acc, file) => {
+    var uniqueFiles = sortedFiles.reduce((acc, file) => {
       if (!acc.has(file.id)) {
         acc.set(file.id, file);
       }
@@ -272,17 +272,17 @@ export class OnedriveService implements IFileService {
     allFiles: OnedriveFileOutput[],
     connection: Connection,
   ): Promise<OnedriveFileOutput[]> {
-    const allPermissions: OnedrivePermissionOutput[] = [];
-    const fileIdToRemotePermissionIdMap: Map<string, string[]> = new Map();
-    const batchSize = 4; // simultaneous requests
+    var allPermissions: OnedrivePermissionOutput[] = [];
+    var fileIdToRemotePermissionIdMap: Map<string, string[]> = new Map();
+    var batchSize = 4; // simultaneous requests
 
-    const files = allFiles.filter((f) => !f.deleted);
+    var files = allFiles.filter((f) => !f.deleted);
 
     for (let i = 0; i < files.length; i += batchSize) {
-      const batch = files.slice(i, i + batchSize);
-      const permissions = await Promise.all(
+      var batch = files.slice(i, i + batchSize);
+      var permissions = await Promise.all(
         batch.map(async (file) => {
-          const permissionConfig: AxiosRequestConfig = {
+          var permissionConfig: AxiosRequestConfig = {
             timeout: 30000,
             method: 'get',
             url: `${connection.account_url}/v1.0/me/drive/items/${file.id}/permissions`,
@@ -294,8 +294,8 @@ export class OnedriveService implements IFileService {
             },
           };
 
-          const resp = await this.makeRequestWithRetry(permissionConfig);
-          const permissions = resp.data.value;
+          var resp = await this.makeRequestWithRetry(permissionConfig);
+          var permissions = resp.data.value;
           fileIdToRemotePermissionIdMap.set(
             file.id,
             permissions.map((p) => p.id),
@@ -309,7 +309,7 @@ export class OnedriveService implements IFileService {
       allPermissions.push(...permissions.flat());
     }
 
-    const uniquePermissions = Array.from(
+    var uniquePermissions = Array.from(
       new Map(
         allPermissions.map((permission) => [permission.id, permission]),
       ).values(),
@@ -317,7 +317,7 @@ export class OnedriveService implements IFileService {
 
     await this.assignUserAndGroupIdsToPermissions(uniquePermissions);
 
-    const syncedPermissions = await this.ingestService.ingestData<
+    var syncedPermissions = await this.ingestService.ingestData<
       UnifiedFilestoragePermissionOutput,
       OnedrivePermissionOutput
     >(
@@ -332,7 +332,7 @@ export class OnedriveService implements IFileService {
       `Ingested ${syncedPermissions.length} permissions for files.`,
     );
 
-    const permissionIdMap: Map<string, string> = new Map(
+    var permissionIdMap: Map<string, string> = new Map(
       syncedPermissions.map((permission) => [
         permission.remote_id,
         permission.id_fs_permission,
@@ -354,17 +354,17 @@ export class OnedriveService implements IFileService {
   private async assignUserAndGroupIdsToPermissions(
     permissions: OnedrivePermissionOutput[],
   ): Promise<void> {
-    const userLookupCache: Map<string, string> = new Map();
-    const groupLookupCache: Map<string, string> = new Map();
+    var userLookupCache: Map<string, string> = new Map();
+    var groupLookupCache: Map<string, string> = new Map();
 
-    for (const permission of permissions) {
+    for (var permission of permissions) {
       if (permission.grantedToV2?.user?.id) {
-        const remote_user_id = permission.grantedToV2.user.id;
+        var remote_user_id = permission.grantedToV2.user.id;
         if (userLookupCache.has(remote_user_id)) {
           permission.internal_user_id = userLookupCache.get(remote_user_id);
           continue;
         }
-        const user = await this.prisma.fs_users.findFirst({
+        var user = await this.prisma.fs_users.findFirst({
           where: {
             remote_id: remote_user_id,
           },
@@ -379,12 +379,12 @@ export class OnedriveService implements IFileService {
       }
 
       if (permission.grantedToV2?.group?.id) {
-        const remote_group_id = permission.grantedToV2.group.id;
+        var remote_group_id = permission.grantedToV2.group.id;
         if (groupLookupCache.has(remote_group_id)) {
           permission.internal_group_id = groupLookupCache.get(remote_group_id);
           continue;
         }
-        const group = await this.prisma.fs_groups.findFirst({
+        var group = await this.prisma.fs_groups.findFirst({
           where: {
             remote_id: remote_group_id,
           },
@@ -405,7 +405,7 @@ export class OnedriveService implements IFileService {
     folderId: string,
   ): Promise<OnedriveFileOutput[]> {
     try {
-      const config: AxiosRequestConfig = {
+      var config: AxiosRequestConfig = {
         timeout: 30000,
         method: 'get',
         url: `${connection.account_url}/v1.0/me/drive/items/${folderId}/children`,
@@ -417,9 +417,9 @@ export class OnedriveService implements IFileService {
         },
       };
 
-      const resp: AxiosResponse = await this.makeRequestWithRetry(config);
+      var resp: AxiosResponse = await this.makeRequestWithRetry(config);
 
-      const files: OnedriveFileOutput[] = resp.data.value.filter(
+      var files: OnedriveFileOutput[] = resp.data.value.filter(
         (elem: any) => !elem.folder, // files don't have a folder property
       );
 
@@ -428,7 +428,7 @@ export class OnedriveService implements IFileService {
       return files;
     } catch (error: any) {
       if (error.response?.status === 404) {
-        const internalFolder = await this.prisma.fs_folders.findFirst({
+        var internalFolder = await this.prisma.fs_folders.findFirst({
           where: {
             remote_id: folderId,
             id_connection: connection.id_connection,
@@ -454,7 +454,7 @@ export class OnedriveService implements IFileService {
   }
 
   private async getLastSyncTime(connectionId: string): Promise<Date | null> {
-    const lastSync = await this.prisma.fs_files.findFirst({
+    var lastSync = await this.prisma.fs_files.findFirst({
       where: { id_connection: connectionId },
       orderBy: { remote_modified_at: { sort: 'desc', nulls: 'last' } },
     });
@@ -463,7 +463,7 @@ export class OnedriveService implements IFileService {
   }
 
   async downloadFile(fileId: string, connection: any): Promise<Buffer> {
-    const config: AxiosRequestConfig = {
+    var config: AxiosRequestConfig = {
       method: 'get',
       url: `${connection.account_url}/v1.0/me/drive/items/${fileId}/content`,
       headers: {
@@ -474,7 +474,7 @@ export class OnedriveService implements IFileService {
       responseType: 'arraybuffer',
     };
 
-    const response: AxiosResponse = await this.makeRequestWithRetry(config);
+    var response: AxiosResponse = await this.makeRequestWithRetry(config);
     return Buffer.from(response.data);
   }
 
@@ -491,17 +491,17 @@ export class OnedriveService implements IFileService {
 
     while (attempts < this.MAX_RETRIES) {
       try {
-        const response: AxiosResponse = await axios(config);
+        var response: AxiosResponse = await axios(config);
         return response;
       } catch (error: any) {
         attempts++;
 
         // Handle rate limiting
         if (error.response && error.response.status === 429) {
-          const retryAfter: number = this.getRetryAfter(
+          var retryAfter: number = this.getRetryAfter(
             error.response.headers['retry-after'],
           );
-          const delayTime: number = Math.max(retryAfter * 1000, backoff);
+          var delayTime: number = Math.max(retryAfter * 1000, backoff);
 
           this.logger.warn(
             `Rate limit hit. Retrying request in ${delayTime}ms (Attempt ${attempts}/${this.MAX_RETRIES})`,
@@ -518,7 +518,7 @@ export class OnedriveService implements IFileService {
           error.code === 'ETIMEDOUT' ||
           error.response?.code === 'ETIMEDOUT'
         ) {
-          const delayTime: number = backoff;
+          var delayTime: number = backoff;
 
           this.logger.warn(
             `Request timeout. Retrying in ${delayTime}ms (Attempt ${attempts}/${this.MAX_RETRIES})`,
@@ -531,7 +531,7 @@ export class OnedriveService implements IFileService {
 
         // Handle server errors (500+)
         if (error.response && error.response.status >= 500) {
-          const delayTime: number = backoff;
+          var delayTime: number = backoff;
 
           this.logger.warn(
             `Server error ${error.response.status}. Retrying in ${delayTime}ms (Attempt ${attempts}/${this.MAX_RETRIES})`,
@@ -569,7 +569,7 @@ export class OnedriveService implements IFileService {
       return 1; // Default to 1 second if header is missing
     }
 
-    const retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
+    var retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
     return isNaN(retryAfterSeconds) ? 1 : retryAfterSeconds;
   }
 
