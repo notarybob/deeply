@@ -28,10 +28,10 @@ export class SharepointService implements IPermissionService {
     data: SyncParam,
   ): Promise<ApiResponse<SharepointPermissionOutput[]>> {
     try {
-      var { linkedUserId, extra } = data;
+      const { linkedUserId, extra } = data;
       //  TODO: where it comes from ??  extra?: { object_name: 'folder' | 'file'; value: string },
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'sharepoint',
@@ -40,7 +40,7 @@ export class SharepointService implements IPermissionService {
       });
       let remote_id;
       if (extra.object_name == 'folder') {
-        var a = await this.prisma.fs_folders.findUnique({
+        const a = await this.prisma.fs_folders.findUnique({
           where: {
             id_fs_folder: extra.value,
           },
@@ -48,7 +48,7 @@ export class SharepointService implements IPermissionService {
         remote_id = a.remote_id;
       }
       if (extra.object_name == 'file') {
-        var a = await this.prisma.fs_files.findUnique({
+        const a = await this.prisma.fs_files.findUnique({
           where: {
             id_fs_file: extra.value,
           },
@@ -57,7 +57,7 @@ export class SharepointService implements IPermissionService {
         remote_id = a.remote_id;
       }
 
-      var resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/drive/items/${remote_id}/permissions`,
         {
           headers: {
