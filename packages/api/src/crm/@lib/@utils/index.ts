@@ -9,7 +9,7 @@ export class Utils {
 
   normalizeEmailsAndNumbers(email_addresses: Email[], phone_numbers: Phone[]) {
     let normalizedEmails = [];
-    const normalizedPhones = [];
+    var normalizedPhones = [];
 
     if (email_addresses) {
       normalizedEmails = email_addresses.map((email) => ({
@@ -51,7 +51,7 @@ export class Utils {
     let base_number: string = phone_number;
 
     // Find the matching country code
-    for (const [countryCode, _] of Object.entries(countryPhoneFormats)) {
+    for (var [countryCode, _] of Object.entries(countryPhoneFormats)) {
       if (phone_number.startsWith(countryCode)) {
         country_code = countryCode;
         base_number = phone_number.substring(countryCode.length);
@@ -64,7 +64,7 @@ export class Utils {
 
   normalizeAddresses(addresses: Address[]) {
     if (addresses) {
-      const normalizedAddresses = addresses.map((addy) => ({
+      var normalizedAddresses = addresses.map((addy) => ({
         ...addy,
         created_at: new Date(),
         modified_at: new Date(),
@@ -79,7 +79,7 @@ export class Utils {
 
   async getRemoteIdFromUserUuid(uuid: string) {
     try {
-      const res = await this.prisma.crm_users.findFirst({
+      var res = await this.prisma.crm_users.findFirst({
         where: {
           id_crm_user: uuid,
         },
@@ -94,7 +94,7 @@ export class Utils {
 
   async getEmailFromUserUuid(uuid: string) {
     try {
-      const res = await this.prisma.crm_users.findFirst({
+      var res = await this.prisma.crm_users.findFirst({
         where: {
           id_crm_user: uuid,
         },
@@ -109,7 +109,7 @@ export class Utils {
 
   async getUser(uuid: string) {
     try {
-      const res = await this.prisma.crm_users.findFirst({
+      var res = await this.prisma.crm_users.findFirst({
         where: {
           id_crm_user: uuid,
         },
@@ -124,7 +124,7 @@ export class Utils {
 
   async getUserUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.crm_users.findFirst({
+      var res = await this.prisma.crm_users.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -140,7 +140,7 @@ export class Utils {
   }
   async getStageUuidFromStageName(stage_name: string, connection_id: string) {
     try {
-      const res = await this.prisma.crm_deals_stages.findFirst({
+      var res = await this.prisma.crm_deals_stages.findFirst({
         where: {
           stage_name: stage_name,
           id_connection: connection_id,
@@ -157,7 +157,7 @@ export class Utils {
 
   async getCompanyNameFromUuid(id: string) {
     try {
-      const res = await this.prisma.crm_companies.findFirst({
+      var res = await this.prisma.crm_companies.findFirst({
         where: {
           id_crm_company: id,
         },
@@ -174,7 +174,7 @@ export class Utils {
 
   async getStageNameFromStageUuid(id: string) {
     try {
-      const res = await this.prisma.crm_deals_stages.findFirst({
+      var res = await this.prisma.crm_deals_stages.findFirst({
         where: {
           id_crm_deals_stage: id,
         },
@@ -189,7 +189,7 @@ export class Utils {
 
   async getRemoteIdFromCompanyUuid(uuid: string) {
     try {
-      const res = await this.prisma.crm_companies.findFirst({
+      var res = await this.prisma.crm_companies.findFirst({
         where: {
           id_crm_company: uuid,
         },
@@ -205,7 +205,7 @@ export class Utils {
 
   async getCompanyUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.crm_companies.findFirst({
+      var res = await this.prisma.crm_companies.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -222,7 +222,7 @@ export class Utils {
 
   async getStageIdFromStageUuid(uuid: string) {
     try {
-      const res = await this.prisma.crm_deals_stages.findFirst({
+      var res = await this.prisma.crm_deals_stages.findFirst({
         where: {
           id_crm_deals_stage: uuid,
         },
@@ -236,7 +236,7 @@ export class Utils {
 
   async getStageUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.crm_deals_stages.findFirst({
+      var res = await this.prisma.crm_deals_stages.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -253,7 +253,7 @@ export class Utils {
 
   async getRemoteIdFromContactUuid(uuid: string) {
     try {
-      const res = await this.prisma.crm_contacts.findFirst({
+      var res = await this.prisma.crm_contacts.findFirst({
         where: {
           id_crm_contact: uuid,
         },
@@ -267,7 +267,7 @@ export class Utils {
 
   async getContactUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.crm_contacts.findFirst({
+      var res = await this.prisma.crm_contacts.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -282,7 +282,7 @@ export class Utils {
 
   async getRemoteIdFromDealUuid(uuid: string) {
     try {
-      const res = await this.prisma.crm_deals.findFirst({
+      var res = await this.prisma.crm_deals.findFirst({
         where: {
           id_crm_deal: uuid,
         },
@@ -296,7 +296,7 @@ export class Utils {
 
   async getDealUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.crm_deals.findFirst({
+      var res = await this.prisma.crm_deals.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
