@@ -53,13 +53,13 @@ export class ZendeskUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingUserOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = user.user_fields[mapping.remote_id];
       }
     }
-    const unifiedUser: UnifiedTicketingUserOutput = {
+    let unifiedUser: UnifiedTicketingUserOutput = {
       remote_id: String(user.id),
       remote_data: user,
       name: user.name,
