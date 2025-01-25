@@ -29,14 +29,14 @@ export class ShopifyService implements IOrderService {
     linkedUserId: string,
   ): Promise<ApiResponse<ShopifyOrderOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'shopify',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/admin/api/2024-07/orders.json`,
         {
           order: orderData,
@@ -63,16 +63,16 @@ export class ShopifyService implements IOrderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ShopifyOrderOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'shopify',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/admin/api/2024-07/orders.json`,
         {
           headers: {
@@ -83,7 +83,7 @@ export class ShopifyService implements IOrderService {
           },
         },
       );
-      let orders: ShopifyOrderOutput[] = resp.data.orders;
+      const orders: ShopifyOrderOutput[] = resp.data.orders;
       this.logger.log(`Synced shopify orders !`);
 
       return {
