@@ -72,7 +72,7 @@ export class ShopifyFulfillmentMapper implements IFulfillmentMapper {
     if (!lineItems) return [];
     return Promise.all(
       lineItems.map(async (item) => {
-        let res: any = {
+        const res: any = {
           remote_id: item.id,
           remote_data: item,
           //variant_id: item.variant_id,
@@ -99,7 +99,7 @@ export class ShopifyFulfillmentMapper implements IFulfillmentMapper {
           duties: item.duties,
         };
 
-        let product_id = await this.utils.getProductIdFromRemote(
+        const product_id = await this.utils.getProductIdFromRemote(
           item.product_id?.toString(),
           connectionId,
         );
@@ -119,9 +119,9 @@ export class ShopifyFulfillmentMapper implements IFulfillmentMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceFulfillmentOutput> {
-    let opts: any = {};
+    const opts: any = {};
     if (fulfillment.order_id) {
-      let order_id = await this.utils.getOrderIdFromRemote(
+      const order_id = await this.utils.getOrderIdFromRemote(
         fulfillment.order_id?.toString(),
         connectionId,
       );
