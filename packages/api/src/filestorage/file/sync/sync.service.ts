@@ -43,15 +43,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = FILESTORAGE_PROVIDERS;
-          for (const provider of providers) {
+          var providers = FILESTORAGE_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -72,8 +72,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(data: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId, id_folder } = data;
-      const service: IFileService =
+      var { integrationId, linkedUserId, id_folder } = data;
+      var service: IFileService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -103,17 +103,17 @@ export class SyncService implements OnModuleInit, IBaseSync {
     id_folder?: string,
   ): Promise<FileStorageFile[]> {
     try {
-      const files_results: FileStorageFile[] = [];
+      var files_results: FileStorageFile[] = [];
       // Cache for folder and drive lookups
-      const folderLookupCache = new Map<string, string | null>();
-      const driveLookupCache = new Map<string, string | null>();
+      var folderLookupCache = new Map<string, string | null>();
+      var driveLookupCache = new Map<string, string | null>();
 
-      const updateOrCreateFile = async (
+      var updateOrCreateFile = async (
         file: UnifiedFilestorageFileOutput,
         originId: string,
         id_folder?: string,
       ) => {
-        const existingFile = await this.prisma.fs_files.findFirst({
+        var existingFile = await this.prisma.fs_files.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
@@ -129,7 +129,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
               file.remote_folder_id,
             );
           } else {
-            const folder = await this.prisma.fs_folders.findFirst({
+            var folder = await this.prisma.fs_folders.findFirst({
               where: {
                 remote_id: file.remote_folder_id,
                 id_connection: connection_id,
@@ -152,7 +152,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
               file.remote_drive_id,
             );
           } else {
-            const drive = await this.prisma.fs_drives.findFirst({
+            var drive = await this.prisma.fs_drives.findFirst({
               where: {
                 remote_id: file.remote_drive_id,
                 id_connection: connection_id,
@@ -169,7 +169,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           }
         }
 
-        const baseData: any = {
+        var baseData: any = {
           name: file.name ?? null,
           file_url: file.file_url ?? null,
           mime_type: file.mime_type ?? null,
@@ -183,7 +183,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         };
 
         // remove null values
-        const cleanData = Object.fromEntries(
+        var cleanData = Object.fromEntries(
           Object.entries(baseData).filter(([_, value]) => value !== null),
         );
 
@@ -208,15 +208,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const originId = file.remote_id;
+        var file = files[i];
+        var originId = file.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        const res = await updateOrCreateFile(file, originId, id_folder);
-        const file_id = res.id_fs_file;
+        var res = await updateOrCreateFile(file, originId, id_folder);
+        var file_id = res.id_fs_file;
         files_results.push(res);
 
         if (file.shared_link) {
@@ -255,7 +255,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           if (typeof file.permissions[0] === 'string') {
             permission_ids = file.permissions;
           } else {
-            const perms = await this.registry
+            var perms = await this.registry
               .getService('filestorage', 'permission')
               .saveToDb(
                 connection_id,
