@@ -30,14 +30,14 @@ export class PipedriveService implements IDealService {
     linkedUserId: string,
   ): Promise<ApiResponse<PipedriveDealOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v1/deals`,
         JSON.stringify(dealData),
         {
@@ -61,15 +61,15 @@ export class PipedriveService implements IDealService {
 
   async sync(data: SyncParam): Promise<ApiResponse<PipedriveDealOutput[]>> {
     try {
-      const { linkedUserId } = data;
-      const connection = await this.prisma.connections.findFirst({
+      let { linkedUserId } = data;
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      const resp = await axios.get(`${connection.account_url}/v1/deals`, {
+      let resp = await axios.get(`${connection.account_url}/v1/deals`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
