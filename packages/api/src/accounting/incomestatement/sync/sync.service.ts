@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = ACCOUNTING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = ACCOUNTING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IIncomeStatementService =
+      const { integrationId, linkedUserId } = param;
+      const service: IIncomeStatementService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -98,11 +98,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccIncomeStatement[]> {
     try {
-      var incomeStatementResults: AccIncomeStatement[] = [];
+      const incomeStatementResults: AccIncomeStatement[] = [];
 
       for (let i = 0; i < incomeStatements.length; i++) {
-        var incomeStatement = incomeStatements[i];
-        var originId = incomeStatement.remote_id;
+        const incomeStatement = incomeStatements[i];
+        const originId = incomeStatement.remote_id;
 
         let existingIncomeStatement =
           await this.prisma.acc_income_statements.findFirst({
@@ -112,7 +112,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
             },
           });
 
-        var incomeStatementData = {
+        const incomeStatementData = {
           name: incomeStatement.name,
           currency: incomeStatement.currency as CurrencyCode,
           start_period: incomeStatement.start_period,
