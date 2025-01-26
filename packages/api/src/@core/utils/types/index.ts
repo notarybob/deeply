@@ -43,7 +43,7 @@ export class ApiResponse<T> {
 }
 
 export function getFileExtension(fileName: string): string | null {
-  const parts = fileName.split('.');
+  let parts = fileName.split('.');
   if (parts.length > 1) {
     return '.' + parts.pop()!.toLowerCase();
   }
@@ -54,8 +54,8 @@ export function getFileExtensionFromMimeType(
   mimeType: string,
 ): string | undefined {
   try {
-    const normalizedMimeType = mimeType.toLowerCase();
-    for (const [extension, mime] of Object.entries(MIME_TYPES)) {
+    let normalizedMimeType = mimeType.toLowerCase();
+    for (let [extension, mime] of Object.entries(MIME_TYPES)) {
       if (mime.toLowerCase() === normalizedMimeType) {
         return extension.startsWith('.') ? extension.slice(1) : extension;
       }
@@ -66,7 +66,7 @@ export function getFileExtensionFromMimeType(
   }
 }
 
-export const MIME_TYPES: { [key: string]: string } = {
+export let MIME_TYPES: { [key: string]: string } = {
   '.aac': 'audio/aac',
   '.abw': 'application/x-abiword',
   '.apng': 'image/apng',
@@ -149,7 +149,7 @@ export const MIME_TYPES: { [key: string]: string } = {
   '.7z': 'application/x-7z-compressed',
 };
 
-export const COUNTRY_CODES: { [key: string]: string } = {
+export let COUNTRY_CODES: { [key: string]: string } = {
   Afghanistan: 'AF',
   Albania: 'AL',
   Algeria: 'DZ',
@@ -347,7 +347,7 @@ export const COUNTRY_CODES: { [key: string]: string } = {
 };
 
 // Create an inverse mapping
-export const CODE_TO_COUNTRY: { [key: string]: string } = Object.entries(
+export let CODE_TO_COUNTRY: { [key: string]: string } = Object.entries(
   COUNTRY_CODES,
 ).reduce((acc, [key, value]) => {
   acc[value] = key;
