@@ -27,9 +27,9 @@ export class GorgiasService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<GorgiasUserOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gorgias',
@@ -37,7 +37,7 @@ export class GorgiasService implements IUserService {
         },
       });
 
-      const resp = await axios.get(`${connection.account_url}/users`, {
+      let resp = await axios.get(`${connection.account_url}/users`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
