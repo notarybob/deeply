@@ -49,14 +49,14 @@ export class ZendeskService implements IEngagementService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZendeskEngagementOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v2/calls`,
         {
           data: engagementData,
@@ -83,7 +83,7 @@ export class ZendeskService implements IEngagementService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskEngagementOutput[]>> {
     try {
-      const { linkedUserId, engagement_type } = data;
+      let { linkedUserId, engagement_type } = data;
 
       switch (engagement_type as string) {
         case 'CALL':
@@ -102,7 +102,7 @@ export class ZendeskService implements IEngagementService {
 
   private async syncCalls(linkedUserId: string) {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -110,7 +110,7 @@ export class ZendeskService implements IEngagementService {
         },
       });
 
-      const resp = await axios.get(`${connection.account_url}/v2/calls`, {
+      let resp = await axios.get(`${connection.account_url}/v2/calls`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -118,7 +118,7 @@ export class ZendeskService implements IEngagementService {
           )}`,
         },
       });
-      const finalData = resp.data.items.map((item) => {
+      let finalData = resp.data.items.map((item) => {
         return item.data;
       });
       this.logger.log(`Synced zendesk engagements calls !`);
