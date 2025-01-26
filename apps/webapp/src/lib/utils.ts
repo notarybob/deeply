@@ -10,8 +10,8 @@ export function toDomain(email: string): string {
 }
 
 export function formatISODate(ISOString: string): string {
-  let date = new Date(ISOString);
-  let options: Intl.DateTimeFormatOptions = {
+  const date = new Date(ISOString);
+  const options: Intl.DateTimeFormatOptions = {
     weekday: 'long',  // "Monday"
     year: 'numeric',  // "2024"
     month: 'long',    // "April"
@@ -23,7 +23,7 @@ export function formatISODate(ISOString: string): string {
   };
 
   // Create a formatter (using US English locale as an example)
-  let formatter = new Intl.DateTimeFormat('en-US', options);
+  const formatter = new Intl.DateTimeFormat('en-US', options);
   return formatter.format(date);
 }
 
@@ -34,12 +34,12 @@ export function formatBytes(
     sizeType?: "accurate" | "normal"
   } = {}
 ) {
-  let { decimals = 0, sizeType = "normal" } = opts
+  const { decimals = 0, sizeType = "normal" } = opts
 
-  let sizes = ["Bytes", "KB", "MB", "GB", "TB"]
-  let accurateSizes = ["Bytes", "KiB", "MiB", "GiB", "TiB"]
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"]
+  const accurateSizes = ["Bytes", "KiB", "MiB", "GiB", "TiB"]
   if (bytes === 0) return "0 Byte"
-  let i = Math.floor(Math.log(bytes) / Math.log(1024))
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
   return `${(bytes / Math.pow(1024, i)).toFixed(decimals)} ${
     sizeType === "accurate" ? accurateSizes[i] ?? "Bytest" : sizes[i] ?? "Bytes"
   }`
@@ -51,8 +51,8 @@ export function truncateMiddle(str: string, maxLength: number) {
     return str;
   }
 
-  let start = str.substring(0, maxLength / 2);
-  let end = str.substring(str.length - maxLength / 2);
+  const start = str.substring(0, maxLength / 2);
+  const end = str.substring(str.length - maxLength / 2);
   return `${start}...${end}`;
 }
 
