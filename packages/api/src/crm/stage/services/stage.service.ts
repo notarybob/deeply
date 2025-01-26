@@ -19,14 +19,14 @@ export class StageService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmStageOutput> {
     try {
-      const stage = await this.prisma.crm_deals_stages.findUnique({
+      var stage = await this.prisma.crm_deals_stages.findUnique({
         where: {
           id_crm_deals_stage: id_stage,
         },
       });
 
       // Fetch field mappings for the stage
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: stage.id_crm_deals_stage,
@@ -37,17 +37,17 @@ export class StageService {
         },
       });
 
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedCrmStageOutput format
-      const unifiedStage: UnifiedCrmStageOutput = {
+      var unifiedStage: UnifiedCrmStageOutput = {
         id: stage.id_crm_deals_stage,
         stage_name: stage.stage_name,
         field_mappings: field_mappings,
@@ -61,12 +61,12 @@ export class StageService {
       };
 
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: stage.id_crm_deals_stage,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -113,7 +113,7 @@ export class StageService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.crm_deals_stages.findFirst({
+        var isCursorPresent = await this.prisma.crm_deals_stages.findFirst({
           where: {
             id_connection: connection_id,
             id_crm_deals_stage: cursor,
@@ -124,7 +124,7 @@ export class StageService {
         }
       }
 
-      const stages = await this.prisma.crm_deals_stages.findMany({
+      var stages = await this.prisma.crm_deals_stages.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -150,10 +150,10 @@ export class StageService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedStages: UnifiedCrmStageOutput[] = await Promise.all(
+      var unifiedStages: UnifiedCrmStageOutput[] = await Promise.all(
         stages.map(async (stage) => {
           // Fetch field mappings for the ticket
-          const values = await this.prisma.value.findMany({
+          var values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: stage.id_crm_deals_stage,
@@ -164,7 +164,7 @@ export class StageService {
             },
           });
           // Create a map to store unique field mappings
-          const fieldMappingsMap = new Map();
+          var fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -172,7 +172,7 @@ export class StageService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-const field_mappings = Object.fromEntries(fieldMappingsMap);
+var field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedCrmStageOutput format
           return {
@@ -189,14 +189,14 @@ const field_mappings = Object.fromEntries(fieldMappingsMap);
       let res: UnifiedCrmStageOutput[] = unifiedStages;
 
       if (remote_data) {
-        const remote_array_data: UnifiedCrmStageOutput[] = await Promise.all(
+        var remote_array_data: UnifiedCrmStageOutput[] = await Promise.all(
           res.map(async (stage) => {
-            const resp = await this.prisma.remote_data.findFirst({
+            var resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: stage.id,
               },
             });
-            const remote_data = JSON.parse(resp.data);
+            var remote_data = JSON.parse(resp.data);
             return { ...stage, remote_data };
           }),
         );
