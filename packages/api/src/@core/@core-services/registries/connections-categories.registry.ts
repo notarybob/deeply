@@ -14,7 +14,7 @@ export class CategoryConnectionRegistry<T = IConnectionCategory> {
   }
 
   getService(category: string): T {
-    let service = this.serviceMap.get(category.toLowerCase().trim());
+    const service = this.serviceMap.get(category.toLowerCase().trim());
     return service;
   }
 }
