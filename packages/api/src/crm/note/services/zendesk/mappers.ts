@@ -20,12 +20,12 @@ export class ZendeskNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<ZendeskNoteInput> {
-    var result: ZendeskNoteInput = {
+    const result: ZendeskNoteInput = {
       content: source.content,
     };
     if (source.contact_id) {
       //then the resource mut be contact and nothign else
-      var contact_id = await this.utils.getRemoteIdFromContactUuid(
+      const contact_id = await this.utils.getRemoteIdFromContactUuid(
         source.contact_id,
       );
       if (contact_id) {
@@ -34,7 +34,7 @@ export class ZendeskNoteMapper implements INoteMapper {
       }
     } else {
       if (source.deal_id) {
-        var deal_id = await this.utils.getRemoteIdFromDealUuid(
+        const deal_id = await this.utils.getRemoteIdFromDealUuid(
           source.deal_id,
         );
         if (deal_id) {
@@ -45,8 +45,8 @@ export class ZendeskNoteMapper implements INoteMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -89,18 +89,18 @@ export class ZendeskNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmNoteOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = note[mapping.remote_id];
       }
     }
 
     let opts: any = {};
-    var type = note.resource_type;
+    const type = note.resource_type;
 
     if (type == 'contact') {
-      var contact_id = await this.utils.getContactUuidFromRemoteId(
+      const contact_id = await this.utils.getContactUuidFromRemoteId(
         String(note.resource_id),
         connectionId,
       );
@@ -113,7 +113,7 @@ export class ZendeskNoteMapper implements INoteMapper {
     }
 
     if (type == 'deal') {
-      var deal_id = await this.utils.getDealUuidFromRemoteId(
+      const deal_id = await this.utils.getDealUuidFromRemoteId(
         String(note.resource_id),
         connectionId,
       );
