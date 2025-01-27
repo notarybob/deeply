@@ -26,9 +26,9 @@ export class SalesforceService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SalesforceUserOutput[]>> {
     try {
-      var { linkedUserId, custom_properties, pageSize, cursor } = data;
+      const { linkedUserId, custom_properties, pageSize, cursor } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -36,7 +36,7 @@ export class SalesforceService implements IUserService {
         },
       });
 
-      var instanceUrl = connection.account_url;
+      const instanceUrl = connection.account_url;
       let pagingString = `${pageSize ? `ORDER BY Id DESC LIMIT ${pageSize} ` : ''}${
         cursor ? `OFFSET ${cursor}` : ''
       }`;
@@ -44,13 +44,13 @@ export class SalesforceService implements IUserService {
         pagingString = 'LIMIT 200';
       }
 
-      var commonPropertyNames = Object.keys(commonUserSalesforceProperties);
-      var allProperties = [...commonPropertyNames, ...custom_properties];
-      var fields = allProperties.join(',');
+      const commonPropertyNames = Object.keys(commonUserSalesforceProperties);
+      const allProperties = [...commonPropertyNames, ...custom_properties];
+      const fields = allProperties.join(',');
 
-      var query = `SELECT ${fields} FROM User ${pagingString}`;
+      const query = `SELECT ${fields} FROM User ${pagingString}`;
 
-      var resp = await axios.get(
+      const resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/query/?q=${encodeURIComponent(query)}`,
         {
           headers: {
