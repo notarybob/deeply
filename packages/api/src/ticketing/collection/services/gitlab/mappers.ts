@@ -25,7 +25,7 @@ export class GitlabCollectionMapper implements ICollectionMapper {
       remote_id: string;
     }[],
   ): GitlabCollectionInput {
-    let result: GitlabCollectionInput = {
+    const result: GitlabCollectionInput = {
       name: source.name,
       description: source.description ? source.description : null,
       path: source.name,
@@ -43,7 +43,7 @@ export class GitlabCollectionMapper implements ICollectionMapper {
     }[],
   ): UnifiedTicketingCollectionOutput | UnifiedTicketingCollectionOutput[] {
     // If the source is not an array, convert it to an array for mapping
-    let sourcesArray = Array.isArray(source) ? source : [source];
+    const sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((collection) =>
       this.mapSingleCollectionToUnified(
@@ -62,7 +62,7 @@ export class GitlabCollectionMapper implements ICollectionMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingCollectionOutput {
-    let unifiedCollection: UnifiedTicketingCollectionOutput = {
+    const unifiedCollection: UnifiedTicketingCollectionOutput = {
       remote_id: String(collection.id),
       remote_data: collection,
       name: collection.name,
