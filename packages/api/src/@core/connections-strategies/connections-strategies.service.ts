@@ -39,7 +39,7 @@ export class ConnectionsStrategiesService {
 
   async isCustomCredentials(projectId: string, type: string) {
     try {
-      const res = await this.prisma.connection_strategies.findFirst({
+      var res = await this.prisma.connection_strategies.findFirst({
         where: {
           id_project: projectId,
           type: type,
@@ -62,7 +62,7 @@ export class ConnectionsStrategiesService {
     status?: boolean,
   ) {
     try {
-      const checkCSDuplicate =
+      var checkCSDuplicate =
         await this.prisma.connection_strategies.findFirst({
           where: {
             id_project: projectId,
@@ -75,7 +75,7 @@ export class ConnectionsStrategiesService {
           message: `Connection strategy already exists for projectId=${projectId} and type=${type}`,
         });
 
-      const cs = await this.prisma.connection_strategies.create({
+      var cs = await this.prisma.connection_strategies.create({
         data: {
           id_connection_strategy: uuidv4(),
           id_project: projectId,
@@ -83,18 +83,18 @@ export class ConnectionsStrategiesService {
           status: status || true,
         },
       });
-      const entity = await this.prisma.cs_entities.create({
+      var entity = await this.prisma.cs_entities.create({
         data: {
           id_cs_entity: uuidv4(),
           id_connection_strategy: cs.id_connection_strategy,
         },
       });
       for (let i = 0; i < attributes.length; i++) {
-        const attribute_slug = attributes[i];
-        const value = values[i];
+        var attribute_slug = attributes[i];
+        var value = values[i];
         //create all attributes (for oauth =>  client_id, client_secret)
         //console.log(`Attribute : ${attribute_slug}, value: ${value}`);
-        const attribute_ = await this.prisma.cs_attributes.create({
+        var attribute_ = await this.prisma.cs_attributes.create({
           data: {
             id_cs_attribute: uuidv4(),
             id_cs_entity: entity.id_cs_entity,
@@ -102,7 +102,7 @@ export class ConnectionsStrategiesService {
             data_type: 'string',
           },
         });
-        const value_ = await this.prisma.cs_values.create({
+        var value_ = await this.prisma.cs_values.create({
           data: {
             id_cs_value: uuidv4(),
             value: this.crypto.encrypt(value),
@@ -119,14 +119,14 @@ export class ConnectionsStrategiesService {
 
   async toggle(id_cs: string) {
     try {
-      const cs = await this.prisma.connection_strategies.findFirst({
+      var cs = await this.prisma.connection_strategies.findFirst({
         where: {
           id_connection_strategy: id_cs,
         },
       });
       if (!cs) throw new ReferenceError('Connection strategy undefined !');
       // Toggle the 'active' value
-      const updatedCs = await this.prisma.connection_strategies.update({
+      var updatedCs = await this.prisma.connection_strategies.update({
         where: {
           id_connection_strategy: id_cs,
         },
@@ -148,14 +148,14 @@ export class ConnectionsStrategiesService {
     type: string,
     attributes: string[],
   ) {
-    const cs = await this.prisma.connection_strategies.findFirst({
+    var cs = await this.prisma.connection_strategies.findFirst({
       where: {
         id_project: projectId,
         type: type,
       },
     });
     if (!cs) throw new ReferenceError('Connection strategy undefined !');
-    const entity = await this.prisma.cs_entities.findFirst({
+    var entity = await this.prisma.cs_entities.findFirst({
       where: {
         id_connection_strategy: cs.id_connection_strategy,
       },
@@ -163,11 +163,11 @@ export class ConnectionsStrategiesService {
     if (!entity)
       throw new ReferenceError('Connection strategy entity undefined !');
 
-    const authValues: string[] = [];
+    var authValues: string[] = [];
     for (let i = 0; i < attributes.length; i++) {
-      const attribute_slug = attributes[i];
+      var attribute_slug = attributes[i];
       //create all attributes (for oauth =>  client_id, client_secret)
-      const attribute_ = await this.prisma.cs_attributes.findFirst({
+      var attribute_ = await this.prisma.cs_attributes.findFirst({
         where: {
           id_cs_entity: entity.id_cs_entity,
           attribute_slug: attribute_slug,
@@ -175,7 +175,7 @@ export class ConnectionsStrategiesService {
       });
       if (!attribute_)
         throw new ReferenceError('Connection Strategy Attribute undefined !');
-      const value_ = await this.prisma.cs_values.findFirst({
+      var value_ = await this.prisma.cs_values.findFirst({
         where: {
           id_cs_attribute: attribute_.id_cs_attribute,
         },
@@ -197,7 +197,7 @@ export class ConnectionsStrategiesService {
     let attributes: string[] = [];
     switch (authStrategy) {
       case AuthStrategy.oauth2:
-        const dynamic_attributes =
+        var dynamic_attributes =
           CONNECTORS_METADATA[vertical.toLowerCase()][provider.toLowerCase()]
             ?.options?.oauth_attributes || [];
         attributes = ['client_id', 'client_secret', ...dynamic_attributes];
@@ -229,12 +229,12 @@ export class ConnectionsStrategiesService {
       default:
         break;
     }
-    const values = await this.getConnectionStrategyData(
+    var values = await this.getConnectionStrategyData(
       projectId,
       type,
       attributes,
     );
-    const data = attributes.reduce((acc, attr, index) => {
+    var data = attributes.reduce((acc, attr, index) => {
       acc[attr.toUpperCase()] = values[index];
       return acc;
     }, {} as Record<string, string>);
@@ -259,7 +259,7 @@ export class ConnectionsStrategiesService {
             `${provider.toUpperCase()}_${vertical.toUpperCase()}_${softwareMode.toUpperCase()}_CLIENT_SECRET`,
           ),
         };
-        const scopes =
+        var scopes =
           CONNECTORS_METADATA[vertical.toLowerCase()][provider.toLowerCase()]
             .scopes;
         if (scopes) {
@@ -271,7 +271,7 @@ export class ConnectionsStrategiesService {
               ].scopes,
           };
         }
-        /*const isSubdomain = needsSubdomain(
+        /*var isSubdomain = needsSubdomain(
           provider.toLowerCase(),
           vertical.toLowerCase(),
         );*/
@@ -284,11 +284,11 @@ export class ConnectionsStrategiesService {
             ),
           };
         }
-        const object =
+        var object =
           CONNECTORS_METADATA[vertical.toLowerCase()][provider.toLowerCase()];
         if (object.options && object.options.oauth_attributes) {
-          const dynamic_attributes = object.options.oauth_attributes;
-          for (const attr of dynamic_attributes) {
+          var dynamic_attributes = object.options.oauth_attributes;
+          for (var attr of dynamic_attributes) {
             data = {
               ...data,
               [attr.toUpperCase()]: this.configService.get<string>(
@@ -343,10 +343,10 @@ export class ConnectionsStrategiesService {
 
   async getSafeCredentials(projectId: string, type: string) {
     try {
-      const res = await this.getCredentials(projectId, type);
+      var res = await this.getCredentials(projectId, type);
 
       if (this.isOAuth2AuthData(res)) {
-        const { CLIENT_SECRET, ...safeData } = res;
+        var { CLIENT_SECRET, ...safeData } = res;
         return safeData;
       }
 
@@ -358,13 +358,13 @@ export class ConnectionsStrategiesService {
 
   async getCredentials(projectId: string, type: string): Promise<AuthData> {
     try {
-      const isCustomCred = await this.isCustomCredentials(projectId, type);
-      const provider = extractProvider(type);
-      const vertical = extractVertical(type);
+      var isCustomCred = await this.isCustomCredentials(projectId, type);
+      var provider = extractProvider(type);
+      var vertical = extractVertical(type);
       //TODO: extract sofwtaremode
       if (!vertical)
         throw new ReferenceError(`vertical not found for provider ${provider}`);
-      const authStrategy = extractAuthMode(type);
+      var authStrategy = extractAuthMode(type);
       if (!authStrategy)
         throw new ReferenceError(
           `auth strategy not found for provider ${provider}`,
@@ -382,7 +382,7 @@ export class ConnectionsStrategiesService {
         );
       } else {
         // type is of form = HUBSPOT_CRM_CLOUD_OAUTH so we must extract the parts
-        const res = this.getEnvData(
+        var res = this.getEnvData(
           provider,
           vertical,
           authStrategy,
@@ -414,14 +414,14 @@ export class ConnectionsStrategiesService {
     values: string[],
   ) {
     try {
-      const cs = await this.prisma.connection_strategies.findFirst({
+      var cs = await this.prisma.connection_strategies.findFirst({
         where: {
           id_connection_strategy: id_cs,
         },
       });
       if (!cs) throw new ReferenceError('Connection strategy undefined !');
 
-      const updateCS = await this.prisma.connection_strategies.update({
+      var updateCS = await this.prisma.connection_strategies.update({
         where: {
           id_connection_strategy: id_cs,
         },
@@ -430,7 +430,7 @@ export class ConnectionsStrategiesService {
         },
       });
 
-      const { id_cs_entity } = await this.prisma.cs_entities.findFirst({
+      var { id_cs_entity } = await this.prisma.cs_entities.findFirst({
         where: {
           id_connection_strategy: id_cs,
         },
@@ -440,18 +440,18 @@ export class ConnectionsStrategiesService {
         throw new ReferenceError('Connection strategy entity undefined !');
 
       for (let i = 0; i < attributes.length; i++) {
-        const attribute_slug = attributes[i];
-        const value = values[i];
+        var attribute_slug = attributes[i];
+        var value = values[i];
 
         // Updating attributes' values
-        const { id_cs_attribute } = await this.prisma.cs_attributes.findFirst({
+        var { id_cs_attribute } = await this.prisma.cs_attributes.findFirst({
           where: {
             id_cs_entity: id_cs_entity,
             attribute_slug: attribute_slug,
             data_type: 'string',
           },
         });
-        const value_ = await this.prisma.cs_values.updateMany({
+        var value_ = await this.prisma.cs_values.updateMany({
           where: {
             id_cs_attribute: id_cs_attribute,
           },
@@ -468,14 +468,14 @@ export class ConnectionsStrategiesService {
 
   async deleteConnectionStrategy(id_cs: string) {
     try {
-      const cs = await this.prisma.connection_strategies.findFirst({
+      var cs = await this.prisma.connection_strategies.findFirst({
         where: {
           id_connection_strategy: id_cs,
         },
       });
       if (!cs) throw new ReferenceError('Connection strategy undefined !');
 
-      const { id_cs_entity } = await this.prisma.cs_entities.findFirst({
+      var { id_cs_entity } = await this.prisma.cs_entities.findFirst({
         where: {
           id_connection_strategy: id_cs,
         },
@@ -483,7 +483,7 @@ export class ConnectionsStrategiesService {
       if (!id_cs_entity)
         throw new ReferenceError('Connection strategy entity undefined !');
 
-      const attributes = await this.prisma.cs_attributes.findMany({
+      var attributes = await this.prisma.cs_attributes.findMany({
         where: {
           id_cs_entity: id_cs_entity,
         },
@@ -491,9 +491,9 @@ export class ConnectionsStrategiesService {
 
       // Deleting all attributes' values
       for (let i = 0; i < attributes.length; i++) {
-        const attributeObj = attributes[i];
+        var attributeObj = attributes[i];
 
-        const deleteValue = await this.prisma.cs_values.deleteMany({
+        var deleteValue = await this.prisma.cs_values.deleteMany({
           where: {
             id_cs_attribute: attributeObj.id_cs_attribute,
           },
@@ -501,20 +501,20 @@ export class ConnectionsStrategiesService {
       }
 
       // Delete All Attribute
-      const deleteAllAttributes = await this.prisma.cs_attributes.deleteMany({
+      var deleteAllAttributes = await this.prisma.cs_attributes.deleteMany({
         where: {
           id_cs_entity: id_cs_entity,
         },
       });
 
       // Delete cs_entity
-      const delete_cs_entity = await this.prisma.cs_entities.deleteMany({
+      var delete_cs_entity = await this.prisma.cs_entities.deleteMany({
         where: {
           id_connection_strategy: id_cs,
         },
       });
 
-      const deleteCS = await this.prisma.connection_strategies.delete({
+      var deleteCS = await this.prisma.connection_strategies.delete({
         where: {
           id_connection_strategy: id_cs,
         },
