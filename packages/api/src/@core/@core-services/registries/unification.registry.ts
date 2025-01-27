@@ -14,7 +14,7 @@ export class UnificationRegistry<T extends IUnification> {
   }
 
   getService(category: string): T {
-    let service = this.serviceMap.get(category.toLowerCase().trim());
+    const service = this.serviceMap.get(category.toLowerCase().trim());
     if (!service) {
       throw new Error();
     }
