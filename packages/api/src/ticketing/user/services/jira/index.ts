@@ -27,16 +27,16 @@ export class JiraService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<JiraUserOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'jira',
           vertical: 'ticketing',
         },
       });
-      const resp = await axios.get(`${connection.account_url}/3/users/search`, {
+      let resp = await axios.get(`${connection.account_url}/3/users/search`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -46,10 +46,10 @@ export class JiraService implements IUserService {
       });
 
       //todo: ratelimiting in jira ?
-      const userEmailPromises = resp.data.map(async (user) => {
-        const accountId = user.account_id;
+      let userEmailPromises = resp.data.map(async (user) => {
+        let accountId = user.account_id;
         if (accountId) {
-          const emailResp = await axios.get(
+          let emailResp = await axios.get(
             `${connection.account_url}/3/users/email?accountId=${accountId}`,
             {
               headers: {
@@ -68,7 +68,7 @@ export class JiraService implements IUserService {
           return user;
         }
       });
-      const dataPromise = await Promise.all(userEmailPromises);
+      let dataPromise = await Promise.all(userEmailPromises);
 
       this.logger.log(`Synced jira users !`);
 
