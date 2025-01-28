@@ -73,7 +73,7 @@ export class OnedriveSharedLinkMapper implements ISharedLinkMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageSharedlinkOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
       customFieldMappings.forEach((mapping) => {
         field_mappings[mapping.slug] = sharedlink[mapping.remote_id];
