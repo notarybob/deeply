@@ -31,19 +31,19 @@ export class WoocommerceService implements IProductService {
     linkedUserId: string,
   ): Promise<ApiResponse<WoocommerceProductOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'woocommerce',
           vertical: 'ecommerce',
         },
       });
-      const decryptedData = JSON.parse(
+      let decryptedData = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
 
-      const { username, password } = decryptedData;
-      const resp = await axios.post(
+      let { username, password } = decryptedData;
+      let resp = await axios.post(
         `${connection.account_url}/v3/products`,
         {
           product: productData,
@@ -72,22 +72,22 @@ export class WoocommerceService implements IProductService {
     data: SyncParam,
   ): Promise<ApiResponse<WoocommerceProductOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'woocommerce',
           vertical: 'ecommerce',
         },
       });
-      const decryptedData = JSON.parse(
+      let decryptedData = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
 
-      const { username, password } = decryptedData;
+      let { username, password } = decryptedData;
 
-      const resp = await axios.get(`${connection.account_url}/v3/products`, {
+      let resp = await axios.get(`${connection.account_url}/v3/products`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Basic ${Buffer.from(
@@ -95,7 +95,7 @@ export class WoocommerceService implements IProductService {
           ).toString('base64')}`,
         },
       });
-      const products: WoocommerceProductOutput[] = resp.data;
+      let products: WoocommerceProductOutput[] = resp.data;
       this.logger.log(`Synced woocommerce products !`);
 
       return {
