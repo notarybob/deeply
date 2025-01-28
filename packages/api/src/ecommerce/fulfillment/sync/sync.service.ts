@@ -41,15 +41,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = ECOMMERCE_PROVIDERS;
-          for (var provider of providers) {
+          const providers = ECOMMERCE_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -70,8 +70,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId, id_order } = param;
-      var service: IFulfillmentService =
+      const { integrationId, linkedUserId, id_order } = param;
+      const service: IFulfillmentService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -101,9 +101,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     order_id?: string,
   ): Promise<EcommerceFulfillment[]> {
     try {
-      var fulfillments_results: EcommerceFulfillment[] = [];
+      const fulfillments_results: EcommerceFulfillment[] = [];
 
-      var updateOrCreateFulfillment = async (
+      const updateOrCreateFulfillment = async (
         fulfillment: UnifiedEcommerceFulfillmentOutput,
         originId: string,
       ) => {
@@ -126,7 +126,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        var baseData: any = {
+        const baseData: any = {
           carrier: fulfillment.carrier ?? null,
           tracking_urls: fulfillment.tracking_urls ?? [],
           tracking_numbers: fulfillment.tracking_numbers ?? [],
@@ -156,11 +156,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < fulfillments.length; i++) {
-        var fulfillment = fulfillments[i];
-        var originId = fulfillment.remote_id;
+        const fulfillment = fulfillments[i];
+        const originId = fulfillment.remote_id;
 
-        var res = await updateOrCreateFulfillment(fulfillment, originId);
-        var fulfillment_id = res.id_ecom_fulfilment;
+        const res = await updateOrCreateFulfillment(fulfillment, originId);
+        const fulfillment_id = res.id_ecom_fulfilment;
         fulfillments_results.push(res);
 
         // Process field mappings
