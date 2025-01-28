@@ -21,7 +21,7 @@ export class ZendeskDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<ZendeskDealInput> {
-    const result: ZendeskDealInput = {
+    var result: ZendeskDealInput = {
       name: source.name,
       value: source.amount,
     };
@@ -33,13 +33,13 @@ export class ZendeskDealMapper implements IDealMapper {
     }
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.owner_id = Number(owner_id);
       }
     }
     if (source.stage_id) {
-      const stage_id = await this.utils.getStageIdFromStageUuid(
+      var stage_id = await this.utils.getStageIdFromStageUuid(
         source.stage_id,
       );
       if (stage_id) {
@@ -48,8 +48,8 @@ export class ZendeskDealMapper implements IDealMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -92,16 +92,16 @@ export class ZendeskDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmDealOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = deal.custom_fields[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (deal.owner_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         String(deal.owner_id),
         connectionId,
       );
@@ -113,7 +113,7 @@ export class ZendeskDealMapper implements IDealMapper {
       }
     }
     if (deal.stage_id) {
-      const stage_id = await this.utils.getStageUuidFromRemoteId(
+      var stage_id = await this.utils.getStageUuidFromRemoteId(
         String(deal.stage_id),
         connectionId,
       );
@@ -126,7 +126,7 @@ export class ZendeskDealMapper implements IDealMapper {
     }
 
     if (deal.contact_id) {
-      const contact_id = await this.utils.getCompanyUuidFromRemoteId(
+      var contact_id = await this.utils.getCompanyUuidFromRemoteId(
         String(deal.contact_id),
         connectionId,
       );
