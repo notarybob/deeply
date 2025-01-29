@@ -45,15 +45,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = CRM_PROVIDERS;
-          for (const provider of providers) {
+          var providers = CRM_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -75,8 +75,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: INoteService =
+      var { integrationId, linkedUserId } = param;
+      var service: INoteService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -103,20 +103,20 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<CrmNote[]> {
     try {
-      const notes_results: CrmNote[] = [];
+      var notes_results: CrmNote[] = [];
 
-      const updateOrCreateNote = async (
+      var updateOrCreateNote = async (
         note: UnifiedCrmNoteOutput,
         originId: string,
       ) => {
-        const existingNote = await this.prisma.crm_notes.findFirst({
+        var existingNote = await this.prisma.crm_notes.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        const baseData: any = {
+        var baseData: any = {
           content: note.content ?? null,
           id_crm_contact: note.contact_id ?? null,
           id_crm_company: note.company_id ?? null,
@@ -146,15 +146,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        const note = data[i];
-        const originId = note.remote_id;
+        var note = data[i];
+        var originId = note.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        const res = await updateOrCreateNote(note, originId);
-        const note_id = res.id_crm_note;
+        var res = await updateOrCreateNote(note, originId);
+        var note_id = res.id_crm_note;
         notes_results.push(res);
 
         // Process field mappings
