@@ -72,10 +72,10 @@ export class SlackConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -111,8 +111,8 @@ export class SlackConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'slack',
@@ -120,18 +120,18 @@ export class SlackConnectionService extends AbstractBaseConnectionService {
         },
       });
 
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
         code: code,
         grant_type: 'authorization_code',
       });
-      const res = await axios.post(
+      var res = await axios.post(
         `https://slack.com/api/oauth.v2.access`,
         formData.toString(),
         {
@@ -140,13 +140,13 @@ export class SlackConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: SlackOAuthResponse = res.data;
+      var data: SlackOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : slack productivity ' + JSON.stringify(data),
       );
 
       let db_res;
-      const connection_token = uuidv4();
+      var connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
