@@ -32,7 +32,7 @@ export class FrontTeamMapper implements ITeamMapper {
     }[],
   ): UnifiedTicketingTeamOutput | UnifiedTicketingTeamOutput[] {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    let sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((team) =>
       this.mapSingleTeamToUnified(team, connectionId, customFieldMappings),
@@ -47,7 +47,7 @@ export class FrontTeamMapper implements ITeamMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingTeamOutput {
-    const unifiedTeam: UnifiedTicketingTeamOutput = {
+    let unifiedTeam: UnifiedTicketingTeamOutput = {
       remote_id: team.id,
       remote_data: team,
       name: team.name,
