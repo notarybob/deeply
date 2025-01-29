@@ -32,7 +32,7 @@ export class ZendeskService implements ITicketService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZendeskTicketOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -43,12 +43,12 @@ export class ZendeskService implements ITicketService {
         ticket: ticketData,
       };
       // We must fetch tokens from zendesk with the commentData.uploads array of Attachment uuids
-      const uuids = ticketData.comment.uploads;
+      var uuids = ticketData.comment.uploads;
       let uploads = [];
       if (uuids && uuids.length > 0) {
         await Promise.all(
           uuids.map(async (uuid) => {
-            const res = await this.prisma.tcg_attachments.findUnique({
+            var res = await this.prisma.tcg_attachments.findUnique({
               where: {
                 id_tcg_attachment: uuid,
               },
@@ -59,10 +59,10 @@ export class ZendeskService implements ITicketService {
               );
 
             //TODO:; fetch the right file from AWS s3
-            const s3File = '';
-            const url = `${connection.account_url}/v2/uploads.json?filename=${res.file_name}`;
+            var s3File = '';
+            var url = `${connection.account_url}/v2/uploads.json?filename=${res.file_name}`;
 
-            const resp = await axios.get(url, {
+            var resp = await axios.get(url, {
               headers: {
                 'Content-Type': this.utils.getMimeType(res.file_name),
                 Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -73,7 +73,7 @@ export class ZendeskService implements ITicketService {
             uploads = [...uploads, resp.data.upload.token];
           }),
         );
-        const finalData = {
+        var finalData = {
           ...ticketData,
           comment: {
             ...ticketData.comment,
@@ -89,7 +89,7 @@ export class ZendeskService implements ITicketService {
         'data to insert for zendesk ticket is ' + JSON.stringify(dataBody),
       );
 
-      const resp = await axios.post(
+      var resp = await axios.post(
         `${connection.account_url}/v2/tickets.json`,
         JSON.stringify(dataBody),
         {
@@ -113,21 +113,21 @@ export class ZendeskService implements ITicketService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskTicketOutput[]>> {
     try {
-      const { linkedUserId, webhook_remote_identifier } = data;
-      const connection = await this.prisma.connections.findFirst({
+      var { linkedUserId, webhook_remote_identifier } = data;
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'ticketing',
         },
       });
-      const remote_ticket_id = webhook_remote_identifier as string;
+      var remote_ticket_id = webhook_remote_identifier as string;
 
-      const request_url = remote_ticket_id
+      var request_url = remote_ticket_id
         ? `${connection.account_url}/v2/tickets/${remote_ticket_id}.json`
         : `${connection.account_url}/v2/tickets.json`;
 
-      const resp = await axios.get(request_url, {
+      var resp = await axios.get(request_url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -137,7 +137,7 @@ export class ZendeskService implements ITicketService {
       });
       this.logger.log(`Synced zendesk tickets !`);
 
-      const result = remote_ticket_id ? [resp.data.ticket] : resp.data.tickets;
+      var result = remote_ticket_id ? [resp.data.ticket] : resp.data.tickets;
 
       return {
         data: result,
