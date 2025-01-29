@@ -50,9 +50,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     },
   ): Promise<FileStorageSharedLink[]> {
     try {
-      const shared_links_results: FileStorageSharedLink[] = [];
+      var shared_links_results: FileStorageSharedLink[] = [];
 
-      const updateOrCreateSharedLink = async (
+      var updateOrCreateSharedLink = async (
         sharedLink: UnifiedFilestorageSharedlinkOutput,
         originId: string,
       ) => {
@@ -74,7 +74,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        const baseData: any = {
+        var baseData: any = {
           url: sharedLink.url ?? null,
           download_url: sharedLink.download_url ?? null,
           scope: sharedLink.scope ?? null,
@@ -112,11 +112,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < sharedLinks.length; i++) {
-        const sharedLink = sharedLinks[i];
-        const originId = sharedLink.remote_id;
+        var sharedLink = sharedLinks[i];
+        var originId = sharedLink.remote_id;
 
-        const res = await updateOrCreateSharedLink(sharedLink, originId);
-        const shared_link_id = res.id_fs_shared_link;
+        var res = await updateOrCreateSharedLink(sharedLink, originId);
+        var shared_link_id = res.id_fs_shared_link;
         shared_links_results.push(res);
 
         // Process field mappings
