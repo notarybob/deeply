@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = ACCOUNTING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = ACCOUNTING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -67,8 +67,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   }
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IAddressService =
+      const { integrationId, linkedUserId } = param;
+      const service: IAddressService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -90,11 +90,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccAddress[]> {
     try {
-      var addressResults: AccAddress[] = [];
+      const addressResults: AccAddress[] = [];
 
       for (let i = 0; i < addresses.length; i++) {
-        var address = addresses[i];
-        var originId = address.remote_id;
+        const address = addresses[i];
+        const originId = address.remote_id;
 
         let existingAddress = await this.prisma.acc_addresses.findFirst({
           where: {
@@ -103,7 +103,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        var addressData = {
+        const addressData = {
           type: address.type,
           street_1: address.street_1,
           street_2: address.street_2,
