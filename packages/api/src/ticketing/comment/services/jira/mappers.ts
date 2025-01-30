@@ -21,7 +21,7 @@ export class JiraCommentMapper implements ICommentMapper {
       remote_id: string;
     }[],
   ): Promise<JiraCommentInput> {
-    var result: JiraCommentInput = {
+    const result: JiraCommentInput = {
       body: {
         content: [
           {
@@ -81,7 +81,7 @@ export class JiraCommentMapper implements ICommentMapper {
     let opts: any = {};
 
     if (comment.author.accountId) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         comment.author.accountId,
         connectionId,
       );
