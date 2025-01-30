@@ -68,14 +68,14 @@ export class CloseService implements IEngagementService {
     linkedUserId: string,
   ): Promise<ApiResponse<CloseEngagementCallOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/activity/call`,
         JSON.stringify(engagementData),
         {
@@ -102,14 +102,14 @@ export class CloseService implements IEngagementService {
     linkedUserId: string,
   ): Promise<ApiResponse<CloseEngagementMeetingOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/activity/meeting`,
         JSON.stringify(engagementData),
         {
@@ -136,17 +136,17 @@ export class CloseService implements IEngagementService {
     linkedUserId: string,
   ): Promise<ApiResponse<CloseEngagementEmailOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
           vertical: 'crm',
         },
       });
-      let dataBody = {
+      const dataBody = {
         properties: engagementData,
       };
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/activity/email`,
         JSON.stringify(dataBody),
         {
@@ -170,7 +170,7 @@ export class CloseService implements IEngagementService {
 
   async sync(data: SyncParam): Promise<ApiResponse<CloseEngagementOutput[]>> {
     try {
-      let { linkedUserId, engagement_type } = data;
+      const { linkedUserId, engagement_type } = data;
 
       switch (engagement_type as string) {
         case 'CALL':
@@ -189,7 +189,7 @@ export class CloseService implements IEngagementService {
 
   private async syncCalls(linkedUserId: string) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -197,9 +197,9 @@ export class CloseService implements IEngagementService {
         },
       });
 
-      let baseURL = `${connection.account_url}/activity/call`;
+      const baseURL = `${connection.account_url}/activity/call`;
 
-      let resp = await axios.get(baseURL, {
+      const resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -221,7 +221,7 @@ export class CloseService implements IEngagementService {
 
   private async syncMeetings(linkedUserId: string) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -229,9 +229,9 @@ export class CloseService implements IEngagementService {
         },
       });
 
-      let baseURL = `${connection.account_url}/activity/meeting`;
+      const baseURL = `${connection.account_url}/activity/meeting`;
 
-      let resp = await axios.get(baseURL, {
+      const resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -252,7 +252,7 @@ export class CloseService implements IEngagementService {
 
   private async syncEmails(linkedUserId: string) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -260,8 +260,8 @@ export class CloseService implements IEngagementService {
         },
       });
 
-      let baseURL = `${connection.account_url}/activity/email`;
-      let resp = await axios.get(baseURL, {
+      const baseURL = `${connection.account_url}/activity/email`;
+      const resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
