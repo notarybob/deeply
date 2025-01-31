@@ -30,14 +30,14 @@ export class ZendeskService implements IContactService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZendeskContactOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v2/contacts`,
         {
           data: contactData,
@@ -64,16 +64,16 @@ export class ZendeskService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskContactOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      let resp = await axios.get(`${connection.account_url}/v2/contacts`, {
+      const resp = await axios.get(`${connection.account_url}/v2/contacts`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -82,10 +82,10 @@ export class ZendeskService implements IContactService {
         },
       });
 
-      let finalData: any[] = resp.data.items.map((item) => {
+      const finalData: any[] = resp.data.items.map((item) => {
         return item.data;
       });
-      let filteredData = finalData.filter(
+      const filteredData = finalData.filter(
         (item) => item.is_organization === false,
       );
 
