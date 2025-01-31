@@ -27,16 +27,16 @@ export class GitlabService implements ICollectionService {
 
   async sync(data: SyncParam): Promise<ApiResponse<GitlabCollectionOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gitlab',
           vertical: 'ticketing',
         },
       });
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/v4/projects?membership=true`,
         {
           headers: {
