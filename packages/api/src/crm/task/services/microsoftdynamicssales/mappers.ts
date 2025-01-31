@@ -21,7 +21,7 @@ export class MicrosoftdynamicssalesTaskMapper implements ITaskMapper {
             remote_id: string;
         }[],
     ): Promise<MicrosoftdynamicssalesTaskInput> {
-        var result: MicrosoftdynamicssalesTaskInput = {
+        const result: MicrosoftdynamicssalesTaskInput = {
             subject: source.subject,
             description: source.content
         };
@@ -40,12 +40,12 @@ export class MicrosoftdynamicssalesTaskMapper implements ITaskMapper {
 
         // User have to provide either company_id or deal_id which will be associated with current task
         if (source.company_id) {
-            var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+            const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
             result["regardingobjectid_account@odata.bind"] = `/accounts(${id})`;
         }
 
         else if (source.deal_id) {
-            var id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+            const id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
             result["regardingobjectid_opportunity@odata.bind"] = `/opportunities(${id})`;
         }
 
@@ -83,9 +83,9 @@ export class MicrosoftdynamicssalesTaskMapper implements ITaskMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmTaskOutput> {
-        var field_mappings: { [key: string]: any } = {};
+        const field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (var mapping of customFieldMappings) {
+            for (const mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = task[mapping.remote_id];
             }
         }
@@ -116,7 +116,7 @@ export class MicrosoftdynamicssalesTaskMapper implements ITaskMapper {
 
         // Here the task either associated to deal or company
         if (task._regardingobjectid_value) {
-            var company_id = await this.utils.getCompanyUuidFromRemoteId(
+            const company_id = await this.utils.getCompanyUuidFromRemoteId(
                 task._regardingobjectid_value,
                 connectionId,
             );
@@ -128,7 +128,7 @@ export class MicrosoftdynamicssalesTaskMapper implements ITaskMapper {
                 }
             }
 
-            var deal_id = await this.utils.getDealUuidFromRemoteId(
+            const deal_id = await this.utils.getDealUuidFromRemoteId(
                 task._regardingobjectid_value,
                 connectionId,
             )
@@ -142,7 +142,7 @@ export class MicrosoftdynamicssalesTaskMapper implements ITaskMapper {
         }
 
         if (task._createdby_value) {
-            var user_id = await this.utils.getUserUuidFromRemoteId(
+            const user_id = await this.utils.getUserUuidFromRemoteId(
                 task._createdby_value,
                 connectionId
             )
