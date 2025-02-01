@@ -29,9 +29,9 @@ export class ZendeskService implements ITeamService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskTeamOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -39,7 +39,7 @@ export class ZendeskService implements ITeamService {
         },
       });
 
-      let resp = await axios.get(`${connection.account_url}/v2/groups.json`, {
+      const resp = await axios.get(`${connection.account_url}/v2/groups.json`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
