@@ -19,7 +19,7 @@ export class FulfillmentOrdersService {
     remote_data?: boolean,
   ): Promise<UnifiedEcommerceFulfillmentOrdersOutput> {
     try {
-      var fulfillmentorders =
+      const fulfillmentorders =
         await this.prisma.ecommerce_fulfillmentorderss.findUnique({
           where: {
             id_ecommerce_fulfillmentorders: id_ecommerce_fulfillmentorders,
@@ -33,7 +33,7 @@ export class FulfillmentOrdersService {
       }
 
       // Fetch field mappings for the fulfillmentorders
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id:
@@ -46,17 +46,17 @@ export class FulfillmentOrdersService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedEcommerceFulfillmentOrdersOutput format
-      var UnifiedEcommerceFulfillmentOrders: UnifiedEcommerceFulfillmentOrdersOutput = {
+      const UnifiedEcommerceFulfillmentOrders: UnifiedEcommerceFulfillmentOrdersOutput = {
         id: fulfillmentorders.id_ecommerce_fulfillmentorders,
         name: fulfillmentorders.name,
         field_mappings: field_mappings,
@@ -67,13 +67,13 @@ export class FulfillmentOrdersService {
 
       let res: UnifiedEcommerceFulfillmentOrdersOutput = UnifiedEcommerceFulfillmentOrders;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id:
               fulfillmentorders.id_ecommerce_fulfillmentorders,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -120,7 +120,7 @@ export class FulfillmentOrdersService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent =
+        const isCursorPresent =
           await this.prisma.ecommerce_fulfillmentorderss.findFirst({
             where: {
               id_connection: connection_id,
@@ -132,7 +132,7 @@ export class FulfillmentOrdersService {
         }
       }
 
-      var fulfillmentorderss =
+      const fulfillmentorderss =
         await this.prisma.ecommerce_fulfillmentorderss.findMany({
           take: limit + 1,
           cursor: cursor
@@ -160,11 +160,11 @@ export class FulfillmentOrdersService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var UnifiedEcommerceFulfillmentOrderss: UnifiedEcommerceFulfillmentOrdersOutput[] =
+      const UnifiedEcommerceFulfillmentOrderss: UnifiedEcommerceFulfillmentOrdersOutput[] =
         await Promise.all(
           fulfillmentorderss.map(async (fulfillmentorders) => {
             // Fetch field mappings for the fulfillmentorders
-            var values = await this.prisma.value.findMany({
+            const values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id:
@@ -177,14 +177,14 @@ export class FulfillmentOrdersService {
             });
 
             // Create a map to store unique field mappings
-            var fieldMappingsMap = new Map();
+            const fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            var field_mappings = Array.from(
+            const field_mappings = Array.from(
               fieldMappingsMap,
               ([key, value]) => ({
                 [key]: value,
@@ -206,15 +206,15 @@ export class FulfillmentOrdersService {
       let res: UnifiedEcommerceFulfillmentOrdersOutput[] = UnifiedEcommerceFulfillmentOrderss;
 
       if (remote_data) {
-        var remote_array_data: UnifiedEcommerceFulfillmentOrdersOutput[] =
+        const remote_array_data: UnifiedEcommerceFulfillmentOrdersOutput[] =
           await Promise.all(
             res.map(async (fulfillmentorders) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: fulfillmentorders.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...fulfillmentorders, remote_data };
             }),
           );
