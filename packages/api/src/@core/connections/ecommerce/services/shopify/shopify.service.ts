@@ -50,10 +50,10 @@ export class ShopifyConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -89,9 +89,9 @@ export class ShopifyConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, body } = opts;
-      const { api_key, store_url } = body;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, body } = opts;
+      var { api_key, store_url } = body;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'woocommerce',
@@ -100,8 +100,8 @@ export class ShopifyConnectionService extends AbstractBaseConnectionService {
       });
 
       let db_res;
-      const connection_token = uuidv4();
-      const BASE_API_URL = (
+      var connection_token = uuidv4();
+      var BASE_API_URL = (
         CONNECTORS_METADATA['ecommerce']['shopify'].urls.apiUrl as DynamicApiUrl
       )(store_url);
       if (isNotUnique) {
@@ -149,7 +149,7 @@ export class ShopifyConnectionService extends AbstractBaseConnectionService {
   }
 
   redirectUponConnection(...params: any[]): void {
-    const [{ res, host, shop }] = params;
+    var [{ res, host, shop }] = params;
 
     return res.redirect(`/?shop=${shop}&host=${encodeURIComponent(host)}`);
   }
