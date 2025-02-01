@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: ICreditNoteService =
+      var { integrationId, linkedUserId } = param;
+      var service: ICreditNoteService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -91,11 +91,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccCreditNote[]> {
     try {
-      const creditNoteResults: AccCreditNote[] = [];
+      var creditNoteResults: AccCreditNote[] = [];
 
       for (let i = 0; i < creditNotes.length; i++) {
-        const creditNote = creditNotes[i];
-        const originId = creditNote.remote_id;
+        var creditNote = creditNotes[i];
+        var originId = creditNote.remote_id;
 
         let existingCreditNote = await this.prisma.acc_credit_notes.findFirst({
           where: {
@@ -104,7 +104,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        const creditNoteData = {
+        var creditNoteData = {
           transaction_date: creditNote.transaction_date
             ? new Date(creditNote.transaction_date)
             : null,
