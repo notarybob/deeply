@@ -66,7 +66,7 @@ export class ConnectionsController {
   @Get('oauth/callback')
   async handleOAuthCallback(@Res() res: Response, @Query() query: any) {
     try {
-      let { state, code, spapi_oauth_code, ...otherQueryParams } = query;
+      const { state, code, spapi_oauth_code, ...otherQueryParams } = query;
 
       if (!code && !spapi_oauth_code) {
         throw new ConnectionsError({
@@ -84,9 +84,9 @@ export class ConnectionsController {
         });
       }
 
-      let stateData: StateDataType = this.parseStateData(state);
+      const stateData: StateDataType = this.parseStateData(state);
 
-      let {
+      const {
         projectId,
         vertical,
         linkedUserId,
@@ -95,7 +95,7 @@ export class ConnectionsController {
         ...dynamicStateParams
       } = stateData;
 
-      let service = this.categoryConnectionRegistry.getService(
+      const service = this.categoryConnectionRegistry.getService(
         vertical.toLowerCase(),
       );
       await service.handleCallBack(
@@ -138,7 +138,7 @@ export class ConnectionsController {
     @Body() body: BodyDataType,
   ) {
     try {
-      let { state } = query;
+      const { state } = query;
       if (!state) {
         throw new ConnectionsError({
           name: 'API_CALLBACK_STATE_NOT_FOUND_ERROR',
@@ -146,16 +146,16 @@ export class ConnectionsController {
         });
       }
 
-      let stateData: StateDataType = JSON.parse(decodeURIComponent(state));
-      let { projectId, vertical, linkedUserId, providerName } = stateData;
+      const stateData: StateDataType = JSON.parse(decodeURIComponent(state));
+      const { projectId, vertical, linkedUserId, providerName } = stateData;
 
-      let strategy =
+      const strategy =
         CONNECTORS_METADATA[vertical.toLowerCase()][providerName.toLowerCase()]
           .authStrategy.strategy;
-      let strategy_type =
+      const strategy_type =
         strategy === AuthStrategy.api_key ? 'apikey' : 'basic';
 
-      let service = this.categoryConnectionRegistry.getService(
+      const service = this.categoryConnectionRegistry.getService(
         vertical.toLowerCase(),
       );
       await service.handleCallBack(
@@ -177,7 +177,7 @@ export class ConnectionsController {
   @Get('internal')
   async list_internal(@Request() req: any) {
     try {
-      let { id_project } = req.user;
+      const { id_project } = req.user;
       return await this.prisma.connections.findMany({
         where: { id_project },
       });
@@ -195,7 +195,7 @@ export class ConnectionsController {
   @Get()
   async list(@Request() req: any) {
     try {
-      let { id_project } = req.user;
+      const { id_project } = req.user;
       return await this.prisma.connections.findMany({
         where: { id_project },
       });
@@ -206,16 +206,16 @@ export class ConnectionsController {
 
   private parseStateData(state: string): StateDataType {
     if (state.includes('&quot;') || state.includes('&amp;')) {
-      let decodedState = state.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+      const decodedState = state.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
       return JSON.parse(decodedState);
     } else if (
       state.includes('deel_delimiter') ||
       state.includes('squarespace_delimiter')
     ) {
-      let [, base64Part] = decodeURIComponent(state).split(
+      const [, base64Part] = decodeURIComponent(state).split(
         /deel_delimiter|squarespace_delimiter/,
       );
-      let jsonString = Buffer.from(base64Part, 'base64').toString('utf-8');
+      const jsonString = Buffer.from(base64Part, 'base64').toString('utf-8');
       return JSON.parse(jsonString);
     } else {
       return JSON.parse(state);
@@ -227,7 +227,7 @@ export class ConnectionsController {
     providerName: string,
     linkedUserId: string,
   ) {
-    let isActive =
+    const isActive =
       CONNECTORS_METADATA[vertical.toLowerCase()][providerName.toLowerCase()]
         .active !== false;
     if (isActive) {
