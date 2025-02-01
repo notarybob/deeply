@@ -29,9 +29,9 @@ export class ZendeskService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskContactOutput[]>> {
     try {
-      const { linkedUserId, webhook_remote_identifier } = data;
+      var { linkedUserId, webhook_remote_identifier } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -43,11 +43,11 @@ export class ZendeskService implements IContactService {
         remote_contact_id = webhook_remote_identifier as string;
       }
 
-      const request_url = remote_contact_id
+      var request_url = remote_contact_id
         ? `${connection.account_url}/v2/users/${remote_contact_id}.json`
         : `${connection.account_url}/v2/users.json`;
 
-      const resp = await axios.get(request_url, {
+      var resp = await axios.get(request_url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -56,10 +56,10 @@ export class ZendeskService implements IContactService {
         },
       });
 
-      const contacts: ZendeskContactOutput[] = remote_contact_id
+      var contacts: ZendeskContactOutput[] = remote_contact_id
         ? [resp.data.user]
         : resp.data.users;
-      const filteredContacts = contacts.filter(
+      var filteredContacts = contacts.filter(
         (contact) => contact.role === 'end-user',
       );
       this.logger.log(`Synced zendesk contacts !`);
