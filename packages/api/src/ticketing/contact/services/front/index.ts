@@ -26,9 +26,9 @@ export class FrontService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<FrontContactOutput[]>> {
     try {
-      const { linkedUserId, account_id, webhook_remote_identifier } = data;
+      var { linkedUserId, account_id, webhook_remote_identifier } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'front',
@@ -39,7 +39,7 @@ export class FrontService implements IContactService {
       if (account_id) {
         // account_id can either be the remote or the panora id
         // if the call is made from real time webhook trigger then it is a remote id
-        const res = await this.prisma.tcg_accounts.findFirst({
+        var res = await this.prisma.tcg_accounts.findFirst({
           where: {
             id_tcg_account: account_id,
           },
@@ -49,7 +49,7 @@ export class FrontService implements IContactService {
         }
       }*/
 
-      const resp = await axios.get(`${connection.account_url}/contacts`, {
+      var resp = await axios.get(`${connection.account_url}/contacts`, {
         headers: {
           Authorization: `Bearer ${this.cryptoService.decrypt(
             connection.access_token,
