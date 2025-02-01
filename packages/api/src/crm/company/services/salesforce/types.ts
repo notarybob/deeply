@@ -41,7 +41,7 @@ export interface SalesforceCompanyOutput extends SalesforceCompanyInput {
   IsDeleted: boolean;
 }
 
-export let commonSalesforceCompanyProperties = {
+export const commonSalesforceCompanyProperties = {
   Id: '',
   Name: '',
   AccountNumber: '',
