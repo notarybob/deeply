@@ -41,15 +41,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = FILESTORAGE_PROVIDERS;
-          for (var provider of providers) {
+          const providers = FILESTORAGE_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -70,8 +70,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IGroupService =
+      const { integrationId, linkedUserId } = param;
+      const service: IGroupService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -93,20 +93,20 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<FileStorageGroup[]> {
     try {
-      var groups_results: FileStorageGroup[] = [];
+      const groups_results: FileStorageGroup[] = [];
 
-      var updateOrCreateGroup = async (
+      const updateOrCreateGroup = async (
         group: UnifiedFilestorageGroupOutput,
         originId: string,
       ) => {
-        var existingGroup = await this.prisma.fs_groups.findFirst({
+        const existingGroup = await this.prisma.fs_groups.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        var baseData: any = {
+        const baseData: any = {
           name: group.name ?? null,
           users: group.users ?? null,
           remote_was_deleted: group.remote_was_deleted ?? null,
@@ -134,15 +134,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < groups.length; i++) {
-        var group = groups[i];
-        var originId = group.remote_id;
+        const group = groups[i];
+        const originId = group.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateGroup(group, originId);
-        var group_id = res.id_fs_group;
+        const res = await updateOrCreateGroup(group, originId);
+        const group_id = res.id_fs_group;
         groups_results.push(res);
 
         // Process field mappings
