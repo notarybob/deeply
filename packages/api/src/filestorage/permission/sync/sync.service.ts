@@ -52,9 +52,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     },
   ): Promise<FileStoragePermission[]> {
     try {
-      var permissions_results: FileStoragePermission[] = [];
+      const permissions_results: FileStoragePermission[] = [];
 
-      var updateOrCreatePermission = async (
+      const updateOrCreatePermission = async (
         permission: UnifiedFilestoragePermissionOutput,
         originId: string,
         extra: { object_name: 'file' | 'folder'; value: string },
@@ -63,7 +63,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
         if (!originId) {
           if (extra.object_name === 'file') {
-            var file = await this.prisma.fs_files.findUnique({
+            const file = await this.prisma.fs_files.findUnique({
               where: {
                 id_fs_file: extra.value,
               },
@@ -78,7 +78,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
               });
             }
           } else {
-            var folder = await this.prisma.fs_folders.findUnique({
+            const folder = await this.prisma.fs_folders.findUnique({
               where: {
                 id_fs_folder: extra.value,
               },
@@ -102,7 +102,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        var baseData: any = {
+        const baseData: any = {
           roles: permission.roles ?? null,
           type: permission.type ?? null,
           user: permission.user_id ?? null,
@@ -131,11 +131,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < permissions.length; i++) {
-        var permission = permissions[i];
-        var originId = permission.remote_id;
+        const permission = permissions[i];
+        const originId = permission.remote_id;
 
-        var res = await updateOrCreatePermission(permission, originId, extra);
-        var permission_id = res.id_fs_permission;
+        const res = await updateOrCreatePermission(permission, originId, extra);
+        const permission_id = res.id_fs_permission;
         permissions_results.push(res);
 
         // Process field mappings
