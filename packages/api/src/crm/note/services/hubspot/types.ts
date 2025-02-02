@@ -39,7 +39,7 @@ export interface HubspotNoteOutput {
   };
 }
 
-export const commonNoteHubspotProperties = {
+export let commonNoteHubspotProperties = {
   hs_timestamp: '',
   hs_note_body: '',
   hubspot_owner_id: '',
