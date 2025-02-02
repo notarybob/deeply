@@ -1,7 +1,7 @@
 import { PassthroughConfig } from '@@core/connections/@utils/types';
 
 // Array of potential rate limit headers
-export let RATE_LIMIT_HEADERS = [
+export const RATE_LIMIT_HEADERS = [
   'retry-after',
   'x-rate-limit-reset',
   'x-ratelimit-reset',
