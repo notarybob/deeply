@@ -36,9 +36,9 @@ export class SharepointService implements IDriveService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SharepointDriveOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'sharepoint',
@@ -46,7 +46,7 @@ export class SharepointService implements IDriveService {
         },
       });
 
-      const resp = await axios.get(`${connection.account_url}/drives`, {
+      let resp = await axios.get(`${connection.account_url}/drives`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -55,7 +55,7 @@ export class SharepointService implements IDriveService {
         },
       });
 
-      const drives: SharepointDriveOutput[] = resp.data.value;
+      let drives: SharepointDriveOutput[] = resp.data.value;
       this.logger.log(`Synced sharepoint drives !`);
 
       return {
