@@ -60,9 +60,9 @@ export class SharepointGroupMapper implements IGroupMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageGroupOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = group[mapping.remote_id];
       }
     }
