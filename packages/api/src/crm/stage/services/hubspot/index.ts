@@ -27,9 +27,9 @@ export class HubspotService implements IStageService {
 
   async sync(data: SyncParam): Promise<ApiResponse<HubspotStageOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
@@ -37,9 +37,9 @@ export class HubspotService implements IStageService {
         },
       });
       // get all stages for all deals
-      const url = 'https://api.hubapi.com/crm-pipelines/v1/pipelines/deals';
+      let url = 'https://api.hubapi.com/crm-pipelines/v1/pipelines/deals';
 
-      const resp = await axios.get(url, {
+      let resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -48,7 +48,7 @@ export class HubspotService implements IStageService {
         },
       });
       this.logger.log(`Synced hubspot stages !`);
-      const final_res = resp.data.results.stages;
+      let final_res = resp.data.results.stages;
 
       return {
         data: final_res,
