@@ -21,7 +21,7 @@ import {
         remote_id: string;
       }[],
     ): Promise<SalesforceContactInput> {
-      const result: SalesforceContactInput = {
+      let result: SalesforceContactInput = {
         FirstName: source.first_name,
         LastName: source.last_name,
       };
@@ -43,8 +43,8 @@ import {
       }
   
       if (customFieldMappings && source.field_mappings) {
-        for (const [k, v] of Object.entries(source.field_mappings)) {
-          const mapping = customFieldMappings.find(
+        for (let [k, v] of Object.entries(source.field_mappings)) {
+          let mapping = customFieldMappings.find(
             (mapping) => mapping.slug === k,
           );
           if (mapping) {
@@ -88,9 +88,9 @@ import {
         remote_id: string;
       }[],
     ): UnifiedCrmContactOutput {
-      const field_mappings: { [key: string]: any } = {};
+      let field_mappings: { [key: string]: any } = {};
       if (customFieldMappings) {
-        for (const mapping of customFieldMappings) {
+        for (let mapping of customFieldMappings) {
           field_mappings[mapping.slug] = contact[mapping.remote_id];
         }
       }
