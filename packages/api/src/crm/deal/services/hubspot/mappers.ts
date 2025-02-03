@@ -21,7 +21,7 @@ export class HubspotDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotDealInput> {
-    const result: HubspotDealInput = {
+    var result: HubspotDealInput = {
       dealname: source.name,
       amount: source.amount.toString(),
       pipeline: source.stage_id || null,
@@ -30,7 +30,7 @@ export class HubspotDealMapper implements IDealMapper {
     };
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.hubspot_owner_id = owner_id;
       }
@@ -38,15 +38,15 @@ export class HubspotDealMapper implements IDealMapper {
 
     //TODO: hubspot does not seem to have stages object it takes only a string
     /*if (source.stage_id) {
-      const stage_id = await this.utils.getRemo(source.user_id);
+      var stage_id = await this.utils.getRemo(source.user_id);
       if (owner_id) {
         result.dealstage = null;
       }
     }*/
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -88,16 +88,16 @@ export class HubspotDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmDealOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = deal.properties[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (deal.properties.hubspot_owner_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         deal.properties.hubspot_owner_id,
         connectionId,
       );
@@ -117,7 +117,7 @@ export class HubspotDealMapper implements IDealMapper {
     }
 
     if (deal.properties.dealstage) {
-      const stage_id = await this.utils.getStageUuidFromStageName(
+      var stage_id = await this.utils.getStageUuidFromStageName(
         deal.properties.dealstage,
         connectionId,
       );
