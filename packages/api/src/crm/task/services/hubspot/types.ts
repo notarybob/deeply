@@ -43,7 +43,7 @@ export interface HubspotTaskOutput {
   archived: boolean;
 }
 
-export const commonTaskHubspotProperties = {
+export let commonTaskHubspotProperties = {
   hs_task_body: '',
   hs_task_priority: '',
   hs_task_status: '',
