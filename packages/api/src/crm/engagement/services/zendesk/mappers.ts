@@ -22,7 +22,7 @@ export class ZendeskEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<ZendeskEngagementInput> {
-    const type = source.type;
+    var type = source.type;
     switch (type) {
       case 'CALL':
         return await this.desunifyCall(source, customFieldMappings);
@@ -43,35 +43,35 @@ export class ZendeskEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<ZendeskEngagementInput> {
-    const result: ZendeskEngagementInput = {
+    var result: ZendeskEngagementInput = {
       summary: source.content || null,
       incoming: source.direction === 'INBOUND',
       phone_number: '33666666', // todo
     };
 
     if (source.start_at && source.end_time) {
-      const startDate = new Date(source.start_at);
-      const endDate = new Date(source.end_time);
+      var startDate = new Date(source.start_at);
+      var endDate = new Date(source.end_time);
 
       // Calculate the difference in milliseconds
-      const diffMilliseconds = endDate.getTime() - startDate.getTime();
+      var diffMilliseconds = endDate.getTime() - startDate.getTime();
 
       // Convert milliseconds to seconds
-      const durationInSeconds = Math.round(diffMilliseconds / 1000);
+      var durationInSeconds = Math.round(diffMilliseconds / 1000);
 
       result.duration = durationInSeconds;
     }
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.user_id = Number(owner_id);
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -139,16 +139,16 @@ export class ZendeskEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (engagement.user_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         String(engagement.user_id),
         connectionId,
       );
@@ -160,7 +160,7 @@ export class ZendeskEngagementMapper implements IEngagementMapper {
       }
     }
 
-    const direction = engagement.incoming ? 'INBOUND' : 'OUTBOUND';
+    var direction = engagement.incoming ? 'INBOUND' : 'OUTBOUND';
 
     return {
       remote_id: String(engagement.id),
