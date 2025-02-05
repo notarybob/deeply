@@ -49,7 +49,7 @@ export class EventsController {
   @UseGuards(JwtAuthGuard)
   @Get('internal')
   async getInternalEvents(@Query() dto: PaginationDto, @Request() req: any) {
-    let { id_project } = req.user;
+    const { id_project } = req.user;
     return await this.eventsService.findEvents(dto, id_project);
   }
 
@@ -70,7 +70,7 @@ export class EventsController {
   @UseGuards(ApiKeyAuthGuard)
   @Get()
   async getEvents(@Query() dto: PaginationDto, @Request() req: any) {
-    let { id_project } = req.user;
+    const { id_project } = req.user;
     return await this.eventsService.findEvents(dto, id_project);
   }
 
@@ -82,7 +82,7 @@ export class EventsController {
   @ApiExcludeEndpoint()
   @UseGuards(JwtAuthGuard)
   async getEventsCount(@Request() req: any) {
-    let { id_project } = req.user;
+    const { id_project } = req.user;
     return await this.eventsService.getEventsCount(id_project);
   }
 }
