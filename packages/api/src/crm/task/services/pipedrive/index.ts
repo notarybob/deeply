@@ -31,14 +31,14 @@ export class PipedriveService implements ITaskService {
     linkedUserId: string,
   ): Promise<ApiResponse<PipedriveTaskOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v1/activities`,
         JSON.stringify(taskData),
         {
@@ -62,16 +62,16 @@ export class PipedriveService implements ITaskService {
 
   async sync(data: SyncParam): Promise<ApiResponse<PipedriveTaskOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/v1/activities?type=task`,
         {
           headers: {
