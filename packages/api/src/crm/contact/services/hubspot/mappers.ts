@@ -21,10 +21,10 @@ export class HubspotContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotContactInput> {
-    const primaryEmail = source.email_addresses?.[0]?.email_address;
-    const primaryPhone = source.phone_numbers?.[0]?.phone_number;
+    let primaryEmail = source.email_addresses?.[0]?.email_address;
+    let primaryPhone = source.phone_numbers?.[0]?.phone_number;
 
-    const result: HubspotContactInput = {
+    let result: HubspotContactInput = {
       firstname: source.first_name,
       lastname: source.last_name,
     };
@@ -53,15 +53,15 @@ export class HubspotContactMapper implements IContactMapper {
     }
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      let owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.hubspot_owner_id = owner_id;
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (let [k, v] of Object.entries(source.field_mappings)) {
+        let mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -106,18 +106,18 @@ export class HubspotContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): UnifiedCrmContactOutput {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact.properties[mapping.remote_id];
       }
     }
 
-    const opts: any = {
+    let opts: any = {
       addresses: [],
     };
 
-    const address: any = {};
+    let address: any = {};
     if (contact.properties.address) {
       address.street_1 = contact.properties.address;
     }
