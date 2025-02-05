@@ -31,17 +31,17 @@ export class HubspotService implements IDealService {
     linkedUserId: string,
   ): Promise<ApiResponse<HubspotDealOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
           vertical: 'crm',
         },
       });
-      let dataBody = {
+      const dataBody = {
         properties: dealData,
       };
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/crm/v3/objects/deals`,
         JSON.stringify(dataBody),
         {
@@ -68,10 +68,10 @@ export class HubspotService implements IDealService {
 
   async sync(data: SyncParam): Promise<ApiResponse<HubspotDealOutput[]>> {
     try {
-      let { linkedUserId, custom_properties } = data;
+      const { linkedUserId, custom_properties } = data;
 
       //crm.schemas.deals.read","crm.objects.deals.read
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
@@ -79,17 +79,17 @@ export class HubspotService implements IDealService {
         },
       });
 
-      let commonPropertyNames = Object.keys(commonDealHubspotProperties);
-      let allProperties = [...commonPropertyNames, ...custom_properties];
-      let baseURL = `${connection.account_url}/crm/v3/objects/deals`;
+      const commonPropertyNames = Object.keys(commonDealHubspotProperties);
+      const allProperties = [...commonPropertyNames, ...custom_properties];
+      const baseURL = `${connection.account_url}/crm/v3/objects/deals`;
 
-      let queryString = allProperties
+      const queryString = allProperties
         .map((prop) => `properties=${encodeURIComponent(prop)}`)
         .join('&');
 
-      let url = `${baseURL}?${queryString}`;
+      const url = `${baseURL}?${queryString}`;
 
-      let resp = await axios.get(url, {
+      const resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
