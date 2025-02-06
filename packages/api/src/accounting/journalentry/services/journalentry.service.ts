@@ -32,13 +32,13 @@ export class JournalEntryService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingJournalentryOutput> {
     try {
-      let service = this.serviceRegistry.getService(integrationId);
-      let resp = await service.addJournalEntry(
+      const service = this.serviceRegistry.getService(integrationId);
+      const resp = await service.addJournalEntry(
         unifiedJournalEntryData,
         linkedUserId,
       );
 
-      let savedJournalEntry = await this.prisma.acc_journal_entries.create({
+      const savedJournalEntry = await this.prisma.acc_journal_entries.create({
         data: {
           id_acc_journal_entry: uuidv4(),
           ...unifiedJournalEntryData,
@@ -69,7 +69,7 @@ export class JournalEntryService {
         );
       }
 
-      let result: UnifiedAccountingJournalentryOutput = {
+      const result: UnifiedAccountingJournalentryOutput = {
         ...savedJournalEntry,
         currency: savedJournalEntry.currency as CurrencyCode,
         id: savedJournalEntry.id_acc_journal_entry,
@@ -95,7 +95,7 @@ export class JournalEntryService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingJournalentryOutput> {
     try {
-      let journalEntry = await this.prisma.acc_journal_entries.findUnique({
+      const journalEntry = await this.prisma.acc_journal_entries.findUnique({
         where: { id_acc_journal_entry: id_acc_journal_entry },
       });
 
@@ -105,22 +105,22 @@ export class JournalEntryService {
         );
       }
 
-      let lineItems = await this.prisma.acc_journal_entries_lines.findMany({
+      const lineItems = await this.prisma.acc_journal_entries_lines.findMany({
         where: { id_acc_journal_entry: id_acc_journal_entry },
       });
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: journalEntry.id_acc_journal_entry },
         },
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedJournalEntry: UnifiedAccountingJournalentryOutput = {
+      const unifiedJournalEntry: UnifiedAccountingJournalentryOutput = {
         id: journalEntry.id_acc_journal_entry,
         transaction_date: journalEntry.transaction_date,
         payments: journalEntry.payments,
@@ -155,7 +155,7 @@ export class JournalEntryService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: journalEntry.id_acc_journal_entry },
         });
         unifiedJournalEntry.remote_data = remoteDataRecord
@@ -199,37 +199,37 @@ export class JournalEntryService {
     previous_cursor: string | null;
   }> {
     try {
-      let journalEntries = await this.prisma.acc_journal_entries.findMany({
+      const journalEntries = await this.prisma.acc_journal_entries.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_journal_entry: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      let hasNextPage = journalEntries.length > limit;
+      const hasNextPage = journalEntries.length > limit;
       if (hasNextPage) journalEntries.pop();
 
-      let unifiedJournalEntries = await Promise.all(
+      const unifiedJournalEntries = await Promise.all(
         journalEntries.map(async (journalEntry) => {
-          let lineItems =
+          const lineItems =
             await this.prisma.acc_journal_entries_lines.findMany({
               where: {
                 id_acc_journal_entry: journalEntry.id_acc_journal_entry,
               },
             });
 
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: journalEntry.id_acc_journal_entry },
             },
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedJournalEntry: UnifiedAccountingJournalentryOutput = {
+          const unifiedJournalEntry: UnifiedAccountingJournalentryOutput = {
             id: journalEntry.id_acc_journal_entry,
             transaction_date: journalEntry.transaction_date,
             payments: journalEntry.payments,
@@ -264,7 +264,7 @@ export class JournalEntryService {
           };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: journalEntry.id_acc_journal_entry },
             });
             unifiedJournalEntry.remote_data = remoteDataRecord
