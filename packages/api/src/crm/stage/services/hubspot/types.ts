@@ -12,6 +12,6 @@ export interface HubspotStageOutput {
   active: boolean;
 }
 
-export let commonStageHubspotProperties = {
+export const commonStageHubspotProperties = {
   dealstage: '',
 };
