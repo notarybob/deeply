@@ -30,14 +30,14 @@ export class ZohoService implements IContactService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZohoContactOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v5/Contacts`,
         { data: [contactData] },
         {
@@ -50,7 +50,7 @@ export class ZohoService implements IContactService {
         },
       );
 
-      let final_res = await axios.get(
+      const final_res = await axios.get(
         `${connection.account_url}/v5/Contacts/${resp.data.data[0].details.id}`,
         {
           headers: {
@@ -73,18 +73,18 @@ export class ZohoService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZohoContactOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      let fields =
+      const fields =
         'First_Name,Last_Name,Full_Name,Email,Phone,Mailing_Street,Other_Street,Mailing_City,Other_City,Mailing_State,Other_State,Mailing_Zip,Other_Zip,Mailing_Country,Other_Country';
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/v5/Contacts?fields=${fields}`,
         {
           headers: {
