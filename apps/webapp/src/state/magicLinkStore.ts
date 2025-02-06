@@ -5,7 +5,7 @@ interface MagicLinkState {
   setUniqueLink: (link: string) => void;
 }
 
-let useMagicLinkStore = create<MagicLinkState>()((set) => ({
+const useMagicLinkStore = create<MagicLinkState>()((set) => ({
     uniqueLink: "https://",
     setUniqueLink: (link) => set({ uniqueLink: link }),
 }));
