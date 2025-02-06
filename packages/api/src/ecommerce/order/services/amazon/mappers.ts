@@ -65,11 +65,11 @@ export class AmazonOrderMapper implements IOrderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceOrderOutput> {
-    const opts: any = {};
+    let opts: any = {};
 
     // insert the buyer in the customers table
     if (order.BuyerInfo) {
-      const customers = await this.ingestService.ingestData<
+      let customers = await this.ingestService.ingestData<
         UnifiedEcommerceCustomerOutput,
         AmazonCustomerOutput
       >(
@@ -124,16 +124,16 @@ export class AmazonOrderMapper implements IOrderMapper {
         };
       });
       // Calculate total_tax and total_discount
-      const total_tax = opts.items.reduce((acc, item) => {
-        const itemTax = item.tax_lines.reduce(
+      let total_tax = opts.items.reduce((acc, item) => {
+        let itemTax = item.tax_lines.reduce(
           (taxAcc, tax) => taxAcc + parseFloat(tax.price),
           0,
         );
         return acc + itemTax;
       }, 0);
 
-      const total_discount = opts.items.reduce((acc, item) => {
-        const itemDiscount = item.discount_allocations.reduce(
+      let total_discount = opts.items.reduce((acc, item) => {
+        let itemDiscount = item.discount_allocations.reduce(
           (discountAcc, discount) => discountAcc + parseFloat(discount.amount),
           0,
         );
