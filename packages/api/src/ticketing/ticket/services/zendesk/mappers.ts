@@ -108,7 +108,7 @@ export class ZendeskTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<ZendeskTicketInput> {
-    const result: ZendeskTicketInput = {
+    var result: ZendeskTicketInput = {
       description: source.description,
       subject: source.name,
       comment: {
@@ -145,12 +145,12 @@ export class ZendeskTicketMapper implements ITicketMapper {
 
     if (customFieldMappings && source.field_mappings) {
       let res: CustomField[] = [];
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
-          const obj = { id: mapping.remote_id, value: v };
+          var obj = { id: mapping.remote_id, value: v };
           res = [...res, obj];
         }
       }
@@ -194,10 +194,10 @@ export class ZendeskTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<Promise<UnifiedTicketingTicketOutput>> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
-        const customField = ticket.custom_fields.find(
+      for (var mapping of customFieldMappings) {
+        var customField = ticket.custom_fields.find(
           (field) => field.id === mapping.remote_id,
         );
         if (customField) {
@@ -206,11 +206,11 @@ export class ZendeskTicketMapper implements ITicketMapper {
       }
     }
 
-    const opts: any = {};
+    var opts: any = {};
 
     //TODO: contact or user ?
     if (ticket.assignee_id) {
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(ticket.assignee_id),
         connectionId,
       );
@@ -233,7 +233,7 @@ export class ZendeskTicketMapper implements ITicketMapper {
     }
 
     if (ticket.tags) {
-      const tags = await this.ingestService.ingestData<
+      var tags = await this.ingestService.ingestData<
         UnifiedTicketingTagOutput,
         ZendeskTagOutput
       >(
@@ -252,7 +252,7 @@ export class ZendeskTicketMapper implements ITicketMapper {
       opts.tags = tags.map((tag) => tag.id_tcg_tag);
     }
 
-    const unifiedTicket: UnifiedTicketingTicketOutput = {
+    var unifiedTicket: UnifiedTicketingTicketOutput = {
       remote_id: String(ticket.id),
       name: ticket.subject,
       description: ticket.description,
