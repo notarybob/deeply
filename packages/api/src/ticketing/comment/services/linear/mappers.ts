@@ -38,7 +38,7 @@ export class LinearCommentMapper implements ICommentMapper {
 
     // TODO - Add attachments attribute
 
-    const result: LinearCommentInput = {
+    var result: LinearCommentInput = {
       body: source.body,
     };
     return result;
