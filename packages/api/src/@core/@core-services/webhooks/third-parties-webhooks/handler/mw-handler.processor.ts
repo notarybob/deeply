@@ -25,7 +25,7 @@ export class MwHandlerProcessor {
 
   @Process({ concurrency: 5 })
   async processReceivedRealtimeWebhooks(job: Job) {
-    let res = await this.prisma.managed_webhooks.findFirst({
+    const res = await this.prisma.managed_webhooks.findFirst({
       where: {
         endpoint: job.data.uuid,
       },
@@ -34,12 +34,12 @@ export class MwHandlerProcessor {
       `Start processing incoming realtime-webhook id ${res.id_managed_webhook}...`,
     );
 
-    let connection = await this.prisma.connections.findFirst({
+    const connection = await this.prisma.connections.findFirst({
       where: {
         id_connection: res.id_connection,
       },
     });
-    let metadata = {
+    const metadata = {
       connector_name: connection.provider_slug,
       id_managed_webhook: res.id_managed_webhook,
       payload: job.data.data,
