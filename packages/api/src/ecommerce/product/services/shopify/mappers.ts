@@ -31,7 +31,7 @@ export class ShopifyProductMapper implements IProductMapper {
       remote_id: string;
     }[],
   ): Promise<ShopifyProductInput> {
-    let res: any = {
+    const res: any = {
       title: source.description,
       body_html: source.description,
       vendor: source.vendor,
