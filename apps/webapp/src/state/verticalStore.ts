@@ -5,7 +5,7 @@ interface VerticalState {
   setVertical: (name: string) => void;
 }
 
-let useVerticalStore = create<VerticalState>()((set) => ({
+const useVerticalStore = create<VerticalState>()((set) => ({
   vertical: "All",
   setVertical: (name) => set({ vertical: name }),
 }));
