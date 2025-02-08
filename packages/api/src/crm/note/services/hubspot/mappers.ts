@@ -20,7 +20,7 @@ export class HubspotNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotNoteInput> {
-    const result: any = {
+    var result: any = {
       properties: {
         hs_note_body: source.content,
         hs_timestamp: new Date().toISOString(),
@@ -28,14 +28,14 @@ export class HubspotNoteMapper implements INoteMapper {
     };
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.properties.hubspot_owner_id = owner_id;
       }
     }
     if (source.deal_id) {
       result.associations = result.associations ? [...result.associations] : [];
-      const id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      var id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       result.associations.push({
         to: {
           id: id,
@@ -50,7 +50,7 @@ export class HubspotNoteMapper implements INoteMapper {
     }
     if (source.contact_id) {
       result.associations = result.associations ? [...result.associations] : [];
-      const id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
+      var id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
       result.associations.push({
         to: {
           id: id,
@@ -65,7 +65,7 @@ export class HubspotNoteMapper implements INoteMapper {
     }
     if (source.company_id) {
       result.associations = result.associations ? [...result.associations] : [];
-      const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+      var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
       result.associations.push({
         to: {
           id: id,
@@ -80,8 +80,8 @@ export class HubspotNoteMapper implements INoteMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -124,16 +124,16 @@ export class HubspotNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmNoteOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = note.properties[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (note.properties.hubspot_owner_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         note.properties.hubspot_owner_id,
         connectionId,
       );
@@ -146,21 +146,21 @@ export class HubspotNoteMapper implements INoteMapper {
     }
     if (note.associations) {
       if (note.associations.deals) {
-        const remote_id = note.associations.deals.results[0].id;
+        var remote_id = note.associations.deals.results[0].id;
         opts.deal_id = await this.utils.getDealUuidFromRemoteId(
           remote_id,
           connectionId,
         );
       }
       if (note.associations.companies) {
-        const remote_id = note.associations.companies.results[0].id;
+        var remote_id = note.associations.companies.results[0].id;
         opts.company_id = await this.utils.getCompanyUuidFromRemoteId(
           remote_id,
           connectionId,
         );
       }
       if (note.associations.contacts) {
-        const remote_id = note.associations.contacts.results[0].id;
+        var remote_id = note.associations.contacts.results[0].id;
         opts.contact_id = await this.utils.getContactUuidFromRemoteId(
           remote_id,
           connectionId,
