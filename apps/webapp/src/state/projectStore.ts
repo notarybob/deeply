@@ -5,7 +5,7 @@ interface ProjectState {
   setIdProject: (id: string) => void;
 }
 
-let useProjectStore = create<ProjectState>()((set) => ({
+const useProjectStore = create<ProjectState>()((set) => ({
   idProject: "",
   setIdProject: (id) => set({ idProject: id }),
 }));
