@@ -19,7 +19,7 @@ export class UserService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestorageUserOutput> {
     try {
-      var user = await this.prisma.fs_users.findUnique({
+      const user = await this.prisma.fs_users.findUnique({
         where: {
           id_fs_user: id_fs_user,
         },
@@ -30,7 +30,7 @@ export class UserService {
       }
 
       // Fetch field mappings for the user
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: user.id_fs_user,
@@ -42,17 +42,17 @@ export class UserService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedFilestorageUserOutput format
-      var unifiedUser: UnifiedFilestorageUserOutput = {
+      const unifiedUser: UnifiedFilestorageUserOutput = {
         id: user.id_fs_user,
         name: user.name,
         email: user.email,
@@ -65,12 +65,12 @@ export class UserService {
 
       let res: UnifiedFilestorageUserOutput = unifiedUser;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: user.id_fs_user,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -117,7 +117,7 @@ export class UserService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.fs_users.findFirst({
+        const isCursorPresent = await this.prisma.fs_users.findFirst({
           where: {
             id_connection: connection_id,
             id_fs_user: cursor,
@@ -128,7 +128,7 @@ export class UserService {
         }
       }
 
-      var users = await this.prisma.fs_users.findMany({
+      const users = await this.prisma.fs_users.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -153,10 +153,10 @@ export class UserService {
       if (cursor) {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
-      var unifiedUsers: UnifiedFilestorageUserOutput[] = await Promise.all(
+      const unifiedUsers: UnifiedFilestorageUserOutput[] = await Promise.all(
         users.map(async (user) => {
           // Fetch field mappings for the user
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: user.id_fs_user,
@@ -168,14 +168,14 @@ export class UserService {
           });
 
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
           });
 
           // Convert the map to an array of objects
-          var field_mappings = Object.fromEntries(fieldMappingsMap);
+          const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedFilestorageUserOutput format
           return {
@@ -194,15 +194,15 @@ export class UserService {
       let res: UnifiedFilestorageUserOutput[] = unifiedUsers;
 
       if (remote_data) {
-        var remote_array_data: UnifiedFilestorageUserOutput[] =
+        const remote_array_data: UnifiedFilestorageUserOutput[] =
           await Promise.all(
             res.map(async (user) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: user.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...user, remote_data };
             }),
           );
