@@ -23,10 +23,10 @@ export class ZendeskCompanyMapper implements ICompanyMapper {
     }[],
   ): Promise<ZendeskCompanyInput> {
     // Assuming 'email_addresses' array contains at least one email and 'phone_numbers' array contains at least one phone number
-    const primaryEmail = source.email_addresses?.[0]?.email_address;
-    const primaryPhone = source.phone_numbers?.[0]?.phone_number;
+    var primaryEmail = source.email_addresses?.[0]?.email_address;
+    var primaryPhone = source.phone_numbers?.[0]?.phone_number;
 
-    const result: ZendeskCompanyInput = {
+    var result: ZendeskCompanyInput = {
       name: source.name,
       is_organization: true,
       industry: source.industry,
@@ -49,14 +49,14 @@ export class ZendeskCompanyMapper implements ICompanyMapper {
       result.phone = primaryPhone;
     }
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.owner_id = Number(owner_id);
       }
     }
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -102,18 +102,18 @@ export class ZendeskCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmCompanyOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = company.custom_fields[mapping.remote_id];
       }
     }
 
     // Constructing the email and phone details
-    const email_addresses = company.email
+    var email_addresses = company.email
       ? [{ email_address: company.email, email_address_type: 'WORK' }]
       : null;
-    const phone_numbers = [];
+    var phone_numbers = [];
 
     if (company.phone) {
       phone_numbers.push({ phone_number: company.phone, phone_type: 'WORK' });
@@ -127,7 +127,7 @@ export class ZendeskCompanyMapper implements ICompanyMapper {
 
     let opts: any = {};
     if (company.owner_id) {
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(company.owner_id),
         connectionId,
       );
@@ -139,7 +139,7 @@ export class ZendeskCompanyMapper implements ICompanyMapper {
       }
     }
 
-    const address: Address = {
+    var address: Address = {
       street_1: company.address.line1,
       city: company.address.city,
       state: company.address.state,
