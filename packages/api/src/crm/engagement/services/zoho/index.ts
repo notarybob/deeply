@@ -26,16 +26,16 @@ export class ZohoService implements IEngagementService {
 
   private async syncCalls(linkedUserId: string) {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      const fields =
+      let fields =
         'Owner,Description,Campaign_Name,End_Date,Start_Date,Type,Created_By,Subject,Call_Type,Who_Id, Call_Start_Time, Call_Duration';
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/v5/Calls?fields=${fields}`,
         {
           headers: {
@@ -59,16 +59,16 @@ export class ZohoService implements IEngagementService {
 
   private async syncMeetings(linkedUserId: string) {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      const fields =
+      let fields =
         'Owner,Description,End_DateTime,Start_DateTime,Subject,What_Id,Who_Id,Participants,Event_Title';
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/v5/Events?fields=${fields}`,
         {
           headers: {
@@ -92,7 +92,7 @@ export class ZohoService implements IEngagementService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZohoEngagementOutput[]>> {
     try {
-      const { linkedUserId, engagement_type } = data;
+      let { linkedUserId, engagement_type } = data;
 
       switch (engagement_type as string) {
         case 'CALL':
