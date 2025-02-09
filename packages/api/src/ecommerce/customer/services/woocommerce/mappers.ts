@@ -70,7 +70,7 @@ export class WoocommerceCustomerMapper implements ICustomerMapper {
       remote_id: string;
     }[],
   ): UnifiedEcommerceCustomerOutput {
-    const result: UnifiedEcommerceCustomerOutput = {
+    let result: UnifiedEcommerceCustomerOutput = {
       remote_id: customer.id?.toString(),
       remote_data: customer,
       email: customer.email,
@@ -123,7 +123,7 @@ export class WoocommerceCustomerMapper implements ICustomerMapper {
 
     if (customFieldMappings && customer.meta_data) {
       result.field_mappings = customer.meta_data.reduce((acc, meta) => {
-        const mapping = customFieldMappings.find((m) => m.slug === meta.key);
+        let mapping = customFieldMappings.find((m) => m.slug === meta.key);
         if (mapping) {
           acc[mapping.remote_id] = meta.value;
         }
