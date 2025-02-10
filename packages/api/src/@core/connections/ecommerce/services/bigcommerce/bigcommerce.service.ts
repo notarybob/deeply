@@ -45,16 +45,16 @@ export class BigcommerceConnectionService extends AbstractBaseConnectionService 
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
 
-      const access_token = JSON.parse(
+      var access_token = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
       config.headers = {
@@ -80,9 +80,9 @@ export class BigcommerceConnectionService extends AbstractBaseConnectionService 
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, body } = opts;
-      const { api_key, store_hash } = body;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, body } = opts;
+      var { api_key, store_hash } = body;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'bigcommerce',
@@ -91,8 +91,8 @@ export class BigcommerceConnectionService extends AbstractBaseConnectionService 
       });
 
       let db_res;
-      const connection_token = uuidv4();
-      const BASE_API_URL = (
+      var connection_token = uuidv4();
+      var BASE_API_URL = (
         CONNECTORS_METADATA['ecommerce']['bigcommerce'].urls
           .apiUrl as DynamicApiUrl
       )(store_hash);
