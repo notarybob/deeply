@@ -41,16 +41,16 @@ export class ContactService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmContactOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
 
-      var customFieldMappings =
+      const customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           'crm.contact',
         );
 
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedCrmContactInput>({
           sourceObject: unifiedContactData,
           targetType: CrmObject.contact,
@@ -65,14 +65,14 @@ export class ContactService {
         'desunified object is ' + JSON.stringify(desunifiedObject),
       );
 
-      var service: IContactService =
+      const service: IContactService =
         this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalContactOutput> = await service.addContact(
+      const resp: ApiResponse<OriginalContactOutput> = await service.addContact(
         desunifiedObject,
         linkedUserId,
       );
 
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalContactOutput[]
       >({
         sourceObject: [resp.data],
@@ -83,10 +83,10 @@ export class ContactService {
         customFieldMappings: customFieldMappings,
       })) as UnifiedCrmContactOutput[];
 
-      var source_contact = resp.data;
-      var target_contact = unifiedObject[0];
+      const source_contact = resp.data;
+      const target_contact = unifiedObject[0];
 
-      var unique_crm_contact_id = await this.saveOrUpdateContact(
+      const unique_crm_contact_id = await this.saveOrUpdateContact(
         target_contact,
         connection_id,
       );
@@ -103,7 +103,7 @@ export class ContactService {
         source_contact,
       );
 
-      var result_contact = await this.getContact(
+      const result_contact = await this.getContact(
         unique_crm_contact_id,
         undefined,
         undefined,
@@ -112,8 +112,8 @@ export class ContactService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -142,7 +142,7 @@ export class ContactService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -153,7 +153,7 @@ export class ContactService {
     contact: UnifiedCrmContactOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingContact = await this.prisma.crm_contacts.findFirst({
+    const existingContact = await this.prisma.crm_contacts.findFirst({
       where: { remote_id: contact.remote_id, id_connection: connection_id },
       include: {
         crm_email_addresses: true,
@@ -162,16 +162,16 @@ export class ContactService {
       },
     });
 
-    var { normalizedEmails, normalizedPhones } =
+    const { normalizedEmails, normalizedPhones } =
       this.utils.normalizeEmailsAndNumbers(
         contact.email_addresses,
         contact.phone_numbers,
       );
 
-    var normalizedAddresses = this.utils.normalizeAddresses(
+    const normalizedAddresses = this.utils.normalizeAddresses(
       contact.addresses,
     );
-    var data: any = {
+    const data: any = {
       first_name: contact.first_name,
       last_name: contact.last_name,
       id_crm_user: contact.user_id,
@@ -179,7 +179,7 @@ export class ContactService {
     };
 
     if (existingContact) {
-      var res = await this.prisma.crm_contacts.update({
+      const res = await this.prisma.crm_contacts.update({
         where: { id_crm_contact: existingContact.id_crm_contact },
         data: data,
       });
@@ -200,7 +200,7 @@ export class ContactService {
       data.id_connection = connection_id;
       data.id_crm_contact = uuidv4();
 
-      var newContact = await this.prisma.crm_contacts.create({ data: data });
+      const newContact = await this.prisma.crm_contacts.create({ data: data });
 
       await this.createRelatedEntities(
         normalizedEmails,
@@ -354,7 +354,7 @@ export class ContactService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmContactOutput> {
     try {
-      var contact = await this.prisma.crm_contacts.findUnique({
+      const contact = await this.prisma.crm_contacts.findUnique({
         where: {
           id_crm_contact: id_crm_contact,
         },
@@ -366,7 +366,7 @@ export class ContactService {
       });
 
       // Fetch field mappings for the contact
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: contact.id_crm_contact,
@@ -378,17 +378,17 @@ export class ContactService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedCrmContactInput format
-      var unifiedContact: UnifiedCrmContactOutput = {
+      const unifiedContact: UnifiedCrmContactOutput = {
         id: contact.id_crm_contact,
         first_name: contact.first_name,
         last_name: contact.last_name,
@@ -412,12 +412,12 @@ export class ContactService {
 
       let res: UnifiedCrmContactOutput = unifiedContact;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: contact.id_crm_contact,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         if (resp && resp.data) {
           res = {
@@ -469,7 +469,7 @@ export class ContactService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.crm_contacts.findFirst({
+        const isCursorPresent = await this.prisma.crm_contacts.findFirst({
           where: {
             id_connection: connection_id,
             id_crm_contact: cursor,
@@ -480,7 +480,7 @@ export class ContactService {
         }
       }
 
-      var contacts = await this.prisma.crm_contacts.findMany({
+      const contacts = await this.prisma.crm_contacts.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -511,10 +511,10 @@ export class ContactService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedContacts: UnifiedCrmContactOutput[] = await Promise.all(
+      const unifiedContacts: UnifiedCrmContactOutput[] = await Promise.all(
         contacts.map(async (contact) => {
           // Fetch field mappings for the contact
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: contact.id_crm_contact,
@@ -525,7 +525,7 @@ export class ContactService {
             },
           });
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -533,7 +533,7 @@ export class ContactService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-          var field_mappings = Object.fromEntries(fieldMappingsMap);
+          const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedCrmContactInput format
           return {
@@ -563,15 +563,15 @@ export class ContactService {
       let res: UnifiedCrmContactOutput[] = unifiedContacts;
 
       if (remote_data) {
-        var remote_array_data: UnifiedCrmContactOutput[] = await Promise.all(
+        const remote_array_data: UnifiedCrmContactOutput[] = await Promise.all(
           res.map(async (contact) => {
-            var resp = await this.prisma.remote_data.findFirst({
+            const resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: contact.id,
               },
             });
             if (resp && resp.data) {
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...contact, remote_data };
             }
             return contact;
