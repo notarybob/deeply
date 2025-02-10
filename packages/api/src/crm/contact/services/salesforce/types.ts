@@ -22,7 +22,7 @@ export interface SalesforceContactOutput extends SalesforceContactInput {
   IsDeleted: boolean;
 }
 
-export const commonSalesforceContactProperties = {
+export let commonSalesforceContactProperties = {
   Id: '',
   FirstName: '',
   LastName: '',
