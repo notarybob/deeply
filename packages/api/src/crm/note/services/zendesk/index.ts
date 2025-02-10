@@ -29,14 +29,14 @@ export class ZendeskService implements INoteService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZendeskNoteOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v2/notes`,
         {
           data: noteData,
@@ -63,16 +63,16 @@ export class ZendeskService implements INoteService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskNoteOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      let resp = await axios.get(`${connection.account_url}/v2/notes`, {
+      const resp = await axios.get(`${connection.account_url}/v2/notes`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -80,7 +80,7 @@ export class ZendeskService implements INoteService {
           )}`,
         },
       });
-      let finalData = resp.data.items.map((item) => {
+      const finalData = resp.data.items.map((item) => {
         return item.data;
       });
       this.logger.log(`Synced zendesk notes !`);
