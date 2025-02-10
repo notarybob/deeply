@@ -27,9 +27,9 @@ export class GitlabService implements ITagService {
 
   async sync(data: SyncParam): Promise<ApiResponse<GitlabTagOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gitlab',
@@ -37,7 +37,7 @@ export class GitlabService implements ITagService {
         },
       });
 
-      var groups = await axios.get(`${connection.account_url}/v4/groups`, {
+      const groups = await axios.get(`${connection.account_url}/v4/groups`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -46,9 +46,9 @@ export class GitlabService implements ITagService {
         },
       });
       let resp: any = [];
-      for (var group of groups.data) {
+      for (const group of groups.data) {
         if (group.id) {
-          var tags = await axios.get(
+          const tags = await axios.get(
             `${connection.account_url}/v4/groups/${group.id}/labels`,
             {
               headers: {
