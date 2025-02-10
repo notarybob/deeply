@@ -21,7 +21,7 @@ export class AttioCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<AttioCompanyInput> {
-    var result: AttioCompanyInput = {
+    const result: AttioCompanyInput = {
       values: {
         name: [
           {
@@ -39,7 +39,7 @@ export class AttioCompanyMapper implements ICompanyMapper {
     }*/
 
     if (source.addresses) {
-      var address = source.addresses[0];
+      const address = source.addresses[0];
       if (address) {
         result.values.primary_location = [
           {
@@ -59,7 +59,7 @@ export class AttioCompanyMapper implements ICompanyMapper {
     }
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.values.team = [
           {
@@ -74,8 +74,8 @@ export class AttioCompanyMapper implements ICompanyMapper {
     // Attio Company doest not have direct mapping of number of employees
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -122,9 +122,9 @@ export class AttioCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmCompanyOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = company.values[mapping.remote_id];
       }
     }
@@ -132,7 +132,7 @@ export class AttioCompanyMapper implements ICompanyMapper {
     let opts: any = {};
 
     if (company.values.team[0]?.target_record_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         company.values.team[0].target_record_id,
         connectionId,
       );
