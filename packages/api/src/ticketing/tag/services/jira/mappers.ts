@@ -32,7 +32,7 @@ export class JiraTagMapper implements ITagMapper {
     }[],
   ): UnifiedTicketingTagOutput | UnifiedTicketingTagOutput[] {
     // If the source is not an array, convert it to an array for mapping
-    let sourcesArray = Array.isArray(source) ? source : [source];
+    const sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((tag) =>
       this.mapSingleTagToUnified(tag, connectionId, customFieldMappings),
@@ -47,7 +47,7 @@ export class JiraTagMapper implements ITagMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingTagOutput {
-    let unifiedTag: UnifiedTicketingTagOutput = {
+    const unifiedTag: UnifiedTicketingTagOutput = {
       remote_id: tag.id ?? null,
       remote_data: tag,
       name: tag.name,
