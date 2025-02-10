@@ -53,21 +53,21 @@ export class FaireConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
 
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         connection.id_project,
         this.type,
       )) as OAuth2AuthData;
 
-      const access_token = JSON.parse(
+      var access_token = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
       config.headers = {
@@ -96,8 +96,8 @@ export class FaireConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'faire',
@@ -105,14 +105,14 @@ export class FaireConnectionService extends AbstractBaseConnectionService {
         },
       });
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
 
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         redirect_url: REDIRECT_URI,
         applicationId: CREDENTIALS.CLIENT_ID,
         applicationSecret: CREDENTIALS.CLIENT_SECRET,
@@ -120,7 +120,7 @@ export class FaireConnectionService extends AbstractBaseConnectionService {
         authorization_code: code,
         grant_type: 'AUTHORIZATION_CODE',
       });
-      const res = await axios.post(
+      var res = await axios.post(
         'https://www.faire.com/api/external-api-oauth2/token',
         formData.toString(),
         {
@@ -129,11 +129,11 @@ export class FaireConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: FaireOAuthResponse = res.data;
+      var data: FaireOAuthResponse = res.data;
       // save tokens for this customer inside our db
       let db_res;
-      const connection_token = uuidv4();
-      const BASE_API_URL = CONNECTORS_METADATA['ecommerce']['faire'].urls
+      var connection_token = uuidv4();
+      var BASE_API_URL = CONNECTORS_METADATA['ecommerce']['faire'].urls
         .apiUrl as string;
 
       if (isNotUnique) {
