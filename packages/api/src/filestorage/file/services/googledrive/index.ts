@@ -16,10 +16,10 @@ import { GoogleDriveFileOutput } from './types';
 import { UnifiedFilestoragePermissionOutput } from '@filestorage/permission/types/model.unified';
 import { GoogledrivePermissionOutput } from '@filestorage/permission/services/googledrive/types';
 
-var BATCH_SIZE = 1000; // Number of files to process in each batch
-var API_RATE_LIMIT = 10; // Requests per second
-var MAX_RETRIES = 3;
-var INITIAL_BACKOFF = 1000; // 1 second
+const BATCH_SIZE = 1000; // Number of files to process in each batch
+const API_RATE_LIMIT = 10; // Requests per second
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF = 1000; // 1 second
 
 @Injectable()
 export class GoogleDriveService implements IFileService {
@@ -49,7 +49,7 @@ export class GoogleDriveService implements IFileService {
     extraParams?: { [key: string]: any },
   ): Promise<UnifiedFilestorageFileOutput[]> {
     // Extract all permissions from the files
-    var permissionsIds: string[] = Array.from(
+    const permissionsIds: string[] = Array.from(
       new Set(
         sourceData.reduce<string[]>((accumulator, file) => {
           if (file.permissionIds?.length) {
@@ -61,14 +61,14 @@ export class GoogleDriveService implements IFileService {
     );
 
     if (permissionsIds.length) {
-      var uniquePermissions = await this.fetchPermissions(
+      const uniquePermissions = await this.fetchPermissions(
         permissionsIds,
         sourceData,
         drive,
       );
 
       // Ingest permissions using the ingestService
-      var syncedPermissions = await this.ingestService.ingestData<
+      const syncedPermissions = await this.ingestService.ingestData<
         UnifiedFilestoragePermissionOutput,
         GoogledrivePermissionOutput
       >(
@@ -84,7 +84,7 @@ export class GoogleDriveService implements IFileService {
       );
 
       // Create a map of original permission ID to synced permission ID
-      var permissionIdMap: Map<string, string> = new Map(
+      const permissionIdMap: Map<string, string> = new Map(
         syncedPermissions.map((permission) => [
           permission.remote_id,
           permission.id_fs_permission,
@@ -105,7 +105,7 @@ export class GoogleDriveService implements IFileService {
     }
 
     // Ingest files with updated permissions
-    var syncedFiles = await this.ingestService.ingestData<
+    const syncedFiles = await this.ingestService.ingestData<
       UnifiedFilestorageFileOutput,
       GoogleDriveFileOutput
     >(
@@ -144,8 +144,8 @@ export class GoogleDriveService implements IFileService {
    * @param pageToken - Used for continuation of initial sync
    */
   async sync(data: SyncParam, pageToken?: string) {
-    var { linkedUserId, custom_field_mappings, ingestParams } = data;
-    var connection = await this.prisma.connections.findFirst({
+    const { linkedUserId, custom_field_mappings, ingestParams } = data;
+    const connection = await this.prisma.connections.findFirst({
       where: {
         id_linked_user: linkedUserId,
         provider_slug: 'googledrive',
@@ -155,19 +155,19 @@ export class GoogleDriveService implements IFileService {
 
     if (!connection) return;
 
-    var auth = new OAuth2Client();
+    const auth = new OAuth2Client();
     auth.setCredentials({
       access_token: this.cryptoService.decrypt(connection.access_token),
     });
-    var drive = google.drive({ version: 'v3', auth });
+    const drive = google.drive({ version: 'v3', auth });
 
-    var lastSyncTime = await this.getLastSyncTime(connection.id_connection);
-    var isFirstSync = !lastSyncTime || pageToken;
+    const lastSyncTime = await this.getLastSyncTime(connection.id_connection);
+    const isFirstSync = !lastSyncTime || pageToken;
     let syncCompleted = false;
 
     if (isFirstSync) {
       // Start or continuation of initial sync
-      var { filesToSync: files, nextPageToken } = await this.getFilesToSync(
+      const { filesToSync: files, nextPageToken } = await this.getFilesToSync(
         drive,
         pageToken,
       );
@@ -198,7 +198,7 @@ export class GoogleDriveService implements IFileService {
       }
     } else {
       // incremental sync using changes api
-      var { filesToSync, moreChangesToFetch, remote_cursor } =
+      const { filesToSync, moreChangesToFetch, remote_cursor } =
         await this.getFilesToSyncFromChangesApi(drive, connection);
 
       await this.ingestFiles(
@@ -240,7 +240,7 @@ export class GoogleDriveService implements IFileService {
     connection: any,
     maxApiCalls = 10, // number of times we use nextPageToken
   ) {
-    var filesToSync: GoogleDriveFileOutput[] = [];
+    const filesToSync: GoogleDriveFileOutput[] = [];
     let apiCallCount = 0;
     let pageToken: string | undefined;
     let newRemoteCursor: string | undefined;
@@ -249,7 +249,7 @@ export class GoogleDriveService implements IFileService {
     pageToken = await this.getRemoteCursor(drive, connection.id_connection);
 
     do {
-      var response = await this.rateLimitedRequest(() =>
+      const response = await this.rateLimitedRequest(() =>
         drive.changes.list({
           pageToken,
           supportsAllDrives: true,
@@ -260,9 +260,9 @@ export class GoogleDriveService implements IFileService {
         }),
       );
 
-      var { changes, nextPageToken, newStartPageToken } = response.data;
+      const { changes, nextPageToken, newStartPageToken } = response.data;
 
-      var batchFiles = changes
+      const batchFiles = changes
         .filter(
           (change) =>
             change.file?.mimeType !== 'application/vnd.google-apps.folder',
@@ -288,13 +288,13 @@ export class GoogleDriveService implements IFileService {
     drive: ReturnType<typeof google.drive>,
     connectionId: string,
   ): Promise<string> {
-    var internalDrive = await this.prisma.fs_drives.findFirst({
+    const internalDrive = await this.prisma.fs_drives.findFirst({
       where: { id_connection: connectionId }, // all drives share the same cursor for now
       select: { id_fs_drive: true, remote_cursor: true },
     });
     let remoteCursor = internalDrive?.remote_cursor;
     if (!remoteCursor) {
-      var startPageToken = await this.rateLimitedRequest(() =>
+      const startPageToken = await this.rateLimitedRequest(() =>
         drive.changes
           .getStartPageToken({ supportsAllDrives: true }) // one cursor for all drives
           .then((response) => response.data.startPageToken),
@@ -321,12 +321,12 @@ export class GoogleDriveService implements IFileService {
       };
     }
 
-    var accumulatedFiles: GoogleDriveFileOutput[] = [];
+    const accumulatedFiles: GoogleDriveFileOutput[] = [];
     let nextPageToken = pageToken;
     let pagesProcessed = 0;
 
     do {
-      var filesResponse = await this.rateLimitedRequest<DriveResponse>(() =>
+      const filesResponse = await this.rateLimitedRequest<DriveResponse>(() =>
         drive.files.list({
           q: 'mimeType != "application/vnd.google-apps.folder"',
           fields:
@@ -345,7 +345,7 @@ export class GoogleDriveService implements IFileService {
     } while (nextPageToken && pagesProcessed < pages);
 
     // Remove duplicate files based on id
-    var filesToSync = Array.from(
+    const filesToSync = Array.from(
       new Map(accumulatedFiles.map((file) => [file.id, file])).values(),
     );
 
@@ -353,7 +353,7 @@ export class GoogleDriveService implements IFileService {
   }
 
   async processBatch(job: any) {
-    var { linkedUserId, pageToken, custom_field_mappings, ingestParams } =
+    const { linkedUserId, pageToken, custom_field_mappings, ingestParams } =
       job.data;
 
     // Call the sync method with the pageToken and other job data
@@ -377,7 +377,7 @@ export class GoogleDriveService implements IFileService {
     files: GoogleDriveFileOutput[],
     drive: ReturnType<typeof google.drive>,
   ): Promise<GoogleDriveFileOutput[]> {
-    var rootDriveId = await this.rateLimitedRequest(() =>
+    const rootDriveId = await this.rateLimitedRequest(() =>
       drive.files
         .get({
           fileId: 'root',
@@ -398,11 +398,11 @@ export class GoogleDriveService implements IFileService {
     files: GoogleDriveFileOutput[],
     drive: ReturnType<typeof google.drive>,
   ): Promise<GoogledrivePermissionOutput[]> {
-    var permissionIdToFiles = new Map<string, string[]>();
+    const permissionIdToFiles = new Map<string, string[]>();
 
-    for (var file of files) {
+    for (const file of files) {
       if (file.permissionIds?.length) {
-        for (var permissionId of file.permissionIds) {
+        for (const permissionId of file.permissionIds) {
           if (permissionIdToFiles.has(permissionId)) {
             // only need one file_id to get the permission
             continue;
@@ -413,13 +413,13 @@ export class GoogleDriveService implements IFileService {
       }
     }
 
-    var permissions: GoogledrivePermissionOutput[] = [];
-    var entries = Array.from(permissionIdToFiles.entries());
+    const permissions: GoogledrivePermissionOutput[] = [];
+    const entries = Array.from(permissionIdToFiles.entries());
 
     // do in batches of 10
     for (let i = 0; i < entries.length; i += 10) {
-      var batch = entries.slice(i, i + 10);
-      var batchPromises = batch.map(([permissionId, fileIds]) =>
+      const batch = entries.slice(i, i + 10);
+      const batchPromises = batch.map(([permissionId, fileIds]) =>
         drive.permissions.get({
           permissionId,
           fileId: fileIds[0],
@@ -427,7 +427,7 @@ export class GoogleDriveService implements IFileService {
         }),
       );
 
-      var batchResults = await Promise.all(batchPromises);
+      const batchResults = await Promise.all(batchPromises);
       permissions.push(
         ...batchResults.map(
           (result) => result.data as unknown as GoogledrivePermissionOutput,
@@ -486,7 +486,7 @@ export class GoogleDriveService implements IFileService {
   }
 
   private async getLastSyncTime(connectionId: string): Promise<Date | null> {
-    var lastSync = await this.prisma.fs_files.findFirst({
+    const lastSync = await this.prisma.fs_files.findFirst({
       where: { id_connection: connectionId },
       orderBy: { remote_modified_at: 'desc' },
     });
@@ -495,7 +495,7 @@ export class GoogleDriveService implements IFileService {
 
   async downloadFile(fileId: string, connection: any): Promise<Buffer> {
     try {
-      var response = await axios.get(
+      const response = await axios.get(
         `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`,
         {
           headers: {
