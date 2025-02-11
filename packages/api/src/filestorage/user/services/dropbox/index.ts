@@ -26,9 +26,9 @@ export class DropboxService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<DropboxUserOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'dropbox',
@@ -37,7 +37,7 @@ export class DropboxService implements IUserService {
       });
 
       // ref: https://www.dropbox.com/developers/documentation/http/teams#team-members-list
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/team/members/list_2`,
         {
           headers: {
