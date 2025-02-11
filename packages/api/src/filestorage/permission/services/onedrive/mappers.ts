@@ -70,9 +70,9 @@ export class OnedrivePermissionMapper implements IPermissionMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestoragePermissionOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = permission[mapping.remote_id];
       }
     }
