@@ -27,7 +27,7 @@ export class GoogleDriveService implements IDriveService {
   }
 
   private async getGoogleClient(linkedUserId: string): Promise<OAuth2Client> {
-    let connection = await this.prisma.connections.findFirst({
+    const connection = await this.prisma.connections.findFirst({
       where: {
         id_linked_user: linkedUserId,
         provider_slug: 'googledrive',
@@ -39,7 +39,7 @@ export class GoogleDriveService implements IDriveService {
       throw new Error('Connection not found');
     }
 
-    let oauth2Client = new google.auth.OAuth2();
+    const oauth2Client = new google.auth.OAuth2();
     oauth2Client.setCredentials({
       access_token: this.cryptoService.decrypt(connection.access_token),
       refresh_token: this.cryptoService.decrypt(connection.refresh_token),
@@ -53,16 +53,16 @@ export class GoogleDriveService implements IDriveService {
     linkedUserId: string,
   ): Promise<ApiResponse<GoogleDriveDriveOutput>> {
     try {
-      let oauth2Client = await this.getGoogleClient(linkedUserId);
-      let drive = google.drive({ version: 'v3', auth: oauth2Client });
+      const oauth2Client = await this.getGoogleClient(linkedUserId);
+      const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
-      let response = await drive.drives.create({
+      const response = await drive.drives.create({
         requestBody: {
           name: driveData.name,
         },
       });
 
-      let createdDrive: GoogleDriveDriveOutput = {
+      const createdDrive: GoogleDriveDriveOutput = {
         id: response.data.id || '',
         name: response.data.name || '',
         kind: response.data.kind || '',
@@ -81,16 +81,16 @@ export class GoogleDriveService implements IDriveService {
 
   async sync(data: SyncParam): Promise<ApiResponse<GoogleDriveDriveOutput[]>> {
     try {
-      let { linkedUserId } = data;
-      let oauth2Client = await this.getGoogleClient(linkedUserId);
-      let drive = google.drive({ version: 'v3', auth: oauth2Client });
+      const { linkedUserId } = data;
+      const oauth2Client = await this.getGoogleClient(linkedUserId);
+      const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
-      let response = await drive.drives.list({
+      const response = await drive.drives.list({
         pageSize: 100,
         fields: 'drives(id,name,kind,createdTime)',
       });
 
-      let drives: GoogleDriveDriveOutput[] = (response.data.drives || []).map(
+      const drives: GoogleDriveDriveOutput[] = (response.data.drives || []).map(
         (drive) => ({
           id: drive.id || '',
           name: drive.name || '',
@@ -99,11 +99,11 @@ export class GoogleDriveService implements IDriveService {
         }),
       );
 
-      let rootDriveResponse = await drive.files.get({
+      const rootDriveResponse = await drive.files.get({
         fileId: 'root',
         fields: 'name,createdTime,id,kind',
       });
-      let rootDrive = rootDriveResponse.data;
+      const rootDrive = rootDriveResponse.data;
 
       drives.push({
         id: rootDrive.id || '',
