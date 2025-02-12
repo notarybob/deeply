@@ -41,15 +41,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = CRM_PROVIDERS;
-          for (var provider of providers) {
+          const providers = CRM_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -71,8 +71,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: ICompanyService =
+      const { integrationId, linkedUserId } = param;
+      const service: ICompanyService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -99,13 +99,13 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<CrmCompany[]> {
     try {
-      var companies_results: CrmCompany[] = [];
+      const companies_results: CrmCompany[] = [];
 
-      var updateOrCreateCompany = async (
+      const updateOrCreateCompany = async (
         company: UnifiedCrmCompanyOutput,
         originId: string,
       ) => {
-        var existingCompany = await this.prisma.crm_companies.findFirst({
+        const existingCompany = await this.prisma.crm_companies.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
@@ -117,17 +117,17 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        var { normalizedEmails, normalizedPhones } =
+        const { normalizedEmails, normalizedPhones } =
           this.utils.normalizeEmailsAndNumbers(
             company.email_addresses,
             company.phone_numbers,
           );
 
-        var normalizedAddresses = this.utils.normalizeAddresses(
+        const normalizedAddresses = this.utils.normalizeAddresses(
           company.addresses,
         );
 
-        var baseData: any = {
+        const baseData: any = {
           name: company.name ?? null,
           industry: company.industry ?? null,
           number_of_employees: company.number_of_employees ?? null,
@@ -136,7 +136,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         };
 
         if (existingCompany) {
-          var res = await this.prisma.crm_companies.update({
+          const res = await this.prisma.crm_companies.update({
             where: {
               id_crm_company: existingCompany.id_crm_company,
             },
@@ -221,8 +221,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
           }
           return res;
         } else {
-          var uuid = uuidv4();
-          var newCompany = await this.prisma.crm_companies.create({
+          const uuid = uuidv4();
+          const newCompany = await this.prisma.crm_companies.create({
             data: {
               ...baseData,
               id_crm_company: uuid,
@@ -278,15 +278,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        var company = data[i];
-        var originId = company.remote_id;
+        const company = data[i];
+        const originId = company.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateCompany(company, originId);
-        var company_id = res.id_crm_company;
+        const res = await updateOrCreateCompany(company, originId);
+        const company_id = res.id_crm_company;
         companies_results.push(res);
 
         // Process field mappings
