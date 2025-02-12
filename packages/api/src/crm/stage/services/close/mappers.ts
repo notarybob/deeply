@@ -52,9 +52,9 @@ export class CloseStageMapper implements IStageMapper {
       remote_id: string;
     }[],
   ): UnifiedCrmStageOutput {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = stage[mapping.remote_id];
       }
     }
