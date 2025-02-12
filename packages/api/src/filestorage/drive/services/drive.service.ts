@@ -19,14 +19,14 @@ export class DriveService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestorageDriveOutput> {
     try {
-      var drive = await this.prisma.fs_drives.findUnique({
+      const drive = await this.prisma.fs_drives.findUnique({
         where: {
           id_fs_drive: id_fs_drive,
         },
       });
 
       // Fetch field mappings for the contact
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: drive.id_fs_drive,
@@ -38,17 +38,17 @@ export class DriveService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedContactInput format
-      var unifiedDrive: UnifiedFilestorageDriveOutput = {
+      const unifiedDrive: UnifiedFilestorageDriveOutput = {
         id: drive.id_fs_drive,
         remote_created_at: String(drive.remote_created_at),
         name: drive.name,
@@ -61,12 +61,12 @@ export class DriveService {
 
       let res: UnifiedFilestorageDriveOutput = unifiedDrive;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: drive.id_fs_drive,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -113,7 +113,7 @@ export class DriveService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.fs_drives.findFirst({
+        const isCursorPresent = await this.prisma.fs_drives.findFirst({
           where: {
             id_connection: connection_id,
             id_fs_drive: cursor,
@@ -124,7 +124,7 @@ export class DriveService {
         }
       }
 
-      var drives = await this.prisma.fs_drives.findMany({
+      const drives = await this.prisma.fs_drives.findMany({
         take: pageSize + 1,
         cursor: cursor
           ? {
@@ -150,10 +150,10 @@ export class DriveService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedDrives: UnifiedFilestorageDriveOutput[] = await Promise.all(
+      const unifiedDrives: UnifiedFilestorageDriveOutput[] = await Promise.all(
         drives.map(async (drive) => {
           // Fetch field mappings for the drive
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: drive.id_fs_drive,
@@ -164,14 +164,14 @@ export class DriveService {
             },
           });
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
           });
 
           // Convert the map to an array of objects
-          var field_mappings = Object.fromEntries(fieldMappingsMap);
+          const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedFilestorageDriveInput format
           return {
@@ -190,15 +190,15 @@ export class DriveService {
       let res: UnifiedFilestorageDriveOutput[] = unifiedDrives;
 
       if (remote_data) {
-        var remote_array_data: UnifiedFilestorageDriveOutput[] =
+        const remote_array_data: UnifiedFilestorageDriveOutput[] =
           await Promise.all(
             res.map(async (drive) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: drive.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...drive, remote_data };
             }),
           );
