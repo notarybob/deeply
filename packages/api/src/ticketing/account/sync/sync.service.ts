@@ -37,15 +37,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = TICKETING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = TICKETING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -67,8 +67,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(data: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId, wh_real_time_trigger } = data;
-      var service: IAccountService =
+      const { integrationId, linkedUserId, wh_real_time_trigger } = data;
+      const service: IAccountService =
         this.serviceRegistry.getService(integrationId);
 
       if (!service) {
@@ -104,14 +104,14 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<TicketingAccount[]> {
     try {
-      var accounts_results: TicketingAccount[] = [];
+      const accounts_results: TicketingAccount[] = [];
 
-      var updateOrCreateAccount = async (
+      const updateOrCreateAccount = async (
         account: UnifiedTicketingAccountOutput,
         originId: string,
         connection_id: string,
       ) => {
-        var existingAccount = await this.prisma.tcg_accounts.findFirst({
+        const existingAccount = await this.prisma.tcg_accounts.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
@@ -143,19 +143,19 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        var account = data[i];
-        var originId = account.remote_id;
+        const account = data[i];
+        const originId = account.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateAccount(
+        const res = await updateOrCreateAccount(
           account,
           originId,
           connection_id,
         );
-        var account_id = res.id_tcg_account;
+        const account_id = res.id_tcg_account;
         accounts_results.push(res);
 
         await this.ingestService.processFieldMappings(
@@ -173,7 +173,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
   }
 
   async removeInDb(connection_id: string, remote_id: string) {
-    var existingAccount = await this.prisma.tcg_accounts.findFirst({
+    const existingAccount = await this.prisma.tcg_accounts.findFirst({
       where: {
         remote_id: remote_id,
         id_connection: connection_id,
