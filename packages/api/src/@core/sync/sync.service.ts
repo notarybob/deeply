@@ -23,7 +23,7 @@ export class CoreSyncService {
   @Cron(CronExpression.EVERY_30_SECONDS)
   async checkAndKickstartSync(user_id?: string) {
     try {
-      const users = user_id
+      let users = user_id
         ? [
             await this.prisma.users.findUnique({
               where: {
@@ -33,16 +33,16 @@ export class CoreSyncService {
           ]
         : await this.prisma.users.findMany();
       if (users && users.length > 0) {
-        for (const user of users) {
+        for (let user of users) {
           try {
-            const projects = await this.prisma.projects.findMany({
+            let projects = await this.prisma.projects.findMany({
               where: {
                 id_user: user.id_user,
               },
             });
-            for (const project of projects) {
+            for (let project of projects) {
               try {
-                const projectSyncConfig =
+                let projectSyncConfig =
                   await this.prisma.projects_pull_frequency.findFirst({
                     where: {
                       id_project: project.id_project,
@@ -50,7 +50,7 @@ export class CoreSyncService {
                   });
 
                 if (projectSyncConfig) {
-                  const syncIntervals = {
+                  let syncIntervals = {
                     crm: projectSyncConfig.crm,
                     accounting: projectSyncConfig.accounting,
                     filestorage: projectSyncConfig.filestorage,
@@ -58,12 +58,12 @@ export class CoreSyncService {
                     ticketing: projectSyncConfig.ticketing,
                   };
 
-                  for (const [vertical, interval] of Object.entries(
+                  for (let [vertical, interval] of Object.entries(
                     syncIntervals,
                   )) {
                     if (interval && interval > 0) {
-                      const now = new Date();
-                      const lastSyncEvent = await this.prisma.events.findFirst({
+                      let now = new Date();
+                      let lastSyncEvent = await this.prisma.events.findFirst({
                         where: {
                           id_project: project.id_project,
                           type: `${vertical}.batchSyncStart`,
@@ -73,11 +73,11 @@ export class CoreSyncService {
                         },
                       });
 
-                      const lastSyncTime = lastSyncEvent
+                      let lastSyncTime = lastSyncEvent
                         ? lastSyncEvent.timestamp
                         : new Date(0);
 
-                      const secondsSinceLastSync =
+                      let secondsSinceLastSync =
                         Number(now.getTime() - lastSyncTime.getTime()) / 1000;
 
                       if (interval && secondsSinceLastSync >= interval) {
@@ -94,17 +94,17 @@ export class CoreSyncService {
                             timestamp: new Date(),
                           },
                         });
-                        const commonObjects =
+                        let commonObjects =
                           getCommonObjectsForVertical(vertical);
-                        for (const commonObject of commonObjects) {
+                        for (let commonObject of commonObjects) {
                           try {
-                            const service = this.registry.getService(
+                            let service = this.registry.getService(
                               vertical,
                               commonObject,
                             );
                             if (service) {
                               try {
-                                const cronExpression =
+                                let cronExpression =
                                   this.convertIntervalToCron(Number(interval));
 
                                 await this.bullQueueService.queueSyncJob(
@@ -139,9 +139,9 @@ export class CoreSyncService {
                         }
                       }
                     } else {
-                      const commonObjects =
+                      let commonObjects =
                         getCommonObjectsForVertical(vertical);
-                      for (const commonObject of commonObjects) {
+                      for (let commonObject of commonObjects) {
                         await this.bullQueueService.removeRepeatableJob(
                           `${vertical}-sync-${commonObject}s-${project.id_project}`,
                         );
@@ -180,18 +180,18 @@ export class CoreSyncService {
 
     // If the interval is less than 1 hour, use minutes
     if (intervalSeconds < 3600) {
-      const minutes = Math.floor(intervalSeconds / 60);
+      let minutes = Math.floor(intervalSeconds / 60);
       return `*/${minutes} * * * *`;
     }
 
     // If the interval is less than 1 day, use hours
     if (intervalSeconds < 86400) {
-      const hours = Math.floor(intervalSeconds / 3600);
+      let hours = Math.floor(intervalSeconds / 3600);
       return `0 */${hours} * * *`;
     }
 
     // For intervals of 1 day or more, use days
-    const days = Math.floor(intervalSeconds / 86400);
+    let days = Math.floor(intervalSeconds / 86400);
     return `0 0 */${days} * *`;
   }
 
@@ -229,7 +229,7 @@ export class CoreSyncService {
   }
 
   async handleCrmSync(provider: string, linkedUserId: string) {
-    const tasks = [
+    let tasks = [
       () =>
         this.registry.getService('crm', 'user').syncForLinkedUser({
           integrationId: provider,
@@ -252,7 +252,7 @@ export class CoreSyncService {
         }),
     ];
 
-    for (const type of ENGAGEMENTS_TYPE) {
+    for (let type of ENGAGEMENTS_TYPE) {
       tasks.push(() =>
         this.registry.getService('crm', 'engagement').syncForLinkedUser({
           integrationId: provider,
@@ -276,7 +276,7 @@ export class CoreSyncService {
     );
 
     // Execute all tasks and handle results
-    for (const task of tasks) {
+    for (let task of tasks) {
       try {
         await task();
       } catch (error) {
@@ -284,20 +284,20 @@ export class CoreSyncService {
       }
     }
 
-    const connection = await this.prisma.connections.findFirst({
+    let connection = await this.prisma.connections.findFirst({
       where: {
         id_linked_user: linkedUserId,
         provider_slug: provider.toLowerCase(),
       },
     });
 
-    const deals = await this.prisma.crm_deals.findMany({
+    let deals = await this.prisma.crm_deals.findMany({
       where: {
         id_connection: connection.id_connection,
       },
     });
 
-    const stageTasks = deals.map(
+    let stageTasks = deals.map(
       (deal) => async () =>
         this.registry.getService('crm', 'stage').syncForLinkedUser({
           integrationId: provider,
@@ -307,7 +307,7 @@ export class CoreSyncService {
     );
 
     // Execute all tasks and handle results
-    for (const task of stageTasks) {
+    for (let task of stageTasks) {
       try {
         await task();
       } catch (error) {
@@ -318,7 +318,7 @@ export class CoreSyncService {
 
   async handleTicketingSync(provider: string, linkedUserId: string) {
     //todo: define here the topological order PER provider
-    const tasks = [
+    let tasks = [
       () =>
         this.registry.getService('ticketing', 'collection').syncForLinkedUser({
           integrationId: provider,
@@ -351,27 +351,27 @@ export class CoreSyncService {
         }),
     ];
 
-    const connection = await this.prisma.connections.findFirst({
+    let connection = await this.prisma.connections.findFirst({
       where: {
         id_linked_user: linkedUserId,
         provider_slug: provider.toLowerCase(),
       },
     });
 
-    for (const task of tasks) {
+    for (let task of tasks) {
       try {
         await task();
       } catch (error) {
         this.logger.error(`Task failed: ${error.message}`, error);
       }
     }
-    const tickets = await this.prisma.tcg_tickets.findMany({
+    let tickets = await this.prisma.tcg_tickets.findMany({
       where: {
         id_connection: connection.id_connection,
       },
     });
 
-    const ticketCommentTasks = tickets.map(
+    let ticketCommentTasks = tickets.map(
       (ticket) => async () =>
         this.registry.getService('ticketing', 'comment').syncForLinkedUser({
           integrationId: provider,
@@ -380,7 +380,7 @@ export class CoreSyncService {
         }),
     );
 
-    const ticketTagsTasks = tickets.map(
+    let ticketTagsTasks = tickets.map(
       (ticket) => async () =>
         this.registry.getService('ticketing', 'tag').syncForLinkedUser({
           integrationId: provider,
@@ -389,7 +389,7 @@ export class CoreSyncService {
         }),
     );
 
-    for (const task of ticketCommentTasks) {
+    for (let task of ticketCommentTasks) {
       try {
         await task();
       } catch (error) {
@@ -400,7 +400,7 @@ export class CoreSyncService {
       }
     }
 
-    for (const task of ticketTagsTasks) {
+    for (let task of ticketTagsTasks) {
       try {
         await task();
       } catch (error) {
@@ -410,7 +410,7 @@ export class CoreSyncService {
   }
 
   async handleFileStorageSync(provider: string, linkedUserId: string) {
-    const tasks = [
+    let tasks = [
       () =>
         this.registry.getService('filestorage', 'user').syncForLinkedUser({
           integrationId: provider,
@@ -445,7 +445,7 @@ export class CoreSyncService {
     //     }),
     //   );
     // }
-    for (const task of tasks) {
+    for (let task of tasks) {
       try {
         await task();
       } catch (error) {
@@ -454,20 +454,20 @@ export class CoreSyncService {
       }
     }
 
-    const connection = await this.prisma.connections.findFirst({
+    let connection = await this.prisma.connections.findFirst({
       where: {
         id_linked_user: linkedUserId,
         provider_slug: provider.toLowerCase(),
       },
     });
 
-    // const folders = await this.prisma.fs_folders.findMany({
+    // let folders = await this.prisma.fs_folders.findMany({
     //   where: {
     //     id_connection: connection.id_connection,
     //   },
     // });
     // if (provider !== 'googledrive') {
-    //   const filesTasks = folders.map(
+    //   let filesTasks = folders.map(
     //     (folder) => async () =>
     //       this.registry.getService('filestorage', 'file').syncForLinkedUser({
     //         integrationId: provider,
@@ -476,7 +476,7 @@ export class CoreSyncService {
     //       }),
     //   );
 
-    //   for (const task of filesTasks) {
+    //   for (let task of filesTasks) {
     //     try {
     //       await task();
     //     } catch (error) {
@@ -488,7 +488,7 @@ export class CoreSyncService {
   }
 
   async handleEcommerceSync(provider: string, linkedUserId: string) {
-    const tasks = [
+    let tasks = [
       () =>
         this.registry.getService('ecommerce', 'customer').syncForLinkedUser({
           integrationId: provider,
@@ -505,7 +505,7 @@ export class CoreSyncService {
           linkedUserId: linkedUserId,
         }),
     ];
-    for (const task of tasks) {
+    for (let task of tasks) {
       try {
         await task();
       } catch (error) {
@@ -513,20 +513,20 @@ export class CoreSyncService {
       }
     }
 
-    const connection = await this.prisma.connections.findFirst({
+    let connection = await this.prisma.connections.findFirst({
       where: {
         id_linked_user: linkedUserId,
         provider_slug: provider.toLowerCase(),
       },
     });
 
-    const orders = await this.prisma.ecom_orders.findMany({
+    let orders = await this.prisma.ecom_orders.findMany({
       where: {
         id_connection: connection.id_connection,
       },
     });
 
-    const fulfTasks = orders.map(
+    let fulfTasks = orders.map(
       (order) => async () =>
         this.registry.getService('ecommerce', 'fulfillment').syncForLinkedUser({
           integrationId: provider,
@@ -535,7 +535,7 @@ export class CoreSyncService {
         }),
     );
 
-    for (const task of fulfTasks) {
+    for (let task of fulfTasks) {
       try {
         await task();
       } catch (error) {
