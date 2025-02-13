@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const apiKeySchema = z.object({
+export let apiKeySchema = z.object({
   id_api_key: z.string(),
   name: z.string(),
 })
