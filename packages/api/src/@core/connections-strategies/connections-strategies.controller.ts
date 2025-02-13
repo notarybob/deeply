@@ -46,8 +46,8 @@ export class ConnectionsStrategiesController {
     @Request() req: any,
     @Body() connectionStrategyCreateDto: CreateConnectionStrategyDto,
   ) {
-    const { id_project } = req.user;
-    const { type, attributes, values, status } = connectionStrategyCreateDto;
+    let { id_project } = req.user;
+    let { type, attributes, values, status } = connectionStrategyCreateDto;
     return await this.connectionsStrategiesService.createConnectionStrategy(
       id_project,
       type,
@@ -92,7 +92,7 @@ export class ConnectionsStrategiesController {
   @UseGuards(JwtAuthGuard)
   @Post('update')
   async updateConnectionStrategy(@Body() updateData: UpdateCSDto) {
-    const { attributes, id_cs, status, values } = updateData;
+    let { attributes, id_cs, status, values } = updateData;
     // validate user against project_id
     return await this.connectionsStrategiesService.updateConnectionStrategy(
       id_cs,
@@ -115,8 +115,8 @@ export class ConnectionsStrategiesController {
     @Body() data: ConnectionStrategyCredentials,
   ) {
     // validate user against project_id
-    const { id_project } = req.user;
-    const { attributes, type } = data;
+    let { id_project } = req.user;
+    let { attributes, type } = data;
     return await this.connectionsStrategiesService.getConnectionStrategyData(
       id_project,
       type,
@@ -148,7 +148,7 @@ export class ConnectionsStrategiesController {
   @UseGuards(JwtAuthGuard)
   @Get('getConnectionStrategiesForProject')
   async getConnectionStrategiesForProject(@Request() req: any) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return await this.connectionsStrategiesService.getConnectionStrategiesForProject(
       id_project,
     );
