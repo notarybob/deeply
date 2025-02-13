@@ -19,7 +19,7 @@ export class UserService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingUserOutput> {
     try {
-      const user = await this.prisma.tcg_users.findUnique({
+      var user = await this.prisma.tcg_users.findUnique({
         where: {
           id_tcg_user: id_ticketing_user,
         },
@@ -28,7 +28,7 @@ export class UserService {
       if (!user) throw new ReferenceError('User undefined');
 
       // Fetch field mappings for the ticket
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: user.id_tcg_user,
@@ -40,17 +40,17 @@ export class UserService {
       });
 
       // Create a map to store unique field mappings
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedTicketingUserOutput format
-      const unifiedUser: UnifiedTicketingUserOutput = {
+      var unifiedUser: UnifiedTicketingUserOutput = {
         id: user.id_tcg_user,
         email_address: user.email_address,
         name: user.name,
@@ -62,12 +62,12 @@ export class UserService {
       };
 
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: user.id_tcg_user,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         unifiedUser.remote_data = remote_data;
       }
@@ -112,7 +112,7 @@ export class UserService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.tcg_users.findFirst({
+        var isCursorPresent = await this.prisma.tcg_users.findFirst({
           where: {
             id_connection: connection_id,
             id_tcg_user: cursor,
@@ -123,7 +123,7 @@ export class UserService {
         }
       }
 
-      const users = await this.prisma.tcg_users.findMany({
+      var users = await this.prisma.tcg_users.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -149,10 +149,10 @@ export class UserService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedUsers: UnifiedTicketingUserOutput[] = await Promise.all(
+      var unifiedUsers: UnifiedTicketingUserOutput[] = await Promise.all(
         users.map(async (user) => {
           // Fetch field mappings for the user
-          const values = await this.prisma.value.findMany({
+          var values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: user.id_tcg_user,
@@ -163,7 +163,7 @@ export class UserService {
             },
           });
           // Create a map to store unique field mappings
-          const fieldMappingsMap = new Map();
+          var fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -171,7 +171,7 @@ export class UserService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-const field_mappings = Object.fromEntries(fieldMappingsMap);
+var field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedTicketingUserOutput format
           return {
@@ -190,15 +190,15 @@ const field_mappings = Object.fromEntries(fieldMappingsMap);
       let res: UnifiedTicketingUserOutput[] = unifiedUsers;
 
       if (remote_data) {
-        const remote_array_data: UnifiedTicketingUserOutput[] =
+        var remote_array_data: UnifiedTicketingUserOutput[] =
           await Promise.all(
             res.map(async (user) => {
-              const resp = await this.prisma.remote_data.findFirst({
+              var resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: user.id,
                 },
               });
-              const remote_data = JSON.parse(resp.data);
+              var remote_data = JSON.parse(resp.data);
               return { ...user, remote_data };
             }),
           );
