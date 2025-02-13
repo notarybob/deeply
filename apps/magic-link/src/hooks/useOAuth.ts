@@ -17,10 +17,10 @@ type UseOAuthProps = {
   additionalParams?: {[key: string]: any}
 };
 
-let useOAuth = ({ providerName, vertical, returnUrl, projectId, linkedUserId, additionalParams, redirectIngressUri, onSuccess }: UseOAuthProps) => {
-  let [isReady, setIsReady] = useState(false);
-  let intervalRef = useRef<number | ReturnType<typeof setInterval> | null>(null);
-  let authWindowRef = useRef<Window | null>(null);  
+const useOAuth = ({ providerName, vertical, returnUrl, projectId, linkedUserId, additionalParams, redirectIngressUri, onSuccess }: UseOAuthProps) => {
+  const [isReady, setIsReady] = useState(false);
+  const intervalRef = useRef<number | ReturnType<typeof setInterval> | null>(null);
+  const authWindowRef = useRef<Window | null>(null);  
 
   useEffect(() => {
     // Perform any setup logic here
@@ -35,7 +35,7 @@ let useOAuth = ({ providerName, vertical, returnUrl, projectId, linkedUserId, ad
     };
   }, []);
 
-  let clearExistingInterval = (clearAuthWindow: boolean) => {
+  const clearExistingInterval = (clearAuthWindow: boolean) => {
     if (clearAuthWindow && authWindowRef.current && !authWindowRef.current.closed) {
       authWindowRef.current.close();
     }
@@ -46,9 +46,9 @@ let useOAuth = ({ providerName, vertical, returnUrl, projectId, linkedUserId, ad
   };
 
 
-  let openModal = async (onWindowClose: () => void) => {
-    let apiUrl = config.API_URL!;
-    let authUrl = await constructAuthUrl({
+  const openModal = async (onWindowClose: () => void) => {
+    const apiUrl = config.API_URL!;
+    const authUrl = await constructAuthUrl({
       projectId, linkedUserId, providerName, returnUrl, apiUrl , vertical, additionalParams, redirectUriIngress: redirectIngressUri 
     });
 
@@ -56,19 +56,19 @@ let useOAuth = ({ providerName, vertical, returnUrl, projectId, linkedUserId, ad
       throw new Error("Auth Url is Invalid " + authUrl);
     }
 
-    let width = 600, height = 600;
-    let left = (window.innerWidth - width) / 2;
-    let top = (window.innerHeight - height) / 2;
-    let authWindow = window.open(authUrl as string, '_blank', `width=${width},height=${height},top=${top},left=${left}`); 
+    const width = 600, height = 600;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+    const authWindow = window.open(authUrl as string, '_blank', `width=${width},height=${height},top=${top},left=${left}`); 
     authWindowRef.current = authWindow; 
 
     clearExistingInterval(false);
 
-    let interval = setInterval(() => {
+    const interval = setInterval(() => {
       try {
-        let redirectedURL = authWindow!.location.href;
-        let urlParams = new URL(redirectedURL).searchParams;
-        let success = urlParams.get('success'); // Example parameter
+        const redirectedURL = authWindow!.location.href;
+        const urlParams = new URL(redirectedURL).searchParams;
+        const success = urlParams.get('success'); // Example parameter
         if (redirectedURL === returnUrl || success) {
           onSuccess(); 
           clearExistingInterval(true);
