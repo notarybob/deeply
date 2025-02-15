@@ -67,7 +67,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
         linkedUserId: string,
     ): Promise<ApiResponse<MicrosoftdynamicssalesEngagementCallOutput>> {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -75,7 +75,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             });
 
-            const respToPost = await axios.post(
+            let respToPost = await axios.post(
                 `${connection.account_url}/api/data/v9.2/phonecalls`,
                 JSON.stringify(engagementData),
                 {
@@ -88,9 +88,9 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             );
 
-            const postCallId = respToPost.headers['location'].split("/").pop();
+            let postCallId = respToPost.headers['location'].split("/").pop();
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/${postCallId}`,
                 {
                     headers: {
@@ -116,7 +116,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
         linkedUserId: string,
     ): Promise<ApiResponse<MicrosoftdynamicssalesEngagementAppointmentOutput>> {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -124,7 +124,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             });
 
-            const respToPost = await axios.post(
+            let respToPost = await axios.post(
                 `${connection.account_url}/api/data/v9.2/appointments`,
                 JSON.stringify(engagementData),
                 {
@@ -137,9 +137,9 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             );
 
-            const postAppointmentId = respToPost.headers['location'].split("/").pop();
+            let postAppointmentId = respToPost.headers['location'].split("/").pop();
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/${postAppointmentId}`,
                 {
                     headers: {
@@ -166,7 +166,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
         linkedUserId: string,
     ): Promise<ApiResponse<MicrosoftdynamicssalesEngagementEmailOutput>> {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -174,7 +174,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             });
 
-            const respToPost = await axios.post(
+            let respToPost = await axios.post(
                 `${connection.account_url}/api/data/v9.2/emails`,
                 JSON.stringify(engagementData),
                 {
@@ -187,9 +187,9 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             );
 
-            const postEmailId = respToPost.headers['location'].split("/").pop();
+            let postEmailId = respToPost.headers['location'].split("/").pop();
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/${postEmailId}`,
                 {
                     headers: {
@@ -213,7 +213,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
 
     async sync(data: SyncParam): Promise<ApiResponse<MicrosoftdynamicssalesEngagementOutput[]>> {
         try {
-            const { linkedUserId, custom_properties, engagement_type } = data;
+            let { linkedUserId, custom_properties, engagement_type } = data;
 
             switch (engagement_type as string) {
                 case 'CALL':
@@ -232,7 +232,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
 
     private async syncCalls(linkedUserId: string, custom_properties?: string[]) {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -240,17 +240,17 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             });
 
-            //   const commonPropertyNames = Object.keys(commonCallMicrosoftdynamicssaleProperties);
-            //   const allProperties = [...commonPropertyNames, ...custom_properties];
-            //   const baseURL = 'https://api.hubapi.com/crm/v3/objects/calls';
+            //   let commonPropertyNames = Object.keys(commonCallMicrosoftdynamicssaleProperties);
+            //   let allProperties = [...commonPropertyNames, ...custom_properties];
+            //   let baseURL = 'https://api.hubapi.com/crm/v3/objects/calls';
 
-            //   const queryString = allProperties
+            //   let queryString = allProperties
             //     .map((prop) => `properties=${encodeURIComponent(prop)}`)
             //     .join('&');
 
-            //   const url = `${baseURL}?${queryString}`;
+            //   let url = `${baseURL}?${queryString}`;
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/phonecalls`,
                 {
                     headers: {
@@ -277,7 +277,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
         custom_properties?: string[],
     ) {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -285,17 +285,17 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             });
 
-            //   const commonPropertyNames = Object.keys(commonMeetingMicrosoftdynamicssaleProperties);
-            //   const allProperties = [...commonPropertyNames, ...custom_properties];
-            //   const baseURL = 'https://api.hubapi.com/crm/v3/objects/meetings';
+            //   let commonPropertyNames = Object.keys(commonMeetingMicrosoftdynamicssaleProperties);
+            //   let allProperties = [...commonPropertyNames, ...custom_properties];
+            //   let baseURL = 'https://api.hubapi.com/crm/v3/objects/meetings';
 
-            //   const queryString = allProperties
+            //   let queryString = allProperties
             //     .map((prop) => `properties=${encodeURIComponent(prop)}`)
             //     .join('&');
 
-            //   const url = `${baseURL}?${queryString}`;
+            //   let url = `${baseURL}?${queryString}`;
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/appointments`,
                 {
                     headers: {
@@ -319,7 +319,7 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
 
     private async syncEmails(linkedUserId: string, custom_properties?: string[]) {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -327,17 +327,17 @@ export class MicrosoftdynamicssalesService implements IEngagementService {
                 },
             });
 
-            //   const commonPropertyNames = Object.keys(commonEmailMicrosoftdynamicssaleProperties);
-            //   const allProperties = [...commonPropertyNames, ...custom_properties];
-            //   const baseURL = 'https://api.hubapi.com/crm/v3/objects/emails';
+            //   let commonPropertyNames = Object.keys(commonEmailMicrosoftdynamicssaleProperties);
+            //   let allProperties = [...commonPropertyNames, ...custom_properties];
+            //   let baseURL = 'https://api.hubapi.com/crm/v3/objects/emails';
 
-            //   const queryString = allProperties
+            //   let queryString = allProperties
             //     .map((prop) => `properties=${encodeURIComponent(prop)}`)
             //     .join('&');
 
-            //   const url = `${baseURL}?${queryString}`;
+            //   let url = `${baseURL}?${queryString}`;
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/emails`,
                 {
                     headers: {
