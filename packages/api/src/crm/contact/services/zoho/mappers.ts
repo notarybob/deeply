@@ -22,10 +22,10 @@ export class ZohoContactMapper implements IContactMapper {
     }[],
   ): ZohoContactInput {
     // Assuming 'email_addresses' array contains at least one email and 'phone_numbers' array contains at least one phone number
-    let primaryEmail = source.email_addresses?.[0]?.email_address;
-    let primaryPhone = source.phone_numbers?.[0]?.phone_number;
+    const primaryEmail = source.email_addresses?.[0]?.email_address;
+    const primaryPhone = source.phone_numbers?.[0]?.phone_number;
 
-    let result: ZohoContactInput = {
+    const result: ZohoContactInput = {
       First_Name: source.first_name,
       Last_Name: source.last_name,
     };
@@ -46,8 +46,8 @@ export class ZohoContactMapper implements IContactMapper {
       result.Mailing_Country = source.addresses[0].country;
     }
     if (customFieldMappings && source.field_mappings) {
-      for (let [k, v] of Object.entries(source.field_mappings)) {
-        let mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -95,19 +95,19 @@ export class ZohoContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmContactOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact[mapping.remote_id];
       }
     }
     // Constructing email and phone details
-    let email_addresses =
+    const email_addresses =
       contact && contact.Email
         ? [{ email_address: contact.Email, email_address_type: 'PERSONAL' }]
         : [];
 
-    let phone_numbers = [];
+    const phone_numbers = [];
 
     if (contact && contact.Phone) {
       phone_numbers.push({
@@ -134,7 +134,7 @@ export class ZohoContactMapper implements IContactMapper {
       });
     }
 
-    let address: Address = {
+    const address: Address = {
       street_1: contact.Mailing_Street,
       city: contact.Mailing_City,
       state: contact.Mailing_State,
@@ -142,7 +142,7 @@ export class ZohoContactMapper implements IContactMapper {
       country: contact.Mailing_Country,
     };
 
-    let opts: any = {};
+    const opts: any = {};
     if (contact.Owner && contact.Owner.id) {
       opts.user_id = await this.utils.getUserUuidFromRemoteId(
         contact.Owner.id,
