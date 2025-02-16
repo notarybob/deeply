@@ -33,7 +33,7 @@ export class SalesforceService implements ICompanyService {
     linkedUserId: string,
   ): Promise<ApiResponse<SalesforceCompanyOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -41,8 +41,8 @@ export class SalesforceService implements ICompanyService {
         },
       });
 
-      const instanceUrl = connection.account_url;
-      const resp = await axios.post(
+      var instanceUrl = connection.account_url;
+      var resp = await axios.post(
         `${instanceUrl}/services/data/v56.0/sobjects/Account/`,
         JSON.stringify(companyData),
         {
@@ -67,9 +67,9 @@ export class SalesforceService implements ICompanyService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SalesforceCompanyOutput[]>> {
     try {
-      const { linkedUserId, custom_properties, pageSize, cursor } = data;
+      var { linkedUserId, custom_properties, pageSize, cursor } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -77,7 +77,7 @@ export class SalesforceService implements ICompanyService {
         },
       });
 
-      const instanceUrl = connection.account_url;
+      var instanceUrl = connection.account_url;
       let pagingString = `${pageSize ? `ORDER BY Id DESC LIMIT ${pageSize} ` : ''}${
         cursor ? `OFFSET ${cursor}` : ''
       }`;
@@ -85,13 +85,13 @@ export class SalesforceService implements ICompanyService {
         pagingString = 'LIMIT 200';
       }
 
-      const commonPropertyNames = Object.keys(commonSalesforceCompanyProperties);
-      const allProperties = [...commonPropertyNames, ...custom_properties];
-      const fields = allProperties.join(',');
+      var commonPropertyNames = Object.keys(commonSalesforceCompanyProperties);
+      var allProperties = [...commonPropertyNames, ...custom_properties];
+      var fields = allProperties.join(',');
 
-      const query = `SELECT ${fields} FROM Account ${pagingString}`;
+      var query = `SELECT ${fields} FROM Account ${pagingString}`;
 
-      const resp = await axios.get(
+      var resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/query/?q=${encodeURIComponent(query)}`,
         {
           headers: {
