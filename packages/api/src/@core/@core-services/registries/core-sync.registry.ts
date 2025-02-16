@@ -16,7 +16,7 @@ export class CoreSyncRegistry {
     common_object: string,
     service: IBaseSync,
   ) {
-    const compositeKey = this.createCompositeKey(
+    let compositeKey = this.createCompositeKey(
       category_vertical,
       common_object,
     );
@@ -25,11 +25,11 @@ export class CoreSyncRegistry {
 
   // Retrieve a service using the composite key
   getService(category_vertical: string, common_object: string): IBaseSync {
-    const compositeKey = this.createCompositeKey(
+    let compositeKey = this.createCompositeKey(
       category_vertical,
       common_object,
     );
-    const service = this.serviceMap.get(compositeKey);
+    let service = this.serviceMap.get(compositeKey);
     if (!service) {
       this.logger.error(`Service not found for key: ${compositeKey}`);
       throw new Error(
