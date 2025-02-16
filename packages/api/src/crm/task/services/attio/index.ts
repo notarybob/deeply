@@ -29,14 +29,14 @@ export class AttioService implements ITaskService {
     linkedUserId: string,
   ): Promise<ApiResponse<AttioTaskOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v2/tasks`,
         JSON.stringify(taskData),
         {
@@ -48,9 +48,9 @@ export class AttioService implements ITaskService {
           },
         },
       );
-      let linked_records = await Promise.all(
+      const linked_records = await Promise.all(
         resp.data.data.linked_records.map(async (record) => {
-          let res = await axios.get(
+          const res = await axios.get(
             `${connection.account_url}/objects/${record.target_object_id}`,
             {
               headers: {
@@ -81,9 +81,9 @@ export class AttioService implements ITaskService {
 
   async sync(data: SyncParam): Promise<ApiResponse<AttioTaskOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
@@ -91,9 +91,9 @@ export class AttioService implements ITaskService {
         },
       });
 
-      let baseURL = `${connection.account_url}/v2/tasks`;
+      const baseURL = `${connection.account_url}/v2/tasks`;
 
-      let resp = await axios.get(baseURL, {
+      const resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
