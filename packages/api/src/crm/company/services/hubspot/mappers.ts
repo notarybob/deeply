@@ -20,7 +20,7 @@ export class HubspotCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotCompanyInput> {
-    const result: any = {
+    var result: any = {
       name: source.name,
       industry: source.industry || null,
     };
@@ -30,12 +30,12 @@ export class HubspotCompanyMapper implements ICompanyMapper {
     }
 
     // Assuming 'phone_numbers' array contains at least one phone number
-    const primaryPhone = source.phone_numbers?.[0]?.phone_number;
+    var primaryPhone = source.phone_numbers?.[0]?.phone_number;
     if (primaryPhone) {
       result.phone = primaryPhone;
     }
     if (source.addresses) {
-      const address = source.addresses[0];
+      var address = source.addresses[0];
       if (address) {
         result.city = address.city;
         result.state = address.state;
@@ -46,15 +46,15 @@ export class HubspotCompanyMapper implements ICompanyMapper {
     }
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.hubspot_owner_id = owner_id;
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -101,15 +101,15 @@ export class HubspotCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmCompanyOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = company.properties[mapping.remote_id];
       }
     }
     let opts: any = {};
     if (company.properties.hubspot_owner_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         company.properties.hubspot_owner_id,
         connectionId,
       );
