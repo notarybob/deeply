@@ -29,7 +29,7 @@ export class AccountingUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<AccountingObjectInput> {
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'accounting',
       targetType_,
       providerName,
@@ -60,7 +60,7 @@ export class AccountingUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<UnifyReturnType> {
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'accounting',
       targetType_,
       providerName,
