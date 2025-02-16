@@ -35,14 +35,14 @@ export class PermissionService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestoragePermissionOutput> {
     try {
-      const permission = await this.prisma.fs_permissions.findUnique({
+      var permission = await this.prisma.fs_permissions.findUnique({
         where: {
           id_fs_permission: id_fs_permission,
         },
       });
 
       // Fetch field mappings for the permission
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: permission.id_fs_permission,
@@ -54,17 +54,17 @@ export class PermissionService {
       });
 
       // Create a map to store unique field mappings
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedFilestoragePermissionOutput format
-      const unifiedPermission: UnifiedFilestoragePermissionOutput = {
+      var unifiedPermission: UnifiedFilestoragePermissionOutput = {
         id: permission.id_fs_permission,
         user_id: permission.user,
         group_id: permission.group,
@@ -78,12 +78,12 @@ export class PermissionService {
 
       let res: UnifiedFilestoragePermissionOutput = unifiedPermission;
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: permission.id_fs_permission,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -131,7 +131,7 @@ export class PermissionService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.fs_permissions.findFirst({
+        var isCursorPresent = await this.prisma.fs_permissions.findFirst({
           where: {
             id_connection: connectionId,
             id_fs_permission: cursor,
@@ -142,7 +142,7 @@ export class PermissionService {
         }
       }
 
-      const permissions = await this.prisma.fs_permissions.findMany({
+      var permissions = await this.prisma.fs_permissions.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -168,11 +168,11 @@ export class PermissionService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedPermissions: UnifiedFilestoragePermissionOutput[] =
+      var unifiedPermissions: UnifiedFilestoragePermissionOutput[] =
         await Promise.all(
           permissions.map(async (permission) => {
             // Fetch field mappings for the permission
-            const values = await this.prisma.value.findMany({
+            var values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id: permission.id_fs_permission,
@@ -184,14 +184,14 @@ export class PermissionService {
             });
 
             // Create a map to store unique field mappings
-            const fieldMappingsMap = new Map();
+            var fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            const field_mappings = Array.from(
+            var field_mappings = Array.from(
               fieldMappingsMap,
               ([key, value]) => ({ [key]: value }),
             );
@@ -214,15 +214,15 @@ export class PermissionService {
       let res: UnifiedFilestoragePermissionOutput[] = unifiedPermissions;
 
       if (remote_data) {
-        const remote_array_data: UnifiedFilestoragePermissionOutput[] =
+        var remote_array_data: UnifiedFilestoragePermissionOutput[] =
           await Promise.all(
             res.map(async (permission) => {
-              const resp = await this.prisma.remote_data.findFirst({
+              var resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: permission.id,
                 },
               });
-              const remote_data = JSON.parse(resp.data);
+              var remote_data = JSON.parse(resp.data);
               return { ...permission, remote_data };
             }),
           );
