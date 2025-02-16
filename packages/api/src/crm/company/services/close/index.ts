@@ -32,14 +32,14 @@ export class CloseService implements ICompanyService {
     linkedUserId: string,
   ): Promise<ApiResponse<CloseCompanyOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v1/lead`,
         JSON.stringify(companyData),
         {
@@ -63,9 +63,9 @@ export class CloseService implements ICompanyService {
 
   async sync(data: SyncParam): Promise<ApiResponse<CloseCompanyOutput[]>> {
     try {
-      let { linkedUserId, custom_properties } = data;
+      const { linkedUserId, custom_properties } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -73,16 +73,16 @@ export class CloseService implements ICompanyService {
         },
       });
 
-      let commonPropertyNames = Object.keys(commonCompanyCloseProperties);
-      let allProperties = [...commonPropertyNames, ...custom_properties];
-      let baseURL = `${connection.account_url}/v1/lead`;
-      let queryString = allProperties
+      const commonPropertyNames = Object.keys(commonCompanyCloseProperties);
+      const allProperties = [...commonPropertyNames, ...custom_properties];
+      const baseURL = `${connection.account_url}/v1/lead`;
+      const queryString = allProperties
         .map((prop) => `properties=${encodeURIComponent(prop)}`)
         .join('&');
 
-      let url = `${baseURL}?${queryString}`;
+      const url = `${baseURL}?${queryString}`;
 
-      let resp = await axios.get(url, {
+      const resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
