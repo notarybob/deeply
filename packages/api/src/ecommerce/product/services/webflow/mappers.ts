@@ -31,7 +31,7 @@ export class WebflowProductMapper implements IProductMapper {
       remote_id: string;
     }[],
   ): Promise<Partial<WebflowProductInput>> {
-    const res: Partial<WebflowProductInput> = {
+    let res: Partial<WebflowProductInput> = {
       product: {
         fieldData: {
           name: source.variants?.[0]?.title,
