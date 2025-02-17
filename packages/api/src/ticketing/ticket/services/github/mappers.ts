@@ -35,11 +35,11 @@ export class GithubTicketMapper implements ITicketMapper {
         }[],
         connectionId?: string,
     ): Promise<GithubTicketInput> {
-        // var remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
+        // const remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
         //     source.collections[0] as string,
         // );
 
-        var result: GithubTicketInput = {
+        const result: GithubTicketInput = {
             title: source.name,
             body: source.description ? source.description : null,
             // Passing new Field to retreive repositroy info to add ticket to that repo
@@ -49,20 +49,20 @@ export class GithubTicketMapper implements ITicketMapper {
 
 
         if (source.assigned_to && source.assigned_to.length > 0) {
-            var data = await this.utils.getAsigneeRemoteIdFromUserUuid(
+            const data = await this.utils.getAsigneeRemoteIdFromUserUuid(
                 source.assigned_to[0],
             );
             if (data) {
                 result.assignee = data;
             }
         }
-        var tags = source.tags as string[];
+        const tags = source.tags as string[];
         if (tags) {
             result.labels = tags;
         }
 
         if (source.comment) {
-            var comment =
+            const comment =
                 (await this.coreUnificationService.desunify<UnifiedTicketingCommentOutput>({
                     sourceObject: source.comment,
                     targetType: TicketingObject.comment,
@@ -77,8 +77,8 @@ export class GithubTicketMapper implements ITicketMapper {
         // TODO - Custom fields mapping
         // if (customFieldMappings && source.field_mappings) {
         //   result.meta = {}; // Ensure meta exists
-        //   for (var [k, v] of Object.entries(source.field_mappings)) {
-        //     var mapping = customFieldMappings.find(
+        //   for (const [k, v] of Object.entries(source.field_mappings)) {
+        //     const mapping = customFieldMappings.find(
         //       (mapping) => mapping.slug === k,
         //     );
         //     if (mapping) {
@@ -98,7 +98,7 @@ export class GithubTicketMapper implements ITicketMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedTicketingTicketOutput | UnifiedTicketingTicketOutput[]> {
-        var sourcesArray = Array.isArray(source) ? source : [source];
+        const sourcesArray = Array.isArray(source) ? source : [source];
         return Promise.all(
             sourcesArray.map(async (ticket) =>
                 this.mapSingleTicketToUnified(
@@ -118,9 +118,9 @@ export class GithubTicketMapper implements ITicketMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedTicketingTicketOutput> {
-        var field_mappings: { [key: string]: any } = {};
+        const field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (var mapping of customFieldMappings) {
+            for (const mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = ticket[mapping.remote_id];
             }
         }
@@ -132,7 +132,7 @@ export class GithubTicketMapper implements ITicketMapper {
 
         if (ticket.assignee) {
             //fetch the right assignee uuid from remote id
-            var user_id = await this.utils.getUserUuidFromRemoteId(
+            const user_id = await this.utils.getUserUuidFromRemoteId(
                 String(ticket.assignee.id),
                 connectionId,
             );
@@ -142,7 +142,7 @@ export class GithubTicketMapper implements ITicketMapper {
         }
 
         if (ticket.labels) {
-            var tags = await this.ingestService.ingestData<
+            const tags = await this.ingestService.ingestData<
                 UnifiedTicketingTagOutput,
                 GithubTagOutput
             >(
@@ -165,7 +165,7 @@ export class GithubTicketMapper implements ITicketMapper {
         }
 
         if (ticket.repository) {
-            var tcg_collection_id = await this.utils.getCollectionUuidFromRemoteId(
+            const tcg_collection_id = await this.utils.getCollectionUuidFromRemoteId(
                 String(ticket.repository.id),
                 connectionId,
             );
@@ -174,7 +174,7 @@ export class GithubTicketMapper implements ITicketMapper {
             }
         }
 
-        var unifiedTicket: UnifiedTicketingTicketOutput = {
+        const unifiedTicket: UnifiedTicketingTicketOutput = {
             remote_id: String(ticket.id),
             remote_data: ticket,
             name: ticket.title,
