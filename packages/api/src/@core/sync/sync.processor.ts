@@ -13,13 +13,13 @@ export class SyncProcessor {
 
   @Process('*')
   async handleSyncJob(job: Job) {
-    let { projectId, vertical, commonObject } = job.data;
+    const { projectId, vertical, commonObject } = job.data;
     this.logger.log(
       `Starting to process job ${job.id} for ${vertical} ${commonObject} (Project: ${projectId})`,
     );
 
     try {
-      let service = this.registry.getService(vertical, commonObject);
+      const service = this.registry.getService(vertical, commonObject);
       if (!service) {
         this.logger.warn(
           `No service found for vertical ${vertical} and common object ${commonObject}`,
