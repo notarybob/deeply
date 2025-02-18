@@ -71,7 +71,7 @@ export class SquarespaceCustomerMapper implements ICustomerMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceCustomerOutput> {
-    let result: UnifiedEcommerceCustomerOutput = {
+    const result: UnifiedEcommerceCustomerOutput = {
       remote_id: null,
       remote_data: customer,
       email: customer.email || null,
@@ -85,7 +85,7 @@ export class SquarespaceCustomerMapper implements ICustomerMapper {
         }, {} as Record<string, any>) || {},
     };
     if (customer.address) {
-      let add = customer.address;
+      const add = customer.address;
       result.addresses = [
         {
           street_1: add.address1,
