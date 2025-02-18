@@ -62,7 +62,7 @@ export class JiraAttachmentMapper implements IAttachmentMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingAttachmentOutput> {
-    const opts = {};
+    let opts = {};
     if (attachment.author.accountId) {
       // todo : determiner qui est l'uploader ?
       var id_user = await this.utils.getUserUuidFromRemoteId(
