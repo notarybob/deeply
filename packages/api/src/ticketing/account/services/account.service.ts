@@ -19,14 +19,14 @@ export class AccountService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingAccountOutput> {
     try {
-      const account = await this.prisma.tcg_accounts.findUnique({
+      var account = await this.prisma.tcg_accounts.findUnique({
         where: {
           id_tcg_account: id_ticketing_account,
         },
       });
 
       // Fetch field mappings for the ticket
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: account.id_tcg_account,
@@ -38,17 +38,17 @@ export class AccountService {
       });
 
       // Create a map to store unique field mappings
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedTicketingAccountOutput format
-      const unifiedAccount: UnifiedTicketingAccountOutput = {
+      var unifiedAccount: UnifiedTicketingAccountOutput = {
         id: account.id_tcg_account,
         name: account.name,
         domains: account.domains,
@@ -61,12 +61,12 @@ export class AccountService {
       let res: UnifiedTicketingAccountOutput = unifiedAccount;
 
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: account.id_tcg_account,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -114,7 +114,7 @@ export class AccountService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.tcg_accounts.findFirst({
+        var isCursorPresent = await this.prisma.tcg_accounts.findFirst({
           where: {
             id_connection: connection_id,
             id_tcg_account: cursor,
@@ -125,7 +125,7 @@ export class AccountService {
         }
       }
 
-      const accounts = await this.prisma.tcg_accounts.findMany({
+      var accounts = await this.prisma.tcg_accounts.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -151,11 +151,11 @@ export class AccountService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedAccounts: UnifiedTicketingAccountOutput[] =
+      var unifiedAccounts: UnifiedTicketingAccountOutput[] =
         await Promise.all(
           accounts.map(async (account) => {
             // Fetch field mappings for the account
-            const values = await this.prisma.value.findMany({
+            var values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id: account.id_tcg_account,
@@ -166,14 +166,14 @@ export class AccountService {
               },
             });
             // Create a map to store unique field mappings
-            const fieldMappingsMap = new Map();
+            var fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            const field_mappings = Array.from(
+            var field_mappings = Array.from(
               fieldMappingsMap,
               ([key, value]) => ({ [key]: value }),
             );
@@ -194,15 +194,15 @@ export class AccountService {
       let res: UnifiedTicketingAccountOutput[] = unifiedAccounts;
 
       if (remote_data) {
-        const remote_array_data: UnifiedTicketingAccountOutput[] =
+        var remote_array_data: UnifiedTicketingAccountOutput[] =
           await Promise.all(
             res.map(async (account) => {
-              const resp = await this.prisma.remote_data.findFirst({
+              var resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: account.id,
                 },
               });
-              const remote_data = JSON.parse(resp.data);
+              var remote_data = JSON.parse(resp.data);
               return { ...account, remote_data };
             }),
           );
