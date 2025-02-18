@@ -27,16 +27,16 @@ export class ZohoService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZohoUserOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/v5/users?type=AllUsers`,
         {
           headers: {
