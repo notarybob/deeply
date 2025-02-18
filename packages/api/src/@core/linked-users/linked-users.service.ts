@@ -47,7 +47,7 @@ export class LinkedUsersService {
   }
   async addLinkedUser(data: CreateLinkedUserDto, id_project: string) {
     try {
-      let res = await this.prisma.linked_users.create({
+      const res = await this.prisma.linked_users.create({
         data: {
           ...data,
           id_linked_user: uuidv4(),
@@ -64,16 +64,16 @@ export class LinkedUsersService {
     id_project: string,
   ) {
     try {
-      let { linked_user_origin_ids, alias } = data;
+      const { linked_user_origin_ids, alias } = data;
 
-      let linkedUsersData = linked_user_origin_ids.map((id) => ({
+      const linkedUsersData = linked_user_origin_ids.map((id) => ({
         id_linked_user: uuidv4(), // Ensure each user gets a unique ID
         linked_user_origin_id: id,
         alias,
         id_project,
       }));
 
-      let res = await this.prisma.linked_users.createMany({
+      const res = await this.prisma.linked_users.createMany({
         data: linkedUsersData,
         skipDuplicates: true, // Optional: skip entries if they already exist
       });
