@@ -60,9 +60,9 @@ export class DropboxGroupMapper implements IGroupMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageGroupOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = group[mapping.remote_id];
       }
     }
