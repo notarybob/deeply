@@ -26,9 +26,9 @@ export class FrontService implements ITagService {
 
   async sync(data: SyncParam): Promise<ApiResponse<FrontTagOutput[]>> {
     try {
-      let { linkedUserId, id_ticket } = data;
+      const { linkedUserId, id_ticket } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'front',
@@ -36,7 +36,7 @@ export class FrontService implements ITagService {
         },
       });
 
-      /*let ticket = await this.prisma.tcg_tickets.findUnique({
+      /*const ticket = await this.prisma.tcg_tickets.findUnique({
         where: {
           id_tcg_ticket: id_ticket as string,
         },
@@ -45,7 +45,7 @@ export class FrontService implements ITagService {
         },
       });
 
-      let resp = await axios.get(`${connection.account_url}/conversations`, {
+      const resp = await axios.get(`${connection.account_url}/conversations`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -55,10 +55,10 @@ export class FrontService implements ITagService {
       });
       this.logger.log(`Synced front tags !`);
 
-      let conversation = resp.data._results.find(
+      const conversation = resp.data._results.find(
         (c) => c.id === ticket.remote_id,
       );*/
-      let resp = await axios.get(`${connection.account_url}/tags`, {
+      const resp = await axios.get(`${connection.account_url}/tags`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
