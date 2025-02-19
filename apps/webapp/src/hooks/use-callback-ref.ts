@@ -11,7 +11,7 @@ import * as React from "react"
 function useCallbackRef<T extends (...args: never[]) => unknown>(
   callback: T | undefined
 ): T {
-  const callbackRef = React.useRef(callback)
+  let callbackRef = React.useRef(callback)
 
   React.useEffect(() => {
     callbackRef.current = callback
