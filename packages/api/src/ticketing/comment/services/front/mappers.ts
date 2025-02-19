@@ -28,7 +28,7 @@ export class FrontCommentMapper implements ICommentMapper {
       remote_id: string;
     }[],
   ): Promise<FrontCommentInput> {
-    const result: FrontCommentInput = {
+    var result: FrontCommentInput = {
       body: source.body,
       author_id: await this.utils.getUserRemoteIdFromUuid(source.user_id), // for Front it must be a User
       attachments: source.attachments as string[],
@@ -75,7 +75,7 @@ export class FrontCommentMapper implements ICommentMapper {
     let opts: any = {};
 
     if (comment.attachments && comment.attachments.length > 0) {
-      const attachments = (await this.coreUnificationService.unify<
+      var attachments = (await this.coreUnificationService.unify<
         OriginalAttachmentOutput[]
       >({
         sourceObject: comment.attachments,
@@ -92,7 +92,7 @@ export class FrontCommentMapper implements ICommentMapper {
     }
 
     if (comment.author.id) {
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(comment.author.id),
         connectionId,
       );
