@@ -21,7 +21,7 @@ export interface SalesforceUserOutput {
   [key: string]: any;
 }
 
-export let commonUserSalesforceProperties = {
+export const commonUserSalesforceProperties = {
   Id: '',
   Username: '',
   Email: '',
