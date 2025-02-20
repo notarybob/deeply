@@ -32,14 +32,14 @@ export class HubspotService implements ITaskService {
     linkedUserId: string,
   ): Promise<ApiResponse<HubspotTaskOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
           vertical: 'crm',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/crm/v3/objects/tasks`,
         JSON.stringify(taskData),
         {
@@ -51,7 +51,7 @@ export class HubspotService implements ITaskService {
           },
         },
       );
-      const final_resp = await axios.get(
+      let final_resp = await axios.get(
         `${connection.account_url}/crm/v3/objects/tasks/${resp.data.id}?properties=hs_task_body&associations=deal,company`,
         {
           headers: {
@@ -74,9 +74,9 @@ export class HubspotService implements ITaskService {
 
   async sync(data: SyncParam): Promise<ApiResponse<HubspotTaskOutput[]>> {
     try {
-      const { linkedUserId, custom_properties } = data;
+      let { linkedUserId, custom_properties } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
@@ -84,17 +84,17 @@ export class HubspotService implements ITaskService {
         },
       });
 
-      const commonPropertyNames = Object.keys(commonTaskHubspotProperties);
-      const allProperties = [...commonPropertyNames, ...custom_properties];
-      const baseURL = `${connection.account_url}/crm/v3/objects/tasks`;
+      let commonPropertyNames = Object.keys(commonTaskHubspotProperties);
+      let allProperties = [...commonPropertyNames, ...custom_properties];
+      let baseURL = `${connection.account_url}/crm/v3/objects/tasks`;
 
-      const queryString = allProperties
+      let queryString = allProperties
         .map((prop) => `properties=${encodeURIComponent(prop)}`)
         .join('&');
 
-      const url = `${baseURL}?${queryString}&associations=deal,company`;
+      let url = `${baseURL}?${queryString}&associations=deal,company`;
 
-      const resp = await axios.get(url, {
+      let resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
