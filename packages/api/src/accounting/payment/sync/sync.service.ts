@@ -42,15 +42,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -71,8 +71,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IPaymentService =
+      var { integrationId, linkedUserId } = param;
+      var service: IPaymentService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -94,11 +94,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccPayment[]> {
     try {
-      const paymentResults: AccPayment[] = [];
+      var paymentResults: AccPayment[] = [];
 
       for (let i = 0; i < payments.length; i++) {
-        const payment = payments[i];
-        const originId = payment.remote_id;
+        var payment = payments[i];
+        var originId = payment.remote_id;
 
         let existingPayment = await this.prisma.acc_payments.findFirst({
           where: {
@@ -107,7 +107,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        const paymentData = {
+        var paymentData = {
           id_acc_invoice: payment.invoice_id,
           transaction_date: payment.transaction_date,
           id_acc_contact: payment.contact_id,
@@ -179,8 +179,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
     lineItems: LineItem[],
     connectionId: string,
   ): Promise<void> {
-    for (const lineItem of lineItems) {
-      const lineItemData = {
+    for (var lineItem of lineItems) {
+      var lineItemData = {
         id_acc_payment: paymentId,
         applied_amount: lineItem.applied_amount
           ? Number(lineItem.applied_amount)
@@ -193,7 +193,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         id_connection: connectionId,
       };
 
-      const existingLineItem =
+      var existingLineItem =
         await this.prisma.acc_payments_line_items.findFirst({
           where: {
             remote_id: lineItem.remote_id,
@@ -220,7 +220,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
     }
 
     // Remove any existing line items that are not in the current set
-    const currentRemoteIds = lineItems.map((item) => item.remote_id);
+    var currentRemoteIds = lineItems.map((item) => item.remote_id);
     await this.prisma.acc_payments_line_items.deleteMany({
       where: {
         id_acc_payment: paymentId,
