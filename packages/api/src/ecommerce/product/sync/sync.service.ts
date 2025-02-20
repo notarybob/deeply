@@ -42,15 +42,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = ECOMMERCE_PROVIDERS;
-          for (var provider of providers) {
+          const providers = ECOMMERCE_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -71,8 +71,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IProductService =
+      const { integrationId, linkedUserId } = param;
+      const service: IProductService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -94,9 +94,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<EcommerceProduct[]> {
     try {
-      var products_results: EcommerceProduct[] = [];
+      const products_results: EcommerceProduct[] = [];
 
-      var updateOrCreateProduct = async (
+      const updateOrCreateProduct = async (
         product: UnifiedEcommerceProductOutput,
         originId: string,
       ) => {
@@ -123,11 +123,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        var normalizedVariants = this.utils.normalizeVariants(
+        const normalizedVariants = this.utils.normalizeVariants(
           product.variants,
         );
 
-        var baseData: any = {
+        const baseData: any = {
           product_url: product.product_url ?? null,
           product_type: product.product_type ?? null,
           product_status: product.product_status ?? null,
@@ -139,7 +139,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         };
 
         if (existingProduct) {
-          var res = await this.prisma.ecom_products.update({
+          const res = await this.prisma.ecom_products.update({
             where: {
               id_ecom_product: existingProduct.id_ecom_product,
             },
@@ -175,7 +175,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           }
           return res;
         } else {
-          var newProd = await this.prisma.ecom_products.create({
+          const newProd = await this.prisma.ecom_products.create({
             data: {
               ...baseData,
               id_ecom_product: uuidv4(),
@@ -206,11 +206,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < products.length; i++) {
-        var product = products[i];
-        var originId = product.remote_id;
+        const product = products[i];
+        const originId = product.remote_id;
 
-        var res = await updateOrCreateProduct(product, originId);
-        var product_id = res.id_ecom_product;
+        const res = await updateOrCreateProduct(product, originId);
+        const product_id = res.id_ecom_product;
         products_results.push(res);
 
         // Process field mappings
