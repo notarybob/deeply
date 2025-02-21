@@ -32,7 +32,7 @@ export class GorgiasService implements ICommentService {
     remoteIdTicket: string,
   ): Promise<ApiResponse<GorgiasCommentOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gorgias',
@@ -40,7 +40,7 @@ export class GorgiasService implements ICommentService {
         },
       });
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/tickets/${remoteIdTicket}/messages`,
         JSON.stringify(commentData),
         {
@@ -64,9 +64,9 @@ export class GorgiasService implements ICommentService {
   }
   async sync(data: SyncParam): Promise<ApiResponse<GorgiasCommentOutput[]>> {
     try {
-      const { linkedUserId, id_ticket } = data;
+      let { linkedUserId, id_ticket } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gorgias',
@@ -74,7 +74,7 @@ export class GorgiasService implements ICommentService {
         },
       });
       //retrieve ticket remote id so we can retrieve the comments in the original software
-      const ticket = await this.prisma.tcg_tickets.findUnique({
+      let ticket = await this.prisma.tcg_tickets.findUnique({
         where: {
           id_tcg_ticket: id_ticket as string,
         },
@@ -83,7 +83,7 @@ export class GorgiasService implements ICommentService {
         },
       });
 
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/conversations/${ticket.remote_id}/comments`,
         {
           headers: {
