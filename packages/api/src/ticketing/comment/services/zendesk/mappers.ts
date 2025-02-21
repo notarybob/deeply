@@ -36,7 +36,7 @@ export class ZendeskCommentMapper implements ICommentMapper {
       remote_id: string;
     }[],
   ): Promise<ZendeskCommentInput> {
-    var result: ZendeskCommentInput = {
+    const result: ZendeskCommentInput = {
       body: source.body,
       public: source.is_private ? !source.is_private : true,
       type: 'Comment',
@@ -102,7 +102,7 @@ export class ZendeskCommentMapper implements ICommentMapper {
     let opts: any = {};
 
     if (comment.attachments && comment.attachments.length > 0) {
-      var attachments = (await this.coreUnificationService.unify<
+      const attachments = (await this.coreUnificationService.unify<
         OriginalAttachmentOutput[]
       >({
         sourceObject: comment.attachments,
@@ -119,7 +119,7 @@ export class ZendeskCommentMapper implements ICommentMapper {
     }
 
     if (comment.author_id) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         String(comment.author_id),
         connectionId,
       );
@@ -127,7 +127,7 @@ export class ZendeskCommentMapper implements ICommentMapper {
       if (user_id) {
         opts = { ...opts, user_id: user_id, creator_type: 'USER' };
       } else {
-        var contact_id = await this.utils.getContactUuidFromRemoteId(
+        const contact_id = await this.utils.getContactUuidFromRemoteId(
           String(comment.author_id),
           connectionId,
         );
