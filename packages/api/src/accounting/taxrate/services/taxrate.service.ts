@@ -28,7 +28,7 @@ export class TaxRateService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingTaxrateOutput> {
     try {
-      const taxRate = await this.prisma.acc_tax_rates.findUnique({
+      let taxRate = await this.prisma.acc_tax_rates.findUnique({
         where: { id_acc_tax_rate: id_acc_tax_rate },
       });
 
@@ -36,18 +36,18 @@ export class TaxRateService {
         throw new Error(`Tax rate with ID ${id_acc_tax_rate} not found.`);
       }
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: taxRate.id_acc_tax_rate },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedTaxRate: UnifiedAccountingTaxrateOutput = {
+      let unifiedTaxRate: UnifiedAccountingTaxrateOutput = {
         id: taxRate.id_acc_tax_rate,
         description: taxRate.description,
         total_tax_ratge: taxRate.total_tax_ratge
@@ -64,7 +64,7 @@ export class TaxRateService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: taxRate.id_acc_tax_rate },
         });
         unifiedTaxRate.remote_data = remoteDataRecord
@@ -108,30 +108,30 @@ export class TaxRateService {
     previous_cursor: string | null;
   }> {
     try {
-      const taxRates = await this.prisma.acc_tax_rates.findMany({
+      let taxRates = await this.prisma.acc_tax_rates.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_tax_rate: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = taxRates.length > limit;
+      let hasNextPage = taxRates.length > limit;
       if (hasNextPage) taxRates.pop();
 
-      const unifiedTaxRates = await Promise.all(
+      let unifiedTaxRates = await Promise.all(
         taxRates.map(async (taxRate) => {
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: taxRate.id_acc_tax_rate },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedTaxRate: UnifiedAccountingTaxrateOutput = {
+          let unifiedTaxRate: UnifiedAccountingTaxrateOutput = {
             id: taxRate.id_acc_tax_rate,
             description: taxRate.description,
             total_tax_ratge: taxRate.total_tax_ratge
@@ -148,7 +148,7 @@ export class TaxRateService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: taxRate.id_acc_tax_rate },
             });
             unifiedTaxRate.remote_data = remoteDataRecord
