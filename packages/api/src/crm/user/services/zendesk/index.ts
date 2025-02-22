@@ -26,16 +26,16 @@ export class ZendeskService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskUserOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      const resp = await axios.get(`${connection.account_url}/v2/users`, {
+      let resp = await axios.get(`${connection.account_url}/v2/users`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -43,7 +43,7 @@ export class ZendeskService implements IUserService {
           )}`,
         },
       });
-      const finalData = resp.data.items.map((item) => {
+      let finalData = resp.data.items.map((item) => {
         return item.data;
       });
       this.logger.log(`Synced zendesk users !`);
