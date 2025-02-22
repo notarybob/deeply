@@ -16,7 +16,7 @@ export class RetryProcessor {
   ) {}
 
   private extractProvider(event_type: string): string {
-    let parts = event_type.split('.');
+    const parts = event_type.split('.');
     if (parts.length >= 2) {
       return parts[1];
     }
@@ -32,15 +32,15 @@ export class RetryProcessor {
       linkedUserId: string;
     }>,
   ) {
-    let { config, event_type, linkedUserId } = job.data;
+    const { config, event_type, linkedUserId } = job.data;
     try {
-      let result = await this.retryHandler.retryWithBackoff(config);
-      let linkedUser = await this.prisma.linked_users.findUnique({
+      const result = await this.retryHandler.retryWithBackoff(config);
+      const linkedUser = await this.prisma.linked_users.findUnique({
         where: {
           id_linked_user: linkedUserId,
         },
       });
-      let event = await this.prisma.events.create({
+      const event = await this.prisma.events.create({
         data: {
           id_connection: '',
           id_project: linkedUser.id_project,
