@@ -39,19 +39,19 @@ export class EngagementService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmEngagementOutput> {
     try {
-      const linkedUser = await this.validateLinkedUser(linkedUserId);
+      var linkedUser = await this.validateLinkedUser(linkedUserId);
       await this.validateCompanyId(unifiedEngagementData.company_id);
       await this.validateEngagementType(unifiedEngagementData.type);
       await this.validateEngagementContacts(unifiedEngagementData.contacts);
 
-      const customFieldMappings =
+      var customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           'crm.engagement',
         );
 
-      const desunifiedObject =
+      var desunifiedObject =
         await this.coreUnification.desunify<UnifiedCrmEngagementInput>({
           sourceObject: unifiedEngagementData,
           targetType: CrmObject.engagement,
@@ -60,16 +60,16 @@ export class EngagementService {
           customFieldMappings: [],
         });
 
-      const service: IEngagementService =
+      var service: IEngagementService =
         this.serviceRegistry.getService(integrationId);
-      const resp: ApiResponse<OriginalEngagementOutput> =
+      var resp: ApiResponse<OriginalEngagementOutput> =
         await service.addEngagement(
           desunifiedObject,
           linkedUserId,
           unifiedEngagementData.type.toUpperCase(),
         );
 
-      const unifiedObject = (await this.coreUnification.unify<
+      var unifiedObject = (await this.coreUnification.unify<
         OriginalEngagementOutput[]
       >({
         sourceObject: [resp.data],
@@ -83,10 +83,10 @@ export class EngagementService {
         },
       })) as UnifiedCrmEngagementOutput[];
 
-      const source_engagement = resp.data;
-      const target_engagement = unifiedObject[0];
+      var source_engagement = resp.data;
+      var target_engagement = unifiedObject[0];
 
-      const unique_crm_engagement_id = await this.saveOrUpdateEngagement(
+      var unique_crm_engagement_id = await this.saveOrUpdateEngagement(
         target_engagement,
         connection_id,
       );
@@ -103,7 +103,7 @@ export class EngagementService {
         source_engagement,
       );
 
-      const result_engagement = await this.getEngagement(
+      var result_engagement = await this.getEngagement(
         unique_crm_engagement_id,
         undefined,
         undefined,
@@ -112,8 +112,8 @@ export class EngagementService {
         remote_data,
       );
 
-      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      const event = await this.prisma.events.create({
+      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      var event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -141,7 +141,7 @@ export class EngagementService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    const linkedUser = await this.prisma.linked_users.findUnique({
+    var linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -150,7 +150,7 @@ export class EngagementService {
 
   async validateCompanyId(companyId?: string) {
     if (companyId) {
-      const company = await this.prisma.crm_companies.findUnique({
+      var company = await this.prisma.crm_companies.findUnique({
         where: { id_crm_company: companyId },
       });
       if (!company)
@@ -161,7 +161,7 @@ export class EngagementService {
   }
 
   async validateEngagementType(type?: string) {
-    const upperType = type?.toUpperCase();
+    var upperType = type?.toUpperCase();
     if (upperType) {
       if (!ENGAGEMENTS_TYPE.includes(upperType)) {
         throw new ReferenceError(
@@ -177,7 +177,7 @@ export class EngagementService {
     if (contacts && contacts.length > 0) {
       await Promise.all(
         contacts.map(async (contact) => {
-          const contactExists = await this.prisma.crm_contacts.findUnique({
+          var contactExists = await this.prisma.crm_contacts.findUnique({
             where: { id_crm_contact: contact },
           });
           if (!contactExists) {
@@ -194,11 +194,11 @@ export class EngagementService {
     engagement: UnifiedCrmEngagementOutput,
     connection_id: string,
   ): Promise<string> {
-    const existingEngagement = await this.prisma.crm_engagements.findFirst({
+    var existingEngagement = await this.prisma.crm_engagements.findFirst({
       where: { remote_id: engagement.remote_id, id_connection: connection_id },
     });
 
-    const data: any = {
+    var data: any = {
       modified_at: new Date(),
       content: engagement.content,
       direction: engagement.direction,
@@ -210,7 +210,7 @@ export class EngagementService {
     };
 
     if (existingEngagement) {
-      const res = await this.prisma.crm_engagements.update({
+      var res = await this.prisma.crm_engagements.update({
         where: { id_crm_engagement: existingEngagement.id_crm_engagement },
         data: data,
       });
@@ -221,7 +221,7 @@ export class EngagementService {
       data.id_connection = connection_id;
       data.id_crm_engagement = uuidv4();
 
-      const newEngagement = await this.prisma.crm_engagements.create({
+      var newEngagement = await this.prisma.crm_engagements.create({
         data: data,
       });
       return newEngagement.id_crm_engagement;
@@ -237,14 +237,14 @@ export class EngagementService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmEngagementOutput> {
     try {
-      const engagement = await this.prisma.crm_engagements.findUnique({
+      var engagement = await this.prisma.crm_engagements.findUnique({
         where: {
           id_crm_engagement: id_engagement,
         },
       });
 
       // Fetch field mappings for the engagement
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: engagement.id_crm_engagement,
@@ -255,17 +255,17 @@ export class EngagementService {
         },
       });
 
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedCrmEngagementOutput format
-      const unifiedEngagement: UnifiedCrmEngagementOutput = {
+      var unifiedEngagement: UnifiedCrmEngagementOutput = {
         id: engagement.id_crm_engagement,
         content: engagement.content,
         direction: engagement.direction,
@@ -287,12 +287,12 @@ export class EngagementService {
       };
 
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: engagement.id_crm_engagement,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -340,7 +340,7 @@ export class EngagementService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.crm_engagements.findFirst({
+        var isCursorPresent = await this.prisma.crm_engagements.findFirst({
           where: {
             id_connection: connection_id,
             id_crm_engagement: cursor,
@@ -351,7 +351,7 @@ export class EngagementService {
         }
       }
 
-      const engagements = await this.prisma.crm_engagements.findMany({
+      var engagements = await this.prisma.crm_engagements.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -377,11 +377,11 @@ export class EngagementService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedEngagements: UnifiedCrmEngagementOutput[] =
+      var unifiedEngagements: UnifiedCrmEngagementOutput[] =
         await Promise.all(
           engagements.map(async (engagement) => {
             // Fetch field mappings for the ticket
-            const values = await this.prisma.value.findMany({
+            var values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id: engagement.id_crm_engagement,
@@ -392,14 +392,14 @@ export class EngagementService {
               },
             });
             // Create a map to store unique field mappings
-            const fieldMappingsMap = new Map();
+            var fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            const field_mappings = Array.from(
+            var field_mappings = Array.from(
               fieldMappingsMap,
               ([key, value]) => ({ [key]: value }),
             );
@@ -427,15 +427,15 @@ export class EngagementService {
       let res: UnifiedCrmEngagementOutput[] = unifiedEngagements;
 
       if (remote_data) {
-        const remote_array_data: UnifiedCrmEngagementOutput[] =
+        var remote_array_data: UnifiedCrmEngagementOutput[] =
           await Promise.all(
             res.map(async (engagement) => {
-              const resp = await this.prisma.remote_data.findFirst({
+              var resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: engagement.id,
                 },
               });
-              const remote_data = JSON.parse(resp.data);
+              var remote_data = JSON.parse(resp.data);
               return { ...engagement, remote_data };
             }),
           );
