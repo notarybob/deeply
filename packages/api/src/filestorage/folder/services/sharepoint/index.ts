@@ -30,7 +30,7 @@ export class SharepointService implements IFolderService {
     linkedUserId: string,
   ): Promise<ApiResponse<SharepointFolderOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'sharepoint',
@@ -39,7 +39,7 @@ export class SharepointService implements IFolderService {
       });
 
       // Currently adding in root folder, might need to change
-      const resp = await axios.post(
+      var resp = await axios.post(
         `${connection.account_url}/drive/root/children`,
         JSON.stringify({
           name: folderData.name,
@@ -72,7 +72,7 @@ export class SharepointService implements IFolderService {
     linkedUserId: string,
   ): Promise<SharepointFolderOutput[]> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'sharepoint',
@@ -81,7 +81,7 @@ export class SharepointService implements IFolderService {
       });
 
       // get root folder
-      const rootFolderData = await axios.get(
+      var rootFolderData = await axios.get(
         `${connection.account_url}/drive/root`,
         {
           headers: {
@@ -103,9 +103,9 @@ export class SharepointService implements IFolderService {
           break;
         }
 
-        const nestedFolders = await Promise.all(
+        var nestedFolders = await Promise.all(
           batch.map(async (folder_id) => {
-            const resp = await axios.get(
+            var resp = await axios.get(
               `${connection.account_url}/drive/items/${folder_id}/children`,
               {
                 headers: {
@@ -120,7 +120,7 @@ export class SharepointService implements IFolderService {
             // Add permissions (shared link is also included in permissions in SharePoint)
             // await Promise.all(
             //   resp.data.value.map(async (driveItem) => {
-            //     const resp = await axios.get(
+            //     var resp = await axios.get(
             //       `${connection.account_url}/drive/items/${driveItem.id}/permissions`,
             //       {
             //         headers: {
@@ -135,11 +135,11 @@ export class SharepointService implements IFolderService {
             //   }),
             // );
 
-            const folders = resp.data.value.filter(
+            var folders = resp.data.value.filter(
               (driveItem) => driveItem.folder,
             );
 
-            // const files = resp.data.value.filter(
+            // var files = resp.data.value.filter(
             //   (driveItem) => !driveItem.folder,
             // );
 
@@ -174,9 +174,9 @@ export class SharepointService implements IFolderService {
   async sync(data: SyncParam): Promise<ApiResponse<SharepointFolderOutput[]>> {
     try {
       this.logger.log('Syncing sharepoint folders');
-      const { linkedUserId } = data;
+      var { linkedUserId } = data;
 
-      const folders = await this.iterativeGetSharepointFolders(
+      var folders = await this.iterativeGetSharepointFolders(
         'root',
         linkedUserId,
       );
