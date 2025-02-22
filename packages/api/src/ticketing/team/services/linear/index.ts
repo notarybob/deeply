@@ -27,9 +27,9 @@ export class LinearService implements ITeamService {
 
   async sync(data: SyncParam): Promise<ApiResponse<LinearTeamOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'linear',
@@ -37,7 +37,7 @@ export class LinearService implements ITeamService {
         },
       });
 
-      var teamQuery = {
+      const teamQuery = {
         "query": "query { teams { nodes { id, name, description } }}"
       };
 
