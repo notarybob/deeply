@@ -33,7 +33,7 @@ export class SalesforceService implements IDealService {
     linkedUserId: string,
   ): Promise<ApiResponse<SalesforceDealOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -41,8 +41,8 @@ export class SalesforceService implements IDealService {
         },
       });
 
-      var instanceUrl = connection.account_url;
-      var resp = await axios.post(
+      const instanceUrl = connection.account_url;
+      const resp = await axios.post(
         `${instanceUrl}/services/data/v56.0/sobjects/Opportunity/`,
         JSON.stringify(dealData),
         {
@@ -69,9 +69,9 @@ export class SalesforceService implements IDealService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SalesforceDealOutput[]>> {
     try {
-      var { linkedUserId, custom_properties, pageSize, cursor } = data;
+      const { linkedUserId, custom_properties, pageSize, cursor } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -79,7 +79,7 @@ export class SalesforceService implements IDealService {
         },
       });
 
-      var instanceUrl = connection.account_url;
+      const instanceUrl = connection.account_url;
       let pagingString = `${pageSize ? `ORDER BY Id DESC LIMIT ${pageSize} ` : ''}${
         cursor ? `OFFSET ${cursor}` : ''
       }`;
@@ -87,13 +87,13 @@ export class SalesforceService implements IDealService {
         pagingString = 'LIMIT 200';
       }
 
-      var commonPropertyNames = Object.keys(commonDealSalesforceProperties);
-      var allProperties = [...commonPropertyNames, ...custom_properties];
-      var fields = allProperties.join(',');
+      const commonPropertyNames = Object.keys(commonDealSalesforceProperties);
+      const allProperties = [...commonPropertyNames, ...custom_properties];
+      const fields = allProperties.join(',');
 
-      var query = `SELECT ${fields} FROM Opportunity ${pagingString}`;
+      const query = `SELECT ${fields} FROM Opportunity ${pagingString}`;
 
-      var resp = await axios.get(
+      const resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/query/?q=${encodeURIComponent(query)}`,
         {
           headers: {
