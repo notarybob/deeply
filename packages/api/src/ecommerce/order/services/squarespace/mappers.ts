@@ -39,7 +39,7 @@ export class SquarespaceOrderMapper implements IOrderMapper {
   ): Promise<SquarespaceOrderInput> {
     let opts: any = {};
     if (source.customer_id) {
-      var customer = await this.utils.getCustomerFromUUID(source.customer_id);
+      const customer = await this.utils.getCustomerFromUUID(source.customer_id);
       opts = {
         customerEmail: customer.email,
         /*billingAddress: customerAddress
@@ -50,7 +50,7 @@ export class SquarespaceOrderMapper implements IOrderMapper {
           : undefined,*/
       };
     }
-    var result = {
+    const result = {
       orderNumber: source.order_number || '',
       createdOn: new Date().toISOString(),
       modifiedOn: new Date().toISOString(),
@@ -122,9 +122,9 @@ export class SquarespaceOrderMapper implements IOrderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceOrderOutput> {
-    var opts: any = {};
+    const opts: any = {};
     if (order.customerEmail) {
-      var customers = await this.ingestService.ingestData<
+      const customers = await this.ingestService.ingestData<
         UnifiedEcommerceCustomerOutput,
         SquarespaceCustomerOutput
       >(
