@@ -26,7 +26,7 @@ export class WebflowService implements IOrderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<WebflowOrderOutput[]>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: data.linkedUserId,
           provider_slug: 'webflow',
@@ -35,7 +35,7 @@ export class WebflowService implements IOrderService {
       });
 
       // ref: https://docs.developers.webflow.com/data/reference/list-orders
-      const resp = await axios.get(`${connection.account_url}/orders`, {
+      let resp = await axios.get(`${connection.account_url}/orders`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -43,7 +43,7 @@ export class WebflowService implements IOrderService {
           )}`,
         },
       });
-      const orders: WebflowOrderOutput[] = resp.data.orders;
+      let orders: WebflowOrderOutput[] = resp.data.orders;
       this.logger.log(`Synced webflow orders !`);
 
       return {
