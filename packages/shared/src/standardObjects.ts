@@ -76,11 +76,11 @@ export enum TicketingObject {
 }
 // Utility function to prepend prefix to enum values
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-let prependPrefixToEnumValues = (prefix: string, enumObj: any) => {
+const prependPrefixToEnumValues = (prefix: string, enumObj: any) => {
     return Object.values(enumObj).map(value => `${prefix}.${value}`);
 }
 
-export let standardObjects = [
+export const standardObjects = [
     ...prependPrefixToEnumValues('crm', CrmObject),
     ...prependPrefixToEnumValues('ticketing', TicketingObject),
     ...prependPrefixToEnumValues('filestorage', FileStorageObject),
