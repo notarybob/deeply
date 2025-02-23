@@ -26,16 +26,16 @@ export class ShopifyService implements ICustomerService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ShopifyCustomerOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'shopify',
           vertical: 'ecommerce',
         },
       });
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/admin/api/2024-07/customers.json`,
         {
           headers: {
@@ -46,7 +46,7 @@ export class ShopifyService implements ICustomerService {
           },
         },
       );
-      const customers: ShopifyCustomerOutput[] = resp.data.customers;
+      let customers: ShopifyCustomerOutput[] = resp.data.customers;
       this.logger.log(`Synced shopify customers !`);
 
       return {
