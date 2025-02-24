@@ -26,10 +26,10 @@ export class GitlabService implements IUserService {
   }
 
   async sync(data: SyncParam): Promise<ApiResponse<GitlabUserOutput[]>> {
-    var { linkedUserId } = data;
+    const { linkedUserId } = data;
 
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'gitlab',
@@ -37,7 +37,7 @@ export class GitlabService implements IUserService {
         },
       });
 
-      var groups = await axios.get(`${connection.account_url}/v4/groups`, {
+      const groups = await axios.get(`${connection.account_url}/v4/groups`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -46,9 +46,9 @@ export class GitlabService implements IUserService {
         },
       });
       let resp = [];
-      for (var group of groups.data) {
+      for (const group of groups.data) {
         if (group.id) {
-          var users = await axios.get(
+          const users = await axios.get(
             `${connection.account_url}/v4/groups/${group.id}/members`,
             {
               headers: {
