@@ -40,10 +40,10 @@ export class CompanyService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmCompanyOutput> {
     try {
-      const linkedUser = await this.validateLinkedUser(linkedUserId);
+      var linkedUser = await this.validateLinkedUser(linkedUserId);
       await this.validateUserId(unifiedCompanyData.user_id);
 
-      const desunifiedObject =
+      var desunifiedObject =
         await this.coreUnification.desunify<UnifiedCrmCompanyInput>({
           sourceObject: unifiedCompanyData,
           targetType: CrmObject.company,
@@ -52,14 +52,14 @@ export class CompanyService {
           customFieldMappings: [],
         });
 
-      const service: ICompanyService =
+      var service: ICompanyService =
         this.serviceRegistry.getService(integrationId);
-      const resp: ApiResponse<OriginalCompanyOutput> = await service.addCompany(
+      var resp: ApiResponse<OriginalCompanyOutput> = await service.addCompany(
         desunifiedObject,
         linkedUserId,
       );
 
-      const unifiedObject = (await this.coreUnification.unify<
+      var unifiedObject = (await this.coreUnification.unify<
         OriginalCompanyOutput[]
       >({
         sourceObject: [resp.data],
@@ -70,10 +70,10 @@ export class CompanyService {
         customFieldMappings: [],
       })) as UnifiedCrmCompanyOutput[];
 
-      const source_company = resp.data;
-      const target_company = unifiedObject[0];
+      var source_company = resp.data;
+      var target_company = unifiedObject[0];
 
-      const unique_crm_company_id = await this.saveOrUpdateCompany(
+      var unique_crm_company_id = await this.saveOrUpdateCompany(
         target_company,
         connection_id,
       );
@@ -83,7 +83,7 @@ export class CompanyService {
         source_company,
       );
 
-      const result_company = await this.getCompany(
+      var result_company = await this.getCompany(
         unique_crm_company_id,
         undefined,
         undefined,
@@ -92,8 +92,8 @@ export class CompanyService {
         remote_data,
       );
 
-      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      const event = await this.prisma.events.create({
+      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      var event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -123,7 +123,7 @@ export class CompanyService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    const linkedUser = await this.prisma.linked_users.findUnique({
+    var linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -132,7 +132,7 @@ export class CompanyService {
 
   async validateUserId(userId?: string) {
     if (userId) {
-      const user = await this.prisma.crm_users.findUnique({
+      var user = await this.prisma.crm_users.findUnique({
         where: { id_crm_user: userId },
       });
       if (!user)
@@ -144,7 +144,7 @@ export class CompanyService {
     company: UnifiedCrmCompanyOutput,
     connection_id: string,
   ): Promise<string> {
-    const existingCompany = await this.prisma.crm_companies.findFirst({
+    var existingCompany = await this.prisma.crm_companies.findFirst({
       where: { remote_id: company.remote_id, id_connection: connection_id },
       include: {
         crm_email_addresses: true,
@@ -153,17 +153,17 @@ export class CompanyService {
       },
     });
 
-    const { normalizedEmails, normalizedPhones } =
+    var { normalizedEmails, normalizedPhones } =
       this.utils.normalizeEmailsAndNumbers(
         company.email_addresses,
         company.phone_numbers,
       );
 
-    const normalizedAddresses = this.utils.normalizeAddresses(
+    var normalizedAddresses = this.utils.normalizeAddresses(
       company.addresses,
     );
 
-    const data: any = {
+    var data: any = {
       name: company.name,
       industry: company.industry,
       number_of_employees: company.number_of_employees,
@@ -172,7 +172,7 @@ export class CompanyService {
     };
 
     if (existingCompany) {
-      const res = await this.prisma.crm_companies.update({
+      var res = await this.prisma.crm_companies.update({
         where: { id_crm_company: existingCompany.id_crm_company },
         data: data,
       });
@@ -193,7 +193,7 @@ export class CompanyService {
       data.id_connection = connection_id;
       data.id_crm_company = uuidv4();
 
-      const newCompany = await this.prisma.crm_companies.create({ data: data });
+      var newCompany = await this.prisma.crm_companies.create({ data: data });
 
       await this.createRelatedEntities(
         normalizedEmails,
@@ -347,7 +347,7 @@ export class CompanyService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmCompanyOutput> {
     try {
-      const company = await this.prisma.crm_companies.findUnique({
+      var company = await this.prisma.crm_companies.findUnique({
         where: {
           id_crm_company: id_company,
         },
@@ -359,7 +359,7 @@ export class CompanyService {
       });
 
       // Fetch field mappings for the company
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: company.id_crm_company,
@@ -371,16 +371,16 @@ export class CompanyService {
       });
 
       //Create a map to store unique field mappings
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
       // Transform to UnifiedCrmCompanyOutput format
-      const unifiedCompany: UnifiedCrmCompanyOutput = {
+      var unifiedCompany: UnifiedCrmCompanyOutput = {
         id: company.id_crm_company,
         name: company.name,
         industry: company.industry,
@@ -408,12 +408,12 @@ export class CompanyService {
       };
 
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: company.id_crm_company,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         if (resp && resp.data) {
           res = {
@@ -463,7 +463,7 @@ export class CompanyService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.crm_companies.findFirst({
+        var isCursorPresent = await this.prisma.crm_companies.findFirst({
           where: {
             id_connection: connection_id,
             id_crm_company: cursor,
@@ -474,7 +474,7 @@ export class CompanyService {
         }
       }
 
-      const companies = await this.prisma.crm_companies.findMany({
+      var companies = await this.prisma.crm_companies.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -505,9 +505,9 @@ export class CompanyService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedCompanies: UnifiedCrmCompanyOutput[] = await Promise.all(
+      var unifiedCompanies: UnifiedCrmCompanyOutput[] = await Promise.all(
         companies.map(async (company) => {
-          const values = await this.prisma.value.findMany({
+          var values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: company.id_crm_company,
@@ -518,7 +518,7 @@ export class CompanyService {
             },
           });
           // Create a map to store unique field mappings
-          const fieldMappingsMap = new Map();
+          var fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -526,7 +526,7 @@ export class CompanyService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-          const field_mappings = Object.fromEntries(fieldMappingsMap);
+          var field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedCrmCompanyOutput format
           return {
@@ -557,15 +557,15 @@ export class CompanyService {
       let res: UnifiedCrmCompanyOutput[] = unifiedCompanies;
 
       if (remote_data) {
-        const remote_array_data: UnifiedCrmCompanyOutput[] = await Promise.all(
+        var remote_array_data: UnifiedCrmCompanyOutput[] = await Promise.all(
           res.map(async (company) => {
-            const resp = await this.prisma.remote_data.findFirst({
+            var resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: company.id,
               },
             });
             if (resp && resp.data) {
-              const remote_data = JSON.parse(resp.data);
+              var remote_data = JSON.parse(resp.data);
               return { ...company, remote_data };
             }
             return company;
