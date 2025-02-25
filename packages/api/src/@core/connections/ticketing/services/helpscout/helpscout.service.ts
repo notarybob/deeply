@@ -52,10 +52,10 @@ export class HelpscoutConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -87,8 +87,8 @@ export class HelpscoutConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, code } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'helpscout',
@@ -96,18 +96,18 @@ export class HelpscoutConnectionService extends AbstractBaseConnectionService {
         },
       });
 
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = {
+      const formData = {
         grant_type: 'authorization_code',
         code: code,
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
       };
-      var res = await axios.post(
+      const res = await axios.post(
         `https://api.helpscout.net/v2/oauth2/token`,
         JSON.stringify(formData),
         {
@@ -116,13 +116,13 @@ export class HelpscoutConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: HelpscoutOAuthResponse = res.data;
+      const data: HelpscoutOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : helpscout ticketing ' + JSON.stringify(data),
       );
 
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -179,19 +179,19 @@ export class HelpscoutConnectionService extends AbstractBaseConnectionService {
   }
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      var { connectionId, refreshToken, projectId } = opts;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const { connectionId, refreshToken, projectId } = opts;
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
       });
 
-      var res = await axios.post(
+      const res = await axios.post(
         `https://api.helpscout.net/v2/oauth2/token`,
         formData.toString(),
         {
@@ -203,7 +203,7 @@ export class HelpscoutConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: HelpscoutOAuthResponse = res.data;
+      const data: HelpscoutOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
