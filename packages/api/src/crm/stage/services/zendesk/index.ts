@@ -26,19 +26,19 @@ export class ZendeskService implements IStageService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskStageOutput[]>> {
     try {
-      let { linkedUserId, deal_id } = data;
+      const { linkedUserId, deal_id } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'crm',
         },
       });
-      let res = await this.prisma.crm_deals.findUnique({
+      const res = await this.prisma.crm_deals.findUnique({
         where: { id_crm_deal: deal_id as string },
       });
-      let deal = await axios.get(
+      const deal = await axios.get(
         `${connection.account_url}/v2/deals/${res.remote_id}`,
         {
           headers: {
@@ -49,8 +49,8 @@ export class ZendeskService implements IStageService {
           },
         },
       );
-      let stage_remote_id: number = deal.data.data.stage_id;
-      let resp = await axios.get(`${connection.account_url}/v2/stages`, {
+      const stage_remote_id: number = deal.data.data.stage_id;
+      const resp = await axios.get(`${connection.account_url}/v2/stages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -59,7 +59,7 @@ export class ZendeskService implements IStageService {
         },
       });
 
-      let finalData = (resp.data.items as any[]).find(
+      const finalData = (resp.data.items as any[]).find(
         (item) => item.data.id === stage_remote_id,
       );
 
