@@ -50,7 +50,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<CloseEngagementInput> {
-    var type = source.type;
+    const type = source.type;
     switch (type) {
       case 'CALL':
         return await this.desunifyCall(source, customFieldMappings);
@@ -71,12 +71,12 @@ export class CloseEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<CloseEngagementCallInput> {
-    var diffInMilliseconds =
+    const diffInMilliseconds =
       source.start_at && source.end_time
         ? new Date(source.end_time).getTime() -
           new Date(source.start_at).getTime()
         : 0;
-    var result: CloseEngagementCallInput = {
+    const result: CloseEngagementCallInput = {
       note: source.content || null,
       duration: Math.floor(diffInMilliseconds / (1000 * 60)),
     };
@@ -86,7 +86,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
 
     // Map HubSpot owner ID from user ID
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.created_by = owner_id;
         result.user_id = owner_id;
@@ -98,7 +98,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       );
     }
     if (source?.contacts && source?.contacts?.length > 0) {
-      var contactId = await this.utils.getRemoteIdFromContactUuid(
+      const contactId = await this.utils.getRemoteIdFromContactUuid(
         source.contacts[0],
       );
       if (contactId) {
@@ -107,8 +107,8 @@ export class CloseEngagementMapper implements IEngagementMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -137,7 +137,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<CloseEngagementEmailInput> {
-    var result: CloseEngagementEmailInput = {
+    const result: CloseEngagementEmailInput = {
       body_text: source.content || null,
       status: null, // Placeholder, needs appropriate mapping
       sender: null,
@@ -152,7 +152,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
     }
     // Map HubSpot owner ID from user ID
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.user_id = owner_id;
       }
@@ -164,8 +164,8 @@ export class CloseEngagementMapper implements IEngagementMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -301,16 +301,16 @@ export class CloseEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (engagement.created_by || engagement.user_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         engagement.created_by || engagement.user_id,
         connectionId,
       );
@@ -322,7 +322,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.contact_id) {
-      var contact_id = await this.utils.getContactUuidFromRemoteId(
+      const contact_id = await this.utils.getContactUuidFromRemoteId(
         engagement.contact_id,
         connectionId,
       );
@@ -334,7 +334,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.lead_id) {
-      var lead_id = await this.utils.getCompanyUuidFromRemoteId(
+      const lead_id = await this.utils.getCompanyUuidFromRemoteId(
         engagement.lead_id,
         connectionId,
       );
@@ -369,16 +369,16 @@ export class CloseEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (engagement.user_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         engagement.user_id,
         connectionId,
       );
@@ -390,7 +390,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.user_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         engagement.user_id,
         connectionId,
       );
@@ -402,7 +402,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.contact_id) {
-      var contact_id = await this.utils.getContactUuidFromRemoteId(
+      const contact_id = await this.utils.getContactUuidFromRemoteId(
         engagement.contact_id,
         connectionId,
       );
@@ -414,7 +414,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.lead_id) {
-      var lead_id = await this.utils.getCompanyUuidFromRemoteId(
+      const lead_id = await this.utils.getCompanyUuidFromRemoteId(
         engagement.lead_id,
         connectionId,
       );
@@ -447,16 +447,16 @@ export class CloseEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (engagement.user_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         engagement.user_id,
         connectionId,
       );
@@ -468,7 +468,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.contact_id) {
-      var contact_id = await this.utils.getContactUuidFromRemoteId(
+      const contact_id = await this.utils.getContactUuidFromRemoteId(
         engagement.contact_id,
         connectionId,
       );
@@ -480,7 +480,7 @@ export class CloseEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.lead_id) {
-      var lead_id = await this.utils.getCompanyUuidFromRemoteId(
+      const lead_id = await this.utils.getCompanyUuidFromRemoteId(
         engagement.lead_id,
         connectionId,
       );
