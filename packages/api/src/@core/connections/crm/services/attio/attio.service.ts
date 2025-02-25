@@ -51,10 +51,10 @@ export class AttioConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -89,11 +89,11 @@ export class AttioConnectionService extends AbstractBaseConnectionService {
   }
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
+      const { linkedUserId, projectId, code } = opts;
       this.logger.log(
         'linkeduserid is ' + linkedUserId + ' inside callback attio',
       );
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
@@ -102,13 +102,13 @@ export class AttioConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
@@ -116,7 +116,7 @@ export class AttioConnectionService extends AbstractBaseConnectionService {
         code: code,
       });
 
-      var res = await axios.post(
+      const res = await axios.post(
         'https://app.attio.com/oauth/token',
         formData.toString(),
         {
@@ -126,11 +126,11 @@ export class AttioConnectionService extends AbstractBaseConnectionService {
         },
       );
 
-      var data: AttioOAuthResponse = res.data;
+      const data: AttioOAuthResponse = res.data;
 
       // Saving the token of customer inside db
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
       if (isNotUnique) {
         // Update existing connection
