@@ -9,7 +9,7 @@ export class Utils {
 
   async getOrderIdFromRemote(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.ecom_orders.findFirst({
+      let res = await this.prisma.ecom_orders.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -24,7 +24,7 @@ export class Utils {
 
   async getCustomerFromUUID(customer_id: string) {
     try {
-      const res = await this.prisma.ecom_customers.findUnique({
+      let res = await this.prisma.ecom_customers.findUnique({
         where: {
           id_ecom_customer: customer_id,
         },
@@ -39,7 +39,7 @@ export class Utils {
 
   async getCustomerIdFromRemote(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.ecom_customers.findFirst({
+      let res = await this.prisma.ecom_customers.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -53,7 +53,7 @@ export class Utils {
   }
   async getProductIdFromRemote(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.ecom_products.findFirst({
+      let res = await this.prisma.ecom_products.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -68,7 +68,7 @@ export class Utils {
 
   normalizeAddresses(addresses: Address[]) {
     if (addresses) {
-      const normalizedAddresses = addresses.map((addy) => ({
+      let normalizedAddresses = addresses.map((addy) => ({
         ...addy,
         created_at: new Date(),
         modified_at: new Date(),
@@ -91,7 +91,7 @@ export class Utils {
     }[],
   ) {
     if (variants) {
-      const normalizedVar = variants.map((data) => ({
+      let normalizedVar = variants.map((data) => ({
         ...(data as any),
         created_at: new Date(),
         modified_at: new Date(),
