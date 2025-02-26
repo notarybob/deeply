@@ -27,9 +27,9 @@ export class CloseService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<CloseUserOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'close',
@@ -37,8 +37,8 @@ export class CloseService implements IUserService {
         },
       });
 
-      let baseURL = `${connection.account_url}/v1/user`;
-      let resp = await axios.get(baseURL, {
+      const baseURL = `${connection.account_url}/v1/user`;
+      const resp = await axios.get(baseURL, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
