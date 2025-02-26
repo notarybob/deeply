@@ -39,11 +39,11 @@ export class DealService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmDealOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
       await this.validateStageId(unifiedDealData.stage_id);
       await this.validateUserId(unifiedDealData.user_id);
 
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedCrmDealInput>({
           sourceObject: unifiedDealData,
           targetType: CrmObject.deal,
@@ -52,14 +52,14 @@ export class DealService {
           customFieldMappings: [],
         });
 
-      var service: IDealService =
+      const service: IDealService =
         this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalDealOutput> = await service.addDeal(
+      const resp: ApiResponse<OriginalDealOutput> = await service.addDeal(
         desunifiedObject,
         linkedUserId,
       );
 
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalDealOutput[]
       >({
         sourceObject: [resp.data],
@@ -70,10 +70,10 @@ export class DealService {
         customFieldMappings: [],
       })) as UnifiedCrmDealOutput[];
 
-      var source_deal = resp.data;
-      var target_deal = unifiedObject[0];
+      const source_deal = resp.data;
+      const target_deal = unifiedObject[0];
 
-      var unique_crm_deal_id = await this.saveOrUpdateDeal(
+      const unique_crm_deal_id = await this.saveOrUpdateDeal(
         target_deal,
         connection_id,
       );
@@ -83,7 +83,7 @@ export class DealService {
         source_deal,
       );
 
-      var result_deal = await this.getDeal(
+      const result_deal = await this.getDeal(
         unique_crm_deal_id,
         undefined,
         undefined,
@@ -92,8 +92,8 @@ export class DealService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -123,7 +123,7 @@ export class DealService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -132,7 +132,7 @@ export class DealService {
 
   async validateStageId(stageId?: string) {
     if (stageId) {
-      var stage = await this.prisma.crm_deals_stages.findUnique({
+      const stage = await this.prisma.crm_deals_stages.findUnique({
         where: { id_crm_deals_stage: stageId },
       });
       if (!stage)
@@ -144,7 +144,7 @@ export class DealService {
 
   async validateUserId(userId?: string) {
     if (userId) {
-      var user = await this.prisma.crm_users.findUnique({
+      const user = await this.prisma.crm_users.findUnique({
         where: { id_crm_user: userId },
       });
       if (!user)
@@ -156,11 +156,11 @@ export class DealService {
     deal: UnifiedCrmDealOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingDeal = await this.prisma.crm_deals.findFirst({
+    const existingDeal = await this.prisma.crm_deals.findFirst({
       where: { remote_id: deal.remote_id, id_connection: connection_id },
     });
 
-    var data: any = {
+    const data: any = {
       name: deal.name,
       description: deal.description,
       amount: deal.amount,
@@ -171,7 +171,7 @@ export class DealService {
     };
 
     if (existingDeal) {
-      var res = await this.prisma.crm_deals.update({
+      const res = await this.prisma.crm_deals.update({
         where: { id_crm_deal: existingDeal.id_crm_deal },
         data: data,
       });
@@ -182,7 +182,7 @@ export class DealService {
       data.id_connection = connection_id;
       data.id_crm_deal = uuidv4();
 
-      var newDeal = await this.prisma.crm_deals.create({ data: data });
+      const newDeal = await this.prisma.crm_deals.create({ data: data });
       return newDeal.id_crm_deal;
     }
   }
@@ -196,14 +196,14 @@ export class DealService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmDealOutput> {
     try {
-      var deal = await this.prisma.crm_deals.findUnique({
+      const deal = await this.prisma.crm_deals.findUnique({
         where: {
           id_crm_deal: id_dealing_deal,
         },
       });
 
       // Fetch field mappings for the deal
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: deal.id_crm_deal,
@@ -214,17 +214,17 @@ export class DealService {
         },
       });
 
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedCrmDealOutput format
-      var unifiedDeal: UnifiedCrmDealOutput = {
+      const unifiedDeal: UnifiedCrmDealOutput = {
         id: deal.id_crm_deal,
         name: deal.name,
         description: deal.description,
@@ -243,12 +243,12 @@ export class DealService {
       };
 
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: deal.id_crm_deal,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -297,7 +297,7 @@ export class DealService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.crm_deals.findFirst({
+        const isCursorPresent = await this.prisma.crm_deals.findFirst({
           where: {
             id_connection: connection_id,
             id_crm_deal: cursor,
@@ -308,7 +308,7 @@ export class DealService {
         }
       }
 
-      var deals = await this.prisma.crm_deals.findMany({
+      const deals = await this.prisma.crm_deals.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -334,10 +334,10 @@ export class DealService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedDeals: UnifiedCrmDealOutput[] = await Promise.all(
+      const unifiedDeals: UnifiedCrmDealOutput[] = await Promise.all(
         deals.map(async (deal) => {
           // Fetch field mappings for the ticket
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: deal.id_crm_deal,
@@ -348,7 +348,7 @@ export class DealService {
             },
           });
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -356,7 +356,7 @@ export class DealService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-var field_mappings = Object.fromEntries(fieldMappingsMap);
+const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedCrmDealOutput format
           return {
@@ -378,14 +378,14 @@ var field_mappings = Object.fromEntries(fieldMappingsMap);
       let res: UnifiedCrmDealOutput[] = unifiedDeals;
 
       if (remote_data) {
-        var remote_array_data: UnifiedCrmDealOutput[] = await Promise.all(
+        const remote_array_data: UnifiedCrmDealOutput[] = await Promise.all(
           res.map(async (deal) => {
-            var resp = await this.prisma.remote_data.findFirst({
+            const resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: deal.id,
               },
             });
-            var remote_data = JSON.parse(resp.data);
+            const remote_data = JSON.parse(resp.data);
             return { ...deal, remote_data };
           }),
         );
