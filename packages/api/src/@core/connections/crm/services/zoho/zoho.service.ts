@@ -30,7 +30,7 @@ type ZohoUrlType = {
     apiBase: string;
   };
 };
-export const ZOHOLocations: ZohoUrlType = {
+export var ZOHOLocations: ZohoUrlType = {
   us: {
     authBase: 'https://accounts.zoho.com',
     apiBase: 'https://www.zohoapis.com',
@@ -55,8 +55,8 @@ export const ZOHOLocations: ZohoUrlType = {
 
 function getDomainSuffix(url: string): string | null {
   try {
-    const domain = new URL(url).hostname;
-    const parts = domain.split('.');
+    var domain = new URL(url).hostname;
+    var parts = domain.split('.');
     if (parts.length > 1) {
       return parts[parts.length - 1];
     }
@@ -101,10 +101,10 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -138,11 +138,11 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code, location } = opts;
+      var { linkedUserId, projectId, code, location } = opts;
       if (!location) {
         throw new ReferenceError(`no zoho location, found ${location}`);
       }
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
@@ -151,13 +151,13 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
@@ -165,8 +165,8 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
         code: code,
       });
       //no refresh token
-      const authDomain = ZOHOLocations[location].authBase;
-      const res = await axios.post(
+      var authDomain = ZOHOLocations[location].authBase;
+      var res = await axios.post(
         `${authDomain}/oauth/v2/token`,
         formData.toString(),
         {
@@ -175,11 +175,11 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: ZohoOAuthResponse = res.data;
+      var data: ZohoOAuthResponse = res.data;
       this.logger.log('OAuth credentials : zoho ' + JSON.stringify(data));
       let db_res;
-      const connection_token = uuidv4();
-      const BASE_API_URL = (
+      var connection_token = uuidv4();
+      var BASE_API_URL = (
         CONNECTORS_METADATA['crm']['zoho'].urls.apiUrl as DynamicApiUrl
       )(ZOHOLocations[location].apiBase);
       if (isNotUnique) {
@@ -240,14 +240,14 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
   }
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      const { connectionId, refreshToken, account_url, projectId } = opts;
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var { connectionId, refreshToken, account_url, projectId } = opts;
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         grant_type: 'refresh_token',
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
@@ -255,7 +255,7 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
         refresh_token: this.cryptoService.decrypt(refreshToken),
       });
 
-      const res = await axios.post(
+      var res = await axios.post(
         `${
           ZOHOLocations[getDomainSuffix(account_url)].authBase
         }/oauth/v2/token`,
@@ -266,7 +266,7 @@ export class ZohoConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: ZohoOAuthResponse = res.data;
+      var data: ZohoOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
