@@ -29,7 +29,7 @@ export class TransactionService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingTransactionOutput> {
     try {
-      const transaction = await this.prisma.acc_transactions.findUnique({
+      let transaction = await this.prisma.acc_transactions.findUnique({
         where: { id_acc_transaction: id_acc_transaction },
       });
 
@@ -37,24 +37,24 @@ export class TransactionService {
         throw new Error(`Transaction with ID ${id_acc_transaction} not found.`);
       }
 
-      const lineItems = await this.prisma.acc_transactions_lines_items.findMany(
+      let lineItems = await this.prisma.acc_transactions_lines_items.findMany(
         {
           where: { id_acc_transaction: id_acc_transaction },
         },
       );
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: transaction.id_acc_transaction },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedTransaction: UnifiedAccountingTransactionOutput = {
+      let unifiedTransaction: UnifiedAccountingTransactionOutput = {
         id: transaction.id_acc_transaction,
         transaction_type: transaction.transaction_type,
         number: transaction.number ? Number(transaction.number) : undefined,
@@ -90,7 +90,7 @@ export class TransactionService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: transaction.id_acc_transaction },
         });
         unifiedTransaction.remote_data = remoteDataRecord
@@ -134,35 +134,35 @@ export class TransactionService {
     previous_cursor: string | null;
   }> {
     try {
-      const transactions = await this.prisma.acc_transactions.findMany({
+      let transactions = await this.prisma.acc_transactions.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_transaction: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = transactions.length > limit;
+      let hasNextPage = transactions.length > limit;
       if (hasNextPage) transactions.pop();
 
-      const unifiedTransactions = await Promise.all(
+      let unifiedTransactions = await Promise.all(
         transactions.map(async (transaction) => {
-          const lineItems =
+          let lineItems =
             await this.prisma.acc_transactions_lines_items.findMany({
               where: { id_acc_transaction: transaction.id_acc_transaction },
             });
 
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: transaction.id_acc_transaction },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedTransaction: UnifiedAccountingTransactionOutput = {
+          let unifiedTransaction: UnifiedAccountingTransactionOutput = {
             id: transaction.id_acc_transaction,
             transaction_type: transaction.transaction_type,
             number: transaction.number ? Number(transaction.number) : undefined,
@@ -199,7 +199,7 @@ export class TransactionService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: transaction.id_acc_transaction },
             });
             unifiedTransaction.remote_data = remoteDataRecord
