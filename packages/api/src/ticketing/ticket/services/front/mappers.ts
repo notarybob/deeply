@@ -47,7 +47,7 @@ export class FrontTicketMapper implements ITicketMapper {
     }[],
     connection_id?: string,
   ): Promise<FrontTicketInput> {
-    const body_: any = {};
+    var body_: any = {};
 
     if (source.comment.creator_type === 'USER') {
       body_.author_id = await this.utils.getAsigneeRemoteIdFromUserUuid(
@@ -57,7 +57,7 @@ export class FrontTicketMapper implements ITicketMapper {
     if (source.attachments) {
       body_.attachments = source.attachments as string[];
     }
-    const result: FrontTicketInput = {
+    var result: FrontTicketInput = {
       type: 'discussion',
       subject: source.name,
       comment: {
@@ -67,9 +67,9 @@ export class FrontTicketMapper implements ITicketMapper {
     };
 
     if (source.assigned_to && source.assigned_to.length > 0) {
-      const res: string[] = [];
-      for (const assignee of source.assigned_to) {
-        const data = await this.utils.getAsigneeRemoteIdFromUserUuid(assignee);
+      var res: string[] = [];
+      for (var assignee of source.assigned_to) {
+        var data = await this.utils.getAsigneeRemoteIdFromUserUuid(assignee);
         if (data) {
           res.push(data);
         }
@@ -79,8 +79,8 @@ export class FrontTicketMapper implements ITicketMapper {
 
     if (source.tags) {
       result.tags = [];
-      for (const tag of source.tags) {
-        const id = await this.utils.getRemoteIdFromTagName(
+      for (var tag of source.tags) {
+        var id = await this.utils.getRemoteIdFromTagName(
           tag as string,
           connection_id,
         );
@@ -89,8 +89,8 @@ export class FrontTicketMapper implements ITicketMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -111,7 +111,7 @@ export class FrontTicketMapper implements ITicketMapper {
     }[],
   ): Promise<UnifiedTicketingTicketOutput | UnifiedTicketingTicketOutput[]> {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    var sourcesArray = Array.isArray(source) ? source : [source];
 
     return Promise.all(
       sourcesArray.map((ticket) =>
@@ -132,9 +132,9 @@ export class FrontTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingTicketOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = ticket.custom_fields[mapping.remote_id];
       }
     }
@@ -143,7 +143,7 @@ export class FrontTicketMapper implements ITicketMapper {
 
     if (ticket.assignee) {
       //fetch the right assignee uuid from remote id
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(ticket.assignee.id),
         connectionId,
       );
@@ -157,7 +157,7 @@ export class FrontTicketMapper implements ITicketMapper {
     // The following code is commented because it uses code from the ATS Module, which was removed from the project
 
     // if (ticket.tags) {
-    //   const tags = (await this.coreUnificationService.unify<
+    //   var tags = (await this.coreUnificationService.unify<
     //     OriginalTagOutput[]
     //   >({
     //     sourceObject: ticket.tags,
@@ -172,7 +172,7 @@ export class FrontTicketMapper implements ITicketMapper {
     //     tags: tags,
     //   };
     // }
-    const unifiedTicket: UnifiedTicketingTicketOutput = {
+    var unifiedTicket: UnifiedTicketingTicketOutput = {
       remote_id: ticket.id,
       remote_data: ticket,
       name: ticket.subject,
