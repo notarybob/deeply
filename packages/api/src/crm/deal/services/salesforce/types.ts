@@ -19,7 +19,7 @@ export interface SalesforceDealOutput extends SalesforceDealInput {
   IsWon: boolean;
 }
 
-export let commonDealSalesforceProperties = {
+export const commonDealSalesforceProperties = {
   Id: '',
   Name: '',
   Amount: 0,
