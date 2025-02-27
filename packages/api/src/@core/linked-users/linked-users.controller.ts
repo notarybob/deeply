@@ -64,7 +64,7 @@ export class LinkedUsersController {
   @ApiExcludeEndpoint()
   @Get('internal')
   fetchLinkedUsersInternal(@Request() req: any) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.linkedUsersService.getLinkedUsers(id_project);
   }
 
@@ -78,7 +78,7 @@ export class LinkedUsersController {
     @Request() req: any,
     @Body() linkedUserCreateDto: CreateLinkedUserDto,
   ) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.linkedUsersService.addLinkedUser(
       linkedUserCreateDto,
       id_project,
@@ -98,7 +98,7 @@ export class LinkedUsersController {
     @Request() req: any,
     @Body() data: CreateBatchLinkedUserDto,
   ) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.linkedUsersService.addBatchLinkedUsers(data, id_project);
   }
 
@@ -147,7 +147,7 @@ export class LinkedUsersController {
     @Request() req: any,
     @Body() linkedUserCreateDto: CreateLinkedUserDto,
   ) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.linkedUsersService.addLinkedUser(
       linkedUserCreateDto,
       projectId,
@@ -166,7 +166,7 @@ export class LinkedUsersController {
     @Request() req: any,
     @Body() data: CreateBatchLinkedUserDto,
   ) {
-    const projectId = req.user.id_project;
+    let projectId = req.user.id_project;
     return this.linkedUsersService.addBatchLinkedUsers(data, projectId);
   }
 
@@ -178,7 +178,7 @@ export class LinkedUsersController {
   @UseGuards(ApiKeyAuthGuard)
   @Get()
   listLinkedUsers(@Request() req: any) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.linkedUsersService.getLinkedUsers(id_project);
   }
 
