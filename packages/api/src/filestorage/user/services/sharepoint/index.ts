@@ -26,9 +26,9 @@ export class SharepointService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SharepointUserOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'sharepoint',
@@ -37,10 +37,10 @@ export class SharepointService implements IUserService {
       });
 
       // remove /sites/site_id from account_url
-      let url = connection.account_url.replace(/\/sites\/.+$/, '');
+      const url = connection.account_url.replace(/\/sites\/.+$/, '');
 
       // ref: https://learn.microsoft.com/en-us/graph/api/user-list?view=graph-rest-1.0&tabs=http
-      let resp = await axios.get(`${url}/users`, {
+      const resp = await axios.get(`${url}/users`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
