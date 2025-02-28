@@ -66,11 +66,11 @@ export class GroupController {
     @Query() query: QueryDto,
   ) {
     try {
-      let { connectionId, projectId, linkedUserId, remoteSource } =
+      const { connectionId, projectId, linkedUserId, remoteSource } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
-      let { remote_data, limit, cursor } = query;
+      const { remote_data, limit, cursor } = query;
       return this.permissionService.getGroups(
         connectionId,
         projectId,
@@ -119,7 +119,7 @@ export class GroupController {
     @Param('id') id: string,
     @Query('remote_data') remote_data?: boolean,
   ) {
-    let { linkedUserId, remoteSource, connectionId, projectId } =
+    const { linkedUserId, remoteSource, connectionId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionToken(
         connection_token,
       );
