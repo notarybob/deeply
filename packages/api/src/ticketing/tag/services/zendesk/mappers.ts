@@ -31,7 +31,7 @@ export class ZendeskTagMapper implements ITagMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingTagOutput | UnifiedTicketingTagOutput[] {
-    let sourcesArray = Array.isArray(source) ? source : [source];
+    const sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((tag) =>
       this.mapSingleTagToUnified(tag, connectionId, customFieldMappings),
@@ -46,7 +46,7 @@ export class ZendeskTagMapper implements ITagMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingTagOutput {
-    let unifiedTag: UnifiedTicketingTagOutput = {
+    const unifiedTag: UnifiedTicketingTagOutput = {
       remote_id: null,
       remote_data: tag,
       name: tag.name,
