@@ -30,7 +30,7 @@ export class AttioService implements IContactService {
     linkedUserId: string,
   ): Promise<ApiResponse<AttioContactOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
@@ -38,7 +38,7 @@ export class AttioService implements IContactService {
         },
       });
 
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v2/objects/people/records`,
         JSON.stringify({
           data: contactData,
@@ -64,9 +64,9 @@ export class AttioService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<AttioContactOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
@@ -74,7 +74,7 @@ export class AttioService implements IContactService {
         },
       });
 
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v2/objects/people/records/query`,
         {},
         {
