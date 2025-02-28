@@ -27,16 +27,16 @@ export class GithubService implements ICollectionService {
 
     async sync(data: SyncParam): Promise<ApiResponse<GithubCollectionOutput[]>> {
         try {
-            let { linkedUserId } = data;
+            const { linkedUserId } = data;
 
-            let connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'github',
                     vertical: 'ticketing',
                 },
             });
-            let resp = await axios.get(
+            const resp = await axios.get(
                 `${connection.account_url}/user/repos`,
                 {
                     headers: {
