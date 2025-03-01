@@ -27,9 +27,9 @@ export class LinearService implements ITagService {
 
   async sync(data: SyncParam): Promise<ApiResponse<LinearTagOutput[]>> {
     try {
-      var { linkedUserId, id_ticket } = data;
+      const { linkedUserId, id_ticket } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'linear',
@@ -37,7 +37,7 @@ export class LinearService implements ITagService {
         },
       });
 
-      var labelQuery = {
+      const labelQuery = {
         "query": "query { issueLabels { nodes { id name } }}"
       };
 
