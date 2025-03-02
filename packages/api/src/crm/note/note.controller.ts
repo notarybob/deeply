@@ -66,11 +66,11 @@ export class NoteController {
     @Query() query: QueryDto,
   ) {
     try {
-      const { linkedUserId, remoteSource, connectionId, projectId } =
+      let { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
-      const { remote_data, limit, cursor } = query;
+      let { remote_data, limit, cursor } = query;
       return this.noteService.getNotes(
         connectionId,
         projectId,
@@ -118,7 +118,7 @@ export class NoteController {
     @Param('id') id: string,
     @Query('remote_data') remote_data?: boolean,
   ) {
-    const { linkedUserId, remoteSource, connectionId, projectId } =
+    let { linkedUserId, remoteSource, connectionId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionToken(
         connection_token,
       );
@@ -160,7 +160,7 @@ export class NoteController {
     @Query('remote_data') remote_data?: boolean,
   ) {
     try {
-      const { linkedUserId, remoteSource, connectionId, projectId } =
+      let { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
