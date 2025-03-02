@@ -22,13 +22,13 @@ export class PipedriveContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): Promise<PipedriveContactInput> {
-    var primaryEmail = source.email_addresses?.[0]?.email_address;
-    var primaryPhone = source.phone_numbers?.[0]?.phone_number;
+    const primaryEmail = source.email_addresses?.[0]?.email_address;
+    const primaryPhone = source.phone_numbers?.[0]?.phone_number;
 
-    var emailObject = primaryEmail
+    const emailObject = primaryEmail
       ? [{ value: primaryEmail, primary: true, label: null }]
       : [];
-    var phoneObject = primaryPhone
+    const phoneObject = primaryPhone
       ? [
           {
             value: primaryPhone,
@@ -40,14 +40,14 @@ export class PipedriveContactMapper implements IContactMapper {
           },
         ]
       : [];
-    var result: PipedriveContactInput = {
+    const result: PipedriveContactInput = {
       name: `${source.first_name} ${source.last_name}`,
       email: emailObject,
       phone: phoneObject,
     };
 
     if (source.user_id) {
-      var owner = await this.utils.getUser(source.user_id);
+      const owner = await this.utils.getUser(source.user_id);
       if (owner) {
         result.owner_id = {
           id: Number(owner.remote_id),
@@ -62,8 +62,8 @@ export class PipedriveContactMapper implements IContactMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -110,15 +110,15 @@ export class PipedriveContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmContactOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact[mapping.remote_id];
       }
     }
     let opts: any = {};
     if (contact.owner_id.id) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         String(contact.owner_id.id),
         connectionId,
       );
