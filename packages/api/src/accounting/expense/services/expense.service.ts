@@ -32,10 +32,10 @@ export class ExpenseService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingExpenseOutput> {
     try {
-      const service = this.serviceRegistry.getService(integrationId);
-      const resp = await service.addExpense(unifiedExpenseData, linkedUserId);
+      let service = this.serviceRegistry.getService(integrationId);
+      let resp = await service.addExpense(unifiedExpenseData, linkedUserId);
 
-      const savedExpense = await this.prisma.acc_expenses.create({
+      let savedExpense = await this.prisma.acc_expenses.create({
         data: {
           id_acc_expense: uuidv4(),
           ...unifiedExpenseData,
@@ -76,7 +76,7 @@ export class ExpenseService {
         );
       }
 
-      const result: UnifiedAccountingExpenseOutput = {
+      let result: UnifiedAccountingExpenseOutput = {
         ...savedExpense,
         currency: savedExpense.currency as CurrencyCode,
         id: savedExpense.id_acc_expense,
@@ -111,7 +111,7 @@ export class ExpenseService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingExpenseOutput> {
     try {
-      const expense = await this.prisma.acc_expenses.findUnique({
+      let expense = await this.prisma.acc_expenses.findUnique({
         where: { id_acc_expense: id_acc_expense },
       });
 
@@ -119,22 +119,22 @@ export class ExpenseService {
         throw new Error(`Expense with ID ${id_acc_expense} not found.`);
       }
 
-      const lineItems = await this.prisma.acc_expense_lines.findMany({
+      let lineItems = await this.prisma.acc_expense_lines.findMany({
         where: { id_acc_expense: id_acc_expense },
       });
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: expense.id_acc_expense },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedExpense: UnifiedAccountingExpenseOutput = {
+      let unifiedExpense: UnifiedAccountingExpenseOutput = {
         id: expense.id_acc_expense,
         transaction_date: expense.transaction_date,
         total_amount: expense.total_amount
@@ -169,7 +169,7 @@ export class ExpenseService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: expense.id_acc_expense },
         });
         unifiedExpense.remote_data = remoteDataRecord
@@ -213,34 +213,34 @@ export class ExpenseService {
     previous_cursor: string | null;
   }> {
     try {
-      const expenses = await this.prisma.acc_expenses.findMany({
+      let expenses = await this.prisma.acc_expenses.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_expense: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = expenses.length > limit;
+      let hasNextPage = expenses.length > limit;
       if (hasNextPage) expenses.pop();
 
-      const unifiedExpenses = await Promise.all(
+      let unifiedExpenses = await Promise.all(
         expenses.map(async (expense) => {
-          const lineItems = await this.prisma.acc_expense_lines.findMany({
+          let lineItems = await this.prisma.acc_expense_lines.findMany({
             where: { id_acc_expense: expense.id_acc_expense },
           });
 
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: expense.id_acc_expense },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedExpense: UnifiedAccountingExpenseOutput = {
+          let unifiedExpense: UnifiedAccountingExpenseOutput = {
             id: expense.id_acc_expense,
             transaction_date: expense.transaction_date,
             total_amount: expense.total_amount
@@ -277,7 +277,7 @@ export class ExpenseService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: expense.id_acc_expense },
             });
             unifiedExpense.remote_data = remoteDataRecord
