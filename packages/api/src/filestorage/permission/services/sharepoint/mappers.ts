@@ -70,9 +70,9 @@ export class SharepointPermissionMapper implements IPermissionMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestoragePermissionOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = permission[mapping.remote_id];
       }
     }
