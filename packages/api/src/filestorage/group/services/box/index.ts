@@ -26,15 +26,15 @@ export class BoxService implements IGroupService {
 
   async sync(data: SyncParam): Promise<ApiResponse<BoxGroupOutput[]>> {
     try {
-      let { linkedUserId } = data;
-      let connection = await this.prisma.connections.findFirst({
+      const { linkedUserId } = data;
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'box',
           vertical: 'filestorage',
         },
       });
-      let resp = await axios.get(`${connection.account_url}/2.0/groups`, {
+      const resp = await axios.get(`${connection.account_url}/2.0/groups`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
