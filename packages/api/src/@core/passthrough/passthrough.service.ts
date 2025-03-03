@@ -26,7 +26,7 @@ export class PassthroughService {
     projectId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const {
+      var {
         method,
         path,
         data,
@@ -35,7 +35,7 @@ export class PassthroughService {
         headers,
       } = requestParams;
 
-      const job_resp_create = await this.prisma.events.create({
+      var job_resp_create = await this.prisma.events.create({
         data: {
           id_connection: connectionId,
           id_project: projectId,
@@ -51,10 +51,10 @@ export class PassthroughService {
         },
       });
 
-      const service = this.categoryConnectionRegistry.getService(
+      var service = this.categoryConnectionRegistry.getService(
         vertical.toLowerCase(),
       );
-      const response = await service.passthrough(
+      var response = await service.passthrough(
         {
           method,
           path,
