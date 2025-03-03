@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 
-let prisma = new PrismaClient();
+const prisma = new PrismaClient();
 
 async function main() {
-  /*let webhook_endpoint = await prisma.webhook_endpoints.create({
+  /*const webhook_endpoint = await prisma.webhook_endpoints.create({
     data: {
       id_webhook_endpoint: uuidv4(),
       url: 'https://webhook.site/5018c5f3-e582-4f6f-a5ca-9e7389e951e2',
