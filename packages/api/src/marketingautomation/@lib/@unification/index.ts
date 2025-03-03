@@ -29,7 +29,7 @@ export class MarketingAutomationUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<MarketingAutomationObjectInput> {
-    let mapping = this.mappersRegistry.getService(
+    const mapping = this.mappersRegistry.getService(
       'marketingautomation',
       targetType_,
       providerName,
@@ -60,7 +60,7 @@ export class MarketingAutomationUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<UnifyReturnType> {
-    let mapping = this.mappersRegistry.getService(
+    const mapping = this.mappersRegistry.getService(
       'marketingautomation',
       targetType_,
       providerName,
