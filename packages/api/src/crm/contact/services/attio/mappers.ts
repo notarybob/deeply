@@ -23,10 +23,10 @@ export class AttioContactMapper implements IContactMapper {
     }[],
   ): Promise<AttioContactInput> {
     // Assuming 'email_addresses' and 'phone_numbers' arrays contain at least one entry
-    let primaryEmail = source.email_addresses?.[0]?.email_address;
-    let primaryPhone = source.phone_numbers?.[0]?.phone_number;
+    const primaryEmail = source.email_addresses?.[0]?.email_address;
+    const primaryPhone = source.phone_numbers?.[0]?.phone_number;
 
-    let result: AttioContactInput = {
+    const result: AttioContactInput = {
       values: {
         name: [
           {
@@ -47,7 +47,7 @@ export class AttioContactMapper implements IContactMapper {
     }
 
     if (source.addresses && source.addresses.length > 0) {
-      let addy: any = {
+      const addy: any = {
         line_2: null,
         line_3: null,
         line_4: null,
@@ -71,8 +71,8 @@ export class AttioContactMapper implements IContactMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (let [k, v] of Object.entries(source.field_mappings)) {
-        let mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -119,19 +119,19 @@ export class AttioContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmContactOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact.values[mapping.remote_id];
       }
     }
 
-    let opts: any = {
+    const opts: any = {
       addresses: [],
     };
 
-    let address: any = {};
-    let addy_exists =
+    const address: any = {};
+    const addy_exists =
       contact.values.primary_location && contact.values.primary_location[0];
 
     if (addy_exists && addy_exists.line_1) {
