@@ -32,7 +32,7 @@ export class FrontUserMapper implements IUserMapper {
     }[],
   ): Promise<UnifiedTicketingUserOutput | UnifiedTicketingUserOutput[]> {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    let sourcesArray = Array.isArray(source) ? source : [source];
 
     return Promise.all(
       sourcesArray.map((user) =>
@@ -49,14 +49,14 @@ export class FrontUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingUserOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = user.custom_fields[mapping.remote_id];
       }
     }
 
-    const unifiedUser: UnifiedTicketingUserOutput = {
+    let unifiedUser: UnifiedTicketingUserOutput = {
       remote_id: String(user.id),
       remote_data: user,
       name: `${user.last_name} ${user.last_name}`,
