@@ -38,7 +38,7 @@ export class GithubCommentMapper implements ICommentMapper {
 
     // TODO - Add attachments attribute
 
-    const result: GithubCommentInput = {
+    var result: GithubCommentInput = {
       body: source.body,
     };
     return result;
@@ -83,7 +83,7 @@ export class GithubCommentMapper implements ICommentMapper {
     // Here Github represent Attachment as URL in body of comment as Markdown so we do not have to store in attachement unified object.
 
     if (comment.user.id) {
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(comment.user.id),
         connectionId,
       );
