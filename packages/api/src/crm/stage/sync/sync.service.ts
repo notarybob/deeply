@@ -43,15 +43,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = CRM_PROVIDERS;
-          for (const provider of providers) {
+          var providers = CRM_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -73,8 +73,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(data: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId, deal_id } = data;
-      const service: IStageService =
+      var { integrationId, linkedUserId, deal_id } = data;
+      var service: IStageService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -109,19 +109,19 @@ export class SyncService implements OnModuleInit, IBaseSync {
     deal_id: string,
   ): Promise<CrmStage[]> {
     try {
-      const stages_results: CrmStage[] = [];
+      var stages_results: CrmStage[] = [];
 
-      const updateOrCreateStage = async (
+      var updateOrCreateStage = async (
         stage: UnifiedCrmStageOutput,
         originId: string,
       ) => {
-        const baseData: any = {
+        var baseData: any = {
           stage_name: stage.stage_name ?? null,
           modified_at: new Date(),
         };
 
         if (deal_id) {
-          const existingStage = await this.prisma.crm_deals.findFirst({
+          var existingStage = await this.prisma.crm_deals.findFirst({
             where: {
               id_crm_deal: deal_id,
             },
@@ -137,7 +137,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
               data: baseData,
             });
           } else {
-            const isExistingStage =
+            var isExistingStage =
               await this.prisma.crm_deals_stages.findFirst({
                 where: {
                   remote_id: originId,
@@ -156,7 +156,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
               });
               return isExistingStage;
             } else {
-              const newStage = await this.prisma.crm_deals_stages.create({
+              var newStage = await this.prisma.crm_deals_stages.create({
                 data: {
                   ...baseData,
                   id_crm_deals_stage: uuidv4(),
@@ -218,11 +218,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        const stage = data[i];
-        const originId = stage.remote_id;
+        var stage = data[i];
+        var originId = stage.remote_id;
 
-        const res = await updateOrCreateStage(stage, originId);
-        const stage_id = res.id_crm_deals_stage;
+        var res = await updateOrCreateStage(stage, originId);
+        var stage_id = res.id_crm_deals_stage;
         stages_results.push(res);
 
         // Process field mappings
