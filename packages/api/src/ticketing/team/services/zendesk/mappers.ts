@@ -52,7 +52,7 @@ export class ZendeskTeamMapper implements ITeamMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingTeamOutput {
-    let unifiedTeam: UnifiedTicketingTeamOutput = {
+    const unifiedTeam: UnifiedTicketingTeamOutput = {
       remote_id: String(team.id),
       remote_data: team,
       name: team.name,
