@@ -37,7 +37,7 @@ export class JiraCollectionMapper implements ICollectionMapper {
     }[],
   ): UnifiedTicketingCollectionOutput | UnifiedTicketingCollectionOutput[] {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    let sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((collection) =>
       this.mapSingleCollectionToUnified(
@@ -56,7 +56,7 @@ export class JiraCollectionMapper implements ICollectionMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingCollectionOutput {
-    const unifiedCollection: UnifiedTicketingCollectionOutput = {
+    let unifiedCollection: UnifiedTicketingCollectionOutput = {
       remote_id: collection.id,
       remote_data: collection,
       name: collection.key,
