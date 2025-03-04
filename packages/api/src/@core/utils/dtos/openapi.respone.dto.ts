@@ -7,7 +7,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 
-export const ApiGetArrayCustomResponse = <DataDto extends Type<unknown>>(
+export let ApiGetArrayCustomResponse = <DataDto extends Type<unknown>>(
   dataDto: DataDto,
 ) =>
   applyDecorators(
@@ -20,7 +20,7 @@ export const ApiGetArrayCustomResponse = <DataDto extends Type<unknown>>(
     }),
   );
 
-export const ApiGetCustomResponse = <DataDto extends Type<unknown>>(
+export let ApiGetCustomResponse = <DataDto extends Type<unknown>>(
   dataDto: DataDto,
 ) =>
   applyDecorators(
@@ -32,7 +32,7 @@ export const ApiGetCustomResponse = <DataDto extends Type<unknown>>(
     }),
   );
 
-export const ApiPostCustomResponse = <DataDto extends Type<unknown>>(
+export let ApiPostCustomResponse = <DataDto extends Type<unknown>>(
   dataDto: DataDto,
 ) =>
   applyDecorators(
@@ -44,7 +44,7 @@ export const ApiPostCustomResponse = <DataDto extends Type<unknown>>(
     }),
   );
 
-export const ApiPostGenericJson = (description: string) => {
+export let ApiPostGenericJson = (description: string) => {
   return applyDecorators(
     ApiCreatedResponse({
       schema: {
@@ -55,7 +55,7 @@ export const ApiPostGenericJson = (description: string) => {
     }),
   );
 };
-export const ApiPostArrayCustomResponse = <DataDto extends Type<unknown>>(
+export let ApiPostArrayCustomResponse = <DataDto extends Type<unknown>>(
   dataDto: DataDto,
 ) =>
   applyDecorators(
@@ -79,7 +79,7 @@ export class PaginatedDto<TData> {
   data: TData[];
 }
 
-export const ApiPaginatedResponse = <TModel extends Type<any>>(
+export let ApiPaginatedResponse = <TModel extends Type<any>>(
   model: TModel,
 ) => {
   return applyDecorators(
