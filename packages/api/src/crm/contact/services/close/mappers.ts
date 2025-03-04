@@ -26,7 +26,7 @@ export class CloseContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): Promise<CloseContactInput> {
-    /*let result: CloseContactInput = {
+    /*const result: CloseContactInput = {
       name: `${source.first_name ?? null} ${source.last_name ?? null}`,
       phones: source?.phone_numbers?.map(
         ({ phone_number, phone_type }) =>
@@ -47,8 +47,8 @@ export class CloseContactMapper implements IContactMapper {
     result.lead_id = source?.field_mappings?.['company_id'];
 
     if (customFieldMappings && source.field_mappings) {
-      for (let [k, v] of Object.entries(source.field_mappings)) {
-        let mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -93,9 +93,9 @@ export class CloseContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): UnifiedCrmContactOutput {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact[mapping.remote_id];
       }
     }
