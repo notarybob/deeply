@@ -47,28 +47,28 @@ export class ZendeskHandlerService {
 
   async createBasicWebhook(webhook_name: string, mw_id: string) {
     try {
-      const mw = await this.prisma.managed_webhooks.findUnique({
+      let mw = await this.prisma.managed_webhooks.findUnique({
         where: {
           id_managed_webhook: mw_id,
         },
       });
       if (!mw) throw ReferenceError('Managed Webhook undefined');
-      const conn = await this.prisma.connections.findUnique({
+      let conn = await this.prisma.connections.findUnique({
         where: {
           id_connection: mw.id_connection,
         },
       });
       if (!conn) throw ReferenceError('Connection undefined');
-      const unified_events = mw.active_events;
+      let unified_events = mw.active_events;
 
-      const events_ = Array.from(
+      let events_ = Array.from(
         new Set(
           unified_events
             .flatMap((event) => mapToRemoteEvent(event))
             .filter((item) => item !== null && item !== undefined),
         ),
       ); // Converts the Set back into an array
-      const body_data = {
+      let body_data = {
         webhook: {
           name: webhook_name,
           status: 'active',
@@ -81,7 +81,7 @@ export class ZendeskHandlerService {
 
       this.logger.log('Creating basic webhook... ');
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${conn.account_url}/webhooks`,
         JSON.stringify(body_data),
         {
@@ -100,7 +100,7 @@ export class ZendeskHandlerService {
 
       this.logger.log('Fetching basic webhook secret... ');
 
-      const webhook_result = await axios.get(
+      let webhook_result = await axios.get(
         `${conn.account_url}/webhooks/${resp.data.webhook.id}/signing_secret`,
         {
           headers: {
@@ -127,21 +127,21 @@ export class ZendeskHandlerService {
 
   async createTriggerWebhook(webhook_name: string, mw_id: string) {
     try {
-      const mw = await this.prisma.managed_webhooks.findUnique({
+      let mw = await this.prisma.managed_webhooks.findUnique({
         where: {
           id_managed_webhook: mw_id,
         },
       });
       if (!mw) throw ReferenceError('Managed Webhook undefined');
 
-      const conn = await this.prisma.connections.findUnique({
+      let conn = await this.prisma.connections.findUnique({
         where: {
           id_connection: mw.id_connection,
         },
       });
       if (!conn) throw ReferenceError('Connection undefined');
 
-      const body_data = {
+      let body_data = {
         webhook: {
           name: webhook_name,
           status: 'active',
@@ -153,7 +153,7 @@ export class ZendeskHandlerService {
       };
 
       this.logger.log('Creating trigger webhook... ');
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${conn.account_url}/webhooks`,
         JSON.stringify(body_data),
         {
@@ -171,7 +171,7 @@ export class ZendeskHandlerService {
       );
 
       // create trigger webhook
-      const b_ = {
+      let b_ = {
         trigger: {
           actions: [
             {
@@ -227,7 +227,7 @@ export class ZendeskHandlerService {
           title: 'Trigger Webhooks',
         },
       };
-      const trigger_result = await axios.post(
+      let trigger_result = await axios.post(
         `${conn.account_url}/triggers.json`,
         JSON.stringify(b_),
         {
@@ -241,7 +241,7 @@ export class ZendeskHandlerService {
       );
 
       this.logger.log('Fetching trigger webhook secret... ');
-      const webhook_result = await axios.get(
+      let webhook_result = await axios.get(
         `${conn.account_url}/webhooks/${resp.data.webhook.id}/signing_secret`,
         {
           headers: {
@@ -274,12 +274,12 @@ export class ZendeskHandlerService {
         payload,
         id_managed_webhook,
       );
-      const mw = await this.prisma.managed_webhooks.findUnique({
+      let mw = await this.prisma.managed_webhooks.findUnique({
         where: {
           id_managed_webhook: id_managed_webhook,
         },
       });
-      const connection = await this.prisma.connections.findUnique({
+      let connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: mw.id_connection,
         },
@@ -297,8 +297,8 @@ export class ZendeskHandlerService {
         });
       } else {
         //non-ticket payload
-        const payload_ = payload as NonTicketPayload;
-        const [event_type, event_action] = this.extractValue(payload_.type);
+        let payload_ = payload as NonTicketPayload;
+        let [event_type, event_action] = this.extractValue(payload_.type);
         switch (event_type) {
           case 'user':
             if (payload_.detail.role) {
@@ -354,15 +354,15 @@ export class ZendeskHandlerService {
   }
 
   extractValue(typeString: string): string[] {
-    const prefix = 'zen:event-type:';
-    const startIndex = typeString.indexOf(prefix);
+    let prefix = 'zen:event-type:';
+    let startIndex = typeString.indexOf(prefix);
 
     if (startIndex === -1) {
       throw new Error('Prefix not found in the string.');
     }
 
-    const afterPrefix = typeString.substring(startIndex + prefix.length);
-    const values = afterPrefix.split(':');
+    let afterPrefix = typeString.substring(startIndex + prefix.length);
+    let values = afterPrefix.split(':');
     return [values[0], values[1]];
   }
 
@@ -373,17 +373,17 @@ export class ZendeskHandlerService {
     id_managed_webhook: string,
   ) {
     try {
-      const res = await this.prisma.managed_webhooks.findFirst({
+      let res = await this.prisma.managed_webhooks.findFirst({
         where: {
           id_managed_webhook: id_managed_webhook,
         },
       });
-      const SIGNING_SECRET_ALGORITHM = 'sha256';
-      const hmac = crypto.createHmac(
+      let SIGNING_SECRET_ALGORITHM = 'sha256';
+      let hmac = crypto.createHmac(
         SIGNING_SECRET_ALGORITHM,
         res.remote_signing_secret,
       );
-      const sig = hmac.update(timestamp + body).digest('base64');
+      let sig = hmac.update(timestamp + body).digest('base64');
       return Buffer.compare(Buffer.from(signature), Buffer.from(sig)) === 0;
     } catch (error) {
       throw error;
