@@ -30,7 +30,7 @@ export class HubspotEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotEngagementInput> {
-    var type = source.type;
+    const type = source.type;
     switch (type) {
       case 'CALL':
         return await this.desunifyCall(source, customFieldMappings);
@@ -51,7 +51,7 @@ export class HubspotEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotEngagementCallInput> {
-    var result: HubspotEngagementCallInput = {
+    const result: HubspotEngagementCallInput = {
       hs_call_body: source.content || null,
       hs_timestamp: new Date() as any,
       hs_call_title: source.subject || null,
@@ -66,15 +66,15 @@ export class HubspotEngagementMapper implements IEngagementMapper {
 
     // Map HubSpot owner ID from user ID
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.hubspot_owner_id = owner_id;
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -93,7 +93,7 @@ export class HubspotEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotEngagementMeetingInput> {
-    var result: HubspotEngagementMeetingInput = {
+    const result: HubspotEngagementMeetingInput = {
       hs_timestamp: new Date() as any,
       hs_meeting_body: source.content || null,
       hs_meeting_title: source.subject || null,
@@ -108,15 +108,15 @@ export class HubspotEngagementMapper implements IEngagementMapper {
 
     // Map HubSpot owner ID from user ID
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.hubspot_owner_id = owner_id;
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -135,7 +135,7 @@ export class HubspotEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotEngagementEmailInput> {
-    var result: HubspotEngagementEmailInput = {
+    const result: HubspotEngagementEmailInput = {
       hs_timestamp: new Date() as any,
       hs_email_text: source.content || null,
       hs_email_subject: source.subject || null,
@@ -157,15 +157,15 @@ export class HubspotEngagementMapper implements IEngagementMapper {
 
     // Map HubSpot owner ID from user ID
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.hubspot_owner_id = owner_id;
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -303,16 +303,16 @@ export class HubspotEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement.properties[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (engagement.properties.hubspot_owner_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         engagement.properties.hubspot_owner_id,
         connectionId,
       );
@@ -344,16 +344,16 @@ export class HubspotEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement.properties[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (engagement.properties.hubspot_owner_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         engagement.properties.hubspot_owner_id,
         connectionId,
       );
@@ -386,16 +386,16 @@ export class HubspotEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement.properties[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (engagement.properties.hubspot_owner_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         engagement.properties.hubspot_owner_id,
         connectionId,
       );
