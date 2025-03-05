@@ -56,10 +56,10 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -91,8 +91,8 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code, organization_name } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code, organization_name } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'microsoftdynamicssales',
@@ -100,14 +100,14 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
         },
       });
 
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
 
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         redirect_uri: REDIRECT_URI,
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
@@ -115,7 +115,7 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
         scope: `https://${organization_name}/.default offline_access`,
         grant_type: 'authorization_code',
       });
-      const res = await axios.post(
+      var res = await axios.post(
         `https://login.microsoftonline.com/common/oauth2/v2.0/token`,
         formData.toString(),
         {
@@ -124,14 +124,14 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
           },
         },
       );
-      const data: MicrosoftDynamicsSalesOAuthResponse = res.data;
+      var data: MicrosoftDynamicsSalesOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : microsoftdynamicssales crm ' +
           JSON.stringify(data),
       );
 
       let db_res;
-      const connection_token = uuidv4();
+      var connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -186,20 +186,20 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
   }
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      const { connectionId, refreshToken, projectId } = opts;
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var { connectionId, refreshToken, projectId } = opts;
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const conn = await this.prisma.connections.findUnique({
+      var conn = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         grant_type: 'refresh_token',
         scope: `${conn.account_url}/.default offline_access`,
         client_id: CREDENTIALS.CLIENT_ID,
@@ -208,7 +208,7 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
         redirect_uri: REDIRECT_URI,
       });
 
-      const res = await axios.post(
+      var res = await axios.post(
         `https://login.microsoftonline.com/common/oauth2/v2.0/token`,
         formData.toString(),
         {
@@ -217,7 +217,7 @@ export class MicrosoftDynamicsSalesConnectionService extends AbstractBaseConnect
           },
         },
       );
-      const data: MicrosoftDynamicsSalesOAuthResponse = res.data;
+      var data: MicrosoftDynamicsSalesOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
