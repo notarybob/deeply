@@ -20,13 +20,13 @@ export class MagicLinkService {
 
   async getMagicLink(id: string) {
     try {
-      const inviteLink = await this.prisma.invite_links.findFirst({
+      var inviteLink = await this.prisma.invite_links.findFirst({
         where: {
           id_invite_link: id,
         },
       });
       if (!inviteLink) throw new ReferenceError('Magic link undefined');
-      const linkedUser = await this.prisma.linked_users.findFirst({
+      var linkedUser = await this.prisma.linked_users.findFirst({
         where: {
           id_linked_user: inviteLink.id_linked_user,
         },
@@ -43,7 +43,7 @@ export class MagicLinkService {
 
   async createUniqueLink(data: CreateMagicLinkDto) {
     try {
-      const checkDup = await this.prisma.linked_users.findFirst({
+      var checkDup = await this.prisma.linked_users.findFirst({
         where: {
           linked_user_origin_id: data.linked_user_origin_id,
           id_project: data.id_project,
@@ -53,7 +53,7 @@ export class MagicLinkService {
       if (checkDup) {
         linked_user_id = checkDup.id_linked_user;
       } else {
-        const res = await this.prisma.linked_users.create({
+        var res = await this.prisma.linked_users.create({
           data: {
             linked_user_origin_id: data.linked_user_origin_id,
             alias: data.alias,
@@ -64,7 +64,7 @@ export class MagicLinkService {
         linked_user_id = res.id_linked_user;
       }
       //todo : handle status of links
-      const res = await this.prisma.invite_links.create({
+      var res = await this.prisma.invite_links.create({
         data: {
           id_invite_link: uuidv4(),
           status: 'generated',
