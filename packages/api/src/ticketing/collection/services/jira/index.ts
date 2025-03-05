@@ -27,9 +27,9 @@ export class JiraService implements ICollectionService {
 
   async sync(data: SyncParam): Promise<ApiResponse<JiraCollectionOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'jira',
@@ -37,7 +37,7 @@ export class JiraService implements ICollectionService {
         },
       });
 
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/3/project/search`,
         {
           headers: {
