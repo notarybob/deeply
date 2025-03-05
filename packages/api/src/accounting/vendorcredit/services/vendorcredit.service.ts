@@ -29,7 +29,7 @@ export class VendorCreditService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingVendorcreditOutput> {
     try {
-      let vendorCredit = await this.prisma.acc_vendor_credits.findUnique({
+      const vendorCredit = await this.prisma.acc_vendor_credits.findUnique({
         where: { id_acc_vendor_credit: id_acc_vendor_credit },
       });
 
@@ -39,22 +39,22 @@ export class VendorCreditService {
         );
       }
 
-      let lineItems = await this.prisma.acc_vendor_credit_lines.findMany({
+      const lineItems = await this.prisma.acc_vendor_credit_lines.findMany({
         where: { id_acc_vendor_credit: id_acc_vendor_credit },
       });
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: vendorCredit.id_acc_vendor_credit },
         },
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedVendorCredit: UnifiedAccountingVendorcreditOutput = {
+      const unifiedVendorCredit: UnifiedAccountingVendorcreditOutput = {
         id: vendorCredit.id_acc_vendor_credit,
         number: vendorCredit.number,
         transaction_date: vendorCredit.transaction_date,
@@ -87,7 +87,7 @@ export class VendorCreditService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: vendorCredit.id_acc_vendor_credit },
         });
         unifiedVendorCredit.remote_data = remoteDataRecord
@@ -131,34 +131,34 @@ export class VendorCreditService {
     previous_cursor: string | null;
   }> {
     try {
-      let vendorCredits = await this.prisma.acc_vendor_credits.findMany({
+      const vendorCredits = await this.prisma.acc_vendor_credits.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_vendor_credit: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      let hasNextPage = vendorCredits.length > limit;
+      const hasNextPage = vendorCredits.length > limit;
       if (hasNextPage) vendorCredits.pop();
 
-      let unifiedVendorCredits = await Promise.all(
+      const unifiedVendorCredits = await Promise.all(
         vendorCredits.map(async (vendorCredit) => {
-          let lineItems = await this.prisma.acc_vendor_credit_lines.findMany({
+          const lineItems = await this.prisma.acc_vendor_credit_lines.findMany({
             where: { id_acc_vendor_credit: vendorCredit.id_acc_vendor_credit },
           });
 
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: vendorCredit.id_acc_vendor_credit },
             },
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedVendorCredit: UnifiedAccountingVendorcreditOutput = {
+          const unifiedVendorCredit: UnifiedAccountingVendorcreditOutput = {
             id: vendorCredit.id_acc_vendor_credit,
             number: vendorCredit.number,
             transaction_date: vendorCredit.transaction_date,
@@ -193,7 +193,7 @@ export class VendorCreditService {
           };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: vendorCredit.id_acc_vendor_credit },
             });
             unifiedVendorCredit.remote_data = remoteDataRecord
