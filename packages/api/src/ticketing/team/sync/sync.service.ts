@@ -37,15 +37,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = TICKETING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = TICKETING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -67,8 +67,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: ITeamService =
+      const { integrationId, linkedUserId } = param;
+      const service: ITeamService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -95,21 +95,21 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<TicketingTeam[]> {
     try {
-      var teams_results: TicketingTeam[] = [];
+      const teams_results: TicketingTeam[] = [];
 
-      var updateOrCreateTeam = async (
+      const updateOrCreateTeam = async (
         team: UnifiedTicketingTeamOutput,
         originId: string,
         connection_id: string,
       ) => {
-        var existingTeam = await this.prisma.tcg_teams.findFirst({
+        const existingTeam = await this.prisma.tcg_teams.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        var baseData: any = {
+        const baseData: any = {
           name: team.name ?? null,
           description: team.description ?? null,
           modified_at: new Date(),
@@ -136,15 +136,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < teams.length; i++) {
-        var team = teams[i];
-        var originId = team.remote_id;
+        const team = teams[i];
+        const originId = team.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateTeam(team, originId, connection_id);
-        var team_id = res.id_tcg_team;
+        const res = await updateOrCreateTeam(team, originId, connection_id);
+        const team_id = res.id_tcg_team;
         teams_results.push(res);
 
         // Process field mappings
