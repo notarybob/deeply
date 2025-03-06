@@ -30,7 +30,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
             remote_id: string;
         }[],
     ): Promise<MicrosoftdynamicssalesEngagementInput> {
-        var type = source.type;
+        const type = source.type;
         switch (type) {
             case 'CALL':
                 return await this.desunifyCall(source, customFieldMappings);
@@ -51,7 +51,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
             remote_id: string;
         }[],
     ): Promise<MicrosoftdynamicssalesEngagementCallInput> {
-        var result: MicrosoftdynamicssalesEngagementCallInput = {
+        const result: MicrosoftdynamicssalesEngagementCallInput = {
             description: source.content ?? '',
             subject: source.subject ?? '',
         };
@@ -70,19 +70,19 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
         }
 
         if (source.company_id) {
-            var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+            const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
             result["regardingobjectid_account@odata.bind"] = `/accounts(${id})`;
         }
 
         // Only assigning first contact from contacts
         if (source.contacts && source.contacts.length > 0) {
-            var id = await this.utils.getRemoteIdFromContactUuid(source.contacts[0]);
+            const id = await this.utils.getRemoteIdFromContactUuid(source.contacts[0]);
             result["regardingobjectid_contact@odata.bind"] = `/contacts(${id})`;
         }
 
         if (customFieldMappings && source.field_mappings) {
-            for (var [k, v] of Object.entries(source.field_mappings)) {
-                var mapping = customFieldMappings.find(
+            for (const [k, v] of Object.entries(source.field_mappings)) {
+                const mapping = customFieldMappings.find(
                     (mapping) => mapping.slug === k,
                 );
                 if (mapping) {
@@ -101,7 +101,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
             remote_id: string;
         }[],
     ): Promise<MicrosoftdynamicssalesEngagementAppointmentInput> {
-        var result: MicrosoftdynamicssalesEngagementAppointmentInput = {
+        const result: MicrosoftdynamicssalesEngagementAppointmentInput = {
             description: source.content ?? '',
             subject: source.subject ?? '',
         };
@@ -115,19 +115,19 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
         }
 
         if (source.company_id) {
-            var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+            const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
             result["regardingobjectid_account@odata.bind"] = `/accounts(${id})`;
         }
 
         // Only assigning first contact from contacts
         if (source.contacts && source.contacts.length > 0) {
-            var id = await this.utils.getRemoteIdFromContactUuid(source.contacts[0]);
+            const id = await this.utils.getRemoteIdFromContactUuid(source.contacts[0]);
             result["regardingobjectid_contact@odata.bind"] = `/contacts(${id})`;
         }
 
         if (customFieldMappings && source.field_mappings) {
-            for (var [k, v] of Object.entries(source.field_mappings)) {
-                var mapping = customFieldMappings.find(
+            for (const [k, v] of Object.entries(source.field_mappings)) {
+                const mapping = customFieldMappings.find(
                     (mapping) => mapping.slug === k,
                 );
                 if (mapping) {
@@ -146,7 +146,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
             remote_id: string;
         }[],
     ): Promise<MicrosoftdynamicssalesEngagementEmailInput> {
-        var result: MicrosoftdynamicssalesEngagementEmailInput = {
+        const result: MicrosoftdynamicssalesEngagementEmailInput = {
             description: source.content ?? '',
             subject: source.subject ?? '',
         };
@@ -165,20 +165,20 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
         }
 
         if (source.company_id) {
-            var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+            const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
             result["regardingobjectid_account@odata.bind"] = `/accounts(${id})`;
         }
 
         // Only assigning first contact from contacts
         if (source.contacts && source.contacts.length > 0) {
-            var id = await this.utils.getRemoteIdFromContactUuid(source.contacts[0]);
+            const id = await this.utils.getRemoteIdFromContactUuid(source.contacts[0]);
             result["regardingobjectid_contact@odata.bind"] = `/contacts(${id})`;
         }
 
 
         if (customFieldMappings && source.field_mappings) {
-            for (var [k, v] of Object.entries(source.field_mappings)) {
-                var mapping = customFieldMappings.find(
+            for (const [k, v] of Object.entries(source.field_mappings)) {
+                const mapping = customFieldMappings.find(
                     (mapping) => mapping.slug === k,
                 );
                 if (mapping) {
@@ -316,16 +316,16 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmEngagementOutput> {
-        var field_mappings: { [key: string]: any } = {};
+        const field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (var mapping of customFieldMappings) {
+            for (const mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = engagement[mapping.remote_id];
             }
         }
 
         let opts: any = {};
         if (engagement._ownerid_value) {
-            var owner_id = await this.utils.getUserUuidFromRemoteId(
+            const owner_id = await this.utils.getUserUuidFromRemoteId(
                 engagement._ownerid_value,
                 connectionId,
             );
@@ -338,7 +338,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
         }
 
         if (engagement._regardingobjectid_value) {
-            var company_id = await this.utils.getCompanyUuidFromRemoteId(
+            const company_id = await this.utils.getCompanyUuidFromRemoteId(
                 engagement._regardingobjectid_value,
                 connectionId
             );
@@ -350,7 +350,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
                 }
             }
 
-            var contact_id = await this.utils.getContactUuidFromRemoteId(
+            const contact_id = await this.utils.getContactUuidFromRemoteId(
                 engagement._regardingobjectid_value,
                 connectionId
             );
@@ -387,16 +387,16 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmEngagementOutput> {
-        var field_mappings: { [key: string]: any } = {};
+        const field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (var mapping of customFieldMappings) {
+            for (const mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = engagement[mapping.remote_id];
             }
         }
 
         let opts: any = {};
         if (engagement._ownerid_value) {
-            var owner_id = await this.utils.getUserUuidFromRemoteId(
+            const owner_id = await this.utils.getUserUuidFromRemoteId(
                 engagement._ownerid_value,
                 connectionId,
             );
@@ -409,7 +409,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
         }
 
         if (engagement._regardingobjectid_value) {
-            var company_id = await this.utils.getCompanyUuidFromRemoteId(
+            const company_id = await this.utils.getCompanyUuidFromRemoteId(
                 engagement._regardingobjectid_value,
                 connectionId
             );
@@ -421,7 +421,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
                 }
             }
 
-            var contact_id = await this.utils.getContactUuidFromRemoteId(
+            const contact_id = await this.utils.getContactUuidFromRemoteId(
                 engagement._regardingobjectid_value,
                 connectionId
             );
@@ -455,16 +455,16 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmEngagementOutput> {
-        var field_mappings: { [key: string]: any } = {};
+        const field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (var mapping of customFieldMappings) {
+            for (const mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = engagement[mapping.remote_id];
             }
         }
 
         let opts: any = {};
         if (engagement._ownerid_value) {
-            var owner_id = await this.utils.getUserUuidFromRemoteId(
+            const owner_id = await this.utils.getUserUuidFromRemoteId(
                 engagement._ownerid_value,
                 connectionId,
             );
@@ -477,7 +477,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
         }
 
         if (engagement._regardingobjectid_value) {
-            var company_id = await this.utils.getCompanyUuidFromRemoteId(
+            const company_id = await this.utils.getCompanyUuidFromRemoteId(
                 engagement._regardingobjectid_value,
                 connectionId
             );
@@ -489,7 +489,7 @@ export class MicrosoftdynamicssalesEngagementMapper implements IEngagementMapper
                 }
             }
 
-            var contact_id = await this.utils.getContactUuidFromRemoteId(
+            const contact_id = await this.utils.getContactUuidFromRemoteId(
                 engagement._regardingobjectid_value,
                 connectionId
             );
