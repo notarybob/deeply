@@ -32,16 +32,16 @@ export class ShopifyService implements IFulfillmentOrdersService {
     data: SyncParam,
   ): Promise<ApiResponse<ShopifyFulfillmentOrdersOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'shopify',
           vertical: 'ecommerce',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/departement.list`,
         {
           headers: {
@@ -52,7 +52,7 @@ export class ShopifyService implements IFulfillmentOrdersService {
           },
         },
       );
-      const fulfillmentorderss: ShopifyFulfillmentOrdersOutput[] =
+      let fulfillmentorderss: ShopifyFulfillmentOrdersOutput[] =
         resp.data.results;
       this.logger.log(`Synced shopify fulfillmentorderss !`);
 
