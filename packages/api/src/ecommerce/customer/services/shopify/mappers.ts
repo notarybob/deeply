@@ -71,7 +71,7 @@ export class ShopifyCustomerMapper implements ICustomerMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceCustomerOutput> {
-    const result = {
+    let result = {
       remote_id: customer.id?.toString(),
       remote_data: customer,
       email: customer.email || null,
@@ -87,7 +87,7 @@ export class ShopifyCustomerMapper implements ICustomerMapper {
     };
 
     if (customer.addresses) {
-      for (const add of customer.addresses) {
+      for (let add of customer.addresses) {
         if (add.address1 && add.city && add.country) {
           result.addresses.push({
             street_1: add.address1,
