@@ -20,14 +20,14 @@ export class TeamService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingTeamOutput> {
     try {
-      const team = await this.prisma.tcg_teams.findUnique({
+      var team = await this.prisma.tcg_teams.findUnique({
         where: {
           id_tcg_team: id_ticketing_team,
         },
       });
 
       // Fetch field mappings for the ticket
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: team.id_tcg_team,
@@ -39,17 +39,17 @@ export class TeamService {
       });
 
       // Create a map to store unique field mappings
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedTicketingTeamOutput format
-      const unifiedTeam: UnifiedTicketingTeamOutput = {
+      var unifiedTeam: UnifiedTicketingTeamOutput = {
         id: team.id_tcg_team,
         name: team.name,
         description: team.description,
@@ -60,12 +60,12 @@ export class TeamService {
       };
 
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: team.id_tcg_team,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
         unifiedTeam.remote_data = remote_data;
       }
       await this.prisma.events.create({
@@ -109,7 +109,7 @@ export class TeamService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.tcg_teams.findFirst({
+        var isCursorPresent = await this.prisma.tcg_teams.findFirst({
           where: {
             id_connection: connection_id,
             id_tcg_team: cursor,
@@ -120,7 +120,7 @@ export class TeamService {
         }
       }
 
-      const teams = await this.prisma.tcg_teams.findMany({
+      var teams = await this.prisma.tcg_teams.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -146,10 +146,10 @@ export class TeamService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const unifiedTeams: UnifiedTicketingTeamOutput[] = await Promise.all(
+      var unifiedTeams: UnifiedTicketingTeamOutput[] = await Promise.all(
         teams.map(async (team) => {
           // Fetch field mappings for the team
-          const values = await this.prisma.value.findMany({
+          var values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: team.id_tcg_team,
@@ -160,7 +160,7 @@ export class TeamService {
             },
           });
           // Create a map to store unique field mappings
-          const fieldMappingsMap = new Map();
+          var fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -168,7 +168,7 @@ export class TeamService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-const field_mappings = Object.fromEntries(fieldMappingsMap);
+var field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedTicketingTeamOutput format
           return {
@@ -186,14 +186,14 @@ const field_mappings = Object.fromEntries(fieldMappingsMap);
       let res: UnifiedTicketingTeamOutput[] = unifiedTeams;
 
       if (remote_data) {
-        const remote_array_data: UnifiedTicketingTeamOutput[] = await Promise.all(
+        var remote_array_data: UnifiedTicketingTeamOutput[] = await Promise.all(
           res.map(async (team) => {
-            const resp = await this.prisma.remote_data.findFirst({
+            var resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: team.id,
               },
             });
-            const remote_data = JSON.parse(resp.data);
+            var remote_data = JSON.parse(resp.data);
             return { ...team, remote_data };
           }),
         );
