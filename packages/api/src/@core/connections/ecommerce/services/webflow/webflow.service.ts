@@ -54,16 +54,16 @@ export class WebflowConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
 
-      var access_token = JSON.parse(
+      const access_token = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
       config.headers = {
@@ -89,8 +89,8 @@ export class WebflowConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, code } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'webflow',
@@ -98,25 +98,25 @@ export class WebflowConnectionService extends AbstractBaseConnectionService {
         },
       });
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      var REDIRECT_URI = `${
+      const REDIRECT_URI = `${
         this.env.getDistributionMode() == 'selfhost'
           ? this.env.getTunnelIngress()
           : this.env.getPanoraBaseUrl()
       }/connections/oauth/callback`;
 
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         redirect_uri: REDIRECT_URI,
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
         code: code,
         grant_type: 'authorization_code',
       });
-      var res = await axios.post(
+      const res = await axios.post(
         'https://api.webflow.com/oauth/access_token',
         formData.toString(),
         {
@@ -125,20 +125,20 @@ export class WebflowConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: WebflowOAuthResponse = res.data;
+      const data: WebflowOAuthResponse = res.data;
       // save tokens for this customer inside our db
       let db_res;
-      var connection_token = uuidv4();
-      var BASE_API_URL = CONNECTORS_METADATA['ecommerce']['webflow'].urls
+      const connection_token = uuidv4();
+      const BASE_API_URL = CONNECTORS_METADATA['ecommerce']['webflow'].urls
         .apiUrl as string;
       // get the site id for the token
-      var site = await axios.get('https://api.webflow.com/v2/sites', {
+      const site = await axios.get('https://api.webflow.com/v2/sites', {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
           Authorization: `Bearer ${data.access_token}`,
         },
       });
-      var site_id = site.data.sites[0].id;
+      const site_id = site.data.sites[0].id;
       if (isNotUnique) {
         // Update existing connection
         db_res = await this.prisma.connections.update({
