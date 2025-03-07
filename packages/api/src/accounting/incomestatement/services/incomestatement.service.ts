@@ -33,7 +33,7 @@ export class IncomeStatementService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingIncomestatementOutput> {
     try {
-      const incomeStatement =
+      let incomeStatement =
         await this.prisma.acc_income_statements.findUnique({
           where: { id_acc_income_statement: id_acc_income_statement },
         });
@@ -44,7 +44,7 @@ export class IncomeStatementService {
         );
       }
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: incomeStatement.id_acc_income_statement,
@@ -53,11 +53,11 @@ export class IncomeStatementService {
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedIncomeStatement: UnifiedAccountingIncomestatementOutput = {
+      let unifiedIncomeStatement: UnifiedAccountingIncomestatementOutput = {
         id: incomeStatement.id_acc_income_statement,
         name: incomeStatement.name,
         currency: incomeStatement.currency as CurrencyCode,
@@ -79,7 +79,7 @@ export class IncomeStatementService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: incomeStatement.id_acc_income_statement,
           },
@@ -125,7 +125,7 @@ export class IncomeStatementService {
     previous_cursor: string | null;
   }> {
     try {
-      const incomeStatements = await this.prisma.acc_income_statements.findMany(
+      let incomeStatements = await this.prisma.acc_income_statements.findMany(
         {
           take: limit + 1,
           cursor: cursor ? { id_acc_income_statement: cursor } : undefined,
@@ -134,12 +134,12 @@ export class IncomeStatementService {
         },
       );
 
-      const hasNextPage = incomeStatements.length > limit;
+      let hasNextPage = incomeStatements.length > limit;
       if (hasNextPage) incomeStatements.pop();
 
-      const unifiedIncomeStatements = await Promise.all(
+      let unifiedIncomeStatements = await Promise.all(
         incomeStatements.map(async (incomeStatement) => {
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: incomeStatement.id_acc_income_statement,
@@ -148,11 +148,11 @@ export class IncomeStatementService {
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedIncomeStatement: UnifiedAccountingIncomestatementOutput =
+          let unifiedIncomeStatement: UnifiedAccountingIncomestatementOutput =
             {
               id: incomeStatement.id_acc_income_statement,
               name: incomeStatement.name,
@@ -175,7 +175,7 @@ export class IncomeStatementService {
             };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: incomeStatement.id_acc_income_statement,
               },
