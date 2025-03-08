@@ -14,7 +14,7 @@ export class ServiceRegistry {
   }
 
   getService(integrationId: string): IDriveService {
-    const service = this.serviceMap.get(integrationId);
+    let service = this.serviceMap.get(integrationId);
     if (!service) {
       //throw new ReferenceError();
       return null;
