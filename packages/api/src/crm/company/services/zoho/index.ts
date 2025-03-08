@@ -30,14 +30,14 @@ export class ZohoService implements ICompanyService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZohoCompanyOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v5/Accounts`,
         { data: [companyData] },
         {
@@ -49,7 +49,7 @@ export class ZohoService implements ICompanyService {
           },
         },
       );
-      let final_res = await axios.get(
+      const final_res = await axios.get(
         `${connection.account_url}/v5/Accounts/${resp.data.data[0].details.id}`,
         {
           headers: {
@@ -72,17 +72,17 @@ export class ZohoService implements ICompanyService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZohoCompanyOutput[]>> {
     try {
-      let { linkedUserId } = data;
-      let connection = await this.prisma.connections.findFirst({
+      const { linkedUserId } = data;
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      let fields =
+      const fields =
         'Owner,Industry,Billing_Street,Billing_Code,Billing_City,Billing_State,Employees,Phone,Description,Account_Name';
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/v5/Accounts?fields=${fields}`,
         {
           headers: {
