@@ -29,7 +29,7 @@ export class AccountingConnectionsService implements IConnectionCategory {
   //STEP 1:[FRONTEND STEP]
   //create a frontend SDK snippet in which an authorization embedded link is set up  so when users click
   // on it to grant access => they grant US the access and then when confirmed
-  /*const authUrl =
+  /*let authUrl =
   'https://app.hubspot.com/oauth/authorize' +
   `?client_id=${encodeURIComponent(CLIENT_ID)}` +
   `&scope=${encodeURIComponent(SCOPES)}` +
@@ -46,15 +46,15 @@ export class AccountingConnectionsService implements IConnectionCategory {
     type_strategy: 'oauth2' | 'apikey' | 'basic',
   ) {
     try {
-      const serviceName = providerName.toLowerCase();
+      let serviceName = providerName.toLowerCase();
 
-      const service = this.serviceRegistry.getService(serviceName);
+      let service = this.serviceRegistry.getService(serviceName);
 
       if (!service) {
         throw new ReferenceError(`Unknown provider, found ${providerName}`);
       }
-      const data: Connection = await service.handleCallback(callbackOpts);
-      const event = await this.prisma.events.create({
+      let data: Connection = await service.handleCallback(callbackOpts);
+      let event = await this.prisma.events.create({
         data: {
           id_connection: data.id_connection,
           id_project: data.id_project,
@@ -89,12 +89,12 @@ export class AccountingConnectionsService implements IConnectionCategory {
     account_url?: string,
   ) {
     try {
-      const serviceName = providerName.toLowerCase();
-      const service = this.serviceRegistry.getService(serviceName);
+      let serviceName = providerName.toLowerCase();
+      let service = this.serviceRegistry.getService(serviceName);
       if (!service) {
         throw new ReferenceError(`Unknown provider, found ${providerName}`);
       }
-      const refreshOpts: RefreshParams = {
+      let refreshOpts: RefreshParams = {
         connectionId: connectionId,
         refreshToken: refresh_token,
         account_url: account_url,
@@ -111,13 +111,13 @@ export class AccountingConnectionsService implements IConnectionCategory {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const connection = await this.prisma.connections.findUnique({
+      let connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
-      const serviceName = connection.provider_slug.toLowerCase();
-      const service = this.serviceRegistry.getService(serviceName);
+      let serviceName = connection.provider_slug.toLowerCase();
+      let service = this.serviceRegistry.getService(serviceName);
       if (!service) {
         throw new ReferenceError(`Unknown provider, found ${serviceName}`);
       }
