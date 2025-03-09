@@ -34,7 +34,7 @@ export class ZendeskService implements ICommentService {
     remoteIdTicket: string,
   ): Promise<ApiResponse<ZendeskCommentOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -42,7 +42,7 @@ export class ZendeskService implements ICommentService {
         },
       });
 
-      var author_id = commentData.author_id;
+      const author_id = commentData.author_id;
 
       let dataBody: any = {
         ticket: {
@@ -53,12 +53,12 @@ export class ZendeskService implements ICommentService {
         },
       };
       // We must fetch tokens from zendesk with the commentData.uploads array of Attachment uuids
-      var uuids = commentData.uploads;
+      const uuids = commentData.uploads;
       let uploads = [];
       if (uuids && uuids.length > 0) {
         await Promise.all(
           uuids.map(async (uuid) => {
-            var res = await this.prisma.tcg_attachments.findUnique({
+            const res = await this.prisma.tcg_attachments.findUnique({
               where: {
                 id_tcg_attachment: uuid,
               },
@@ -69,10 +69,10 @@ export class ZendeskService implements ICommentService {
               );
 
             //TODO: fetch the right file from AWS s3
-            var s3File = '';
-            var url = `${connection.account_url}/v2/uploads.json?filename=${res.file_name}`;
+            const s3File = '';
+            const url = `${connection.account_url}/v2/uploads.json?filename=${res.file_name}`;
 
-            var resp = await axios.get(url, {
+            const resp = await axios.get(url, {
               headers: {
                 'Content-Type': this.utils.getMimeType(res.file_name),
                 Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -83,7 +83,7 @@ export class ZendeskService implements ICommentService {
             uploads = [...uploads, resp.data.upload.token];
           }),
         );
-        var finalData = {
+        const finalData = {
           ticket: {
             comment: {
               ...commentData,
@@ -95,7 +95,7 @@ export class ZendeskService implements ICommentService {
       }
 
       //to add a comment on Zendesk you must update a ticket using the Ticket API
-      var resp = await axios.put(
+      const resp = await axios.put(
         `${connection.account_url}/v2/tickets/${remoteIdTicket}.json`,
         JSON.stringify(dataBody),
         {
@@ -107,7 +107,7 @@ export class ZendeskService implements ICommentService {
           },
         },
       );
-      var pre_res = resp.data.audit.events.find((obj) =>
+      const pre_res = resp.data.audit.events.find((obj) =>
         obj.hasOwnProperty('body'),
       );
       return {
@@ -121,9 +121,9 @@ export class ZendeskService implements ICommentService {
   }
   async sync(data: SyncParam): Promise<ApiResponse<OriginalCommentOutput[]>> {
     try {
-      var { linkedUserId, id_ticket } = data;
+      const { linkedUserId, id_ticket } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -131,7 +131,7 @@ export class ZendeskService implements ICommentService {
         },
       });
       //retrieve ticket remote id so we can retrieve the comments in the original software
-      var ticket = await this.prisma.tcg_tickets.findUnique({
+      const ticket = await this.prisma.tcg_tickets.findUnique({
         where: {
           id_tcg_ticket: id_ticket as string,
         },
@@ -140,7 +140,7 @@ export class ZendeskService implements ICommentService {
         },
       });
 
-      var resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/v2/tickets/${ticket.remote_id}/comments.json`,
         {
           headers: {
