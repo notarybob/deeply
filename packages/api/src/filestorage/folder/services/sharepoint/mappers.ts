@@ -35,15 +35,15 @@ export class SharepointFolderMapper implements IFolderMapper {
       remote_id: string;
     }[],
   ): Promise<SharepointFolderInput> {
-    const result = {
+    let result = {
       name: source.name,
       folder: {},
       description: source.description,
     };
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (let [k, v] of Object.entries(source.field_mappings)) {
+        let mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -87,16 +87,16 @@ export class SharepointFolderMapper implements IFolderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageFolderOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = folder[mapping.remote_id];
       }
     }
 
-    const opts: any = {};
+    let opts: any = {};
     if (folder.permissions?.length) {
-      const permissions = await this.coreUnificationService.unify<
+      let permissions = await this.coreUnificationService.unify<
         OriginalPermissionOutput[]
       >({
         sourceObject: folder.permissions,
@@ -110,7 +110,7 @@ export class SharepointFolderMapper implements IFolderMapper {
 
       // shared link
       if (folder.permissions.some((p) => p.link)) {
-        const sharedLinks =
+        let sharedLinks =
           await this.coreUnificationService.unify<OriginalSharedLinkOutput>({
             sourceObject: folder.permissions.find((p) => p.link),
             targetType: FileStorageObject.sharedlink,
@@ -123,7 +123,7 @@ export class SharepointFolderMapper implements IFolderMapper {
       }
     }
 
-    const result = {
+    let result = {
       remote_id: folder.id,
       remote_data: folder,
       name: folder.name,
