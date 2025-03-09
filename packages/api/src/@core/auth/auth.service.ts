@@ -37,10 +37,10 @@ export class AuthService {
   
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    let { email, new_password, reset_token } = resetPasswordDto;
+    const { email, new_password, reset_token } = resetPasswordDto;
 
     // verify there is a user with corresponding email and non-expired reset token
-    let checkResetRequestIsValid = await this.prisma.users.findFirst({
+    const checkResetRequestIsValid = await this.prisma.users.findFirst({
       where: {
         email: email,
         reset_token_expires_at: {
@@ -54,7 +54,7 @@ export class AuthService {
     }
 
     // Verify the reset token
-    let isValidToken = await this.verifyResetToken(
+    const isValidToken = await this.verifyResetToken(
       checkResetRequestIsValid.reset_token,
       reset_token,
     );
@@ -63,10 +63,10 @@ export class AuthService {
       throw new BadRequestException('Invalid reset token');
     }
     // Hash the new password
-    let hashedPassword = await bcrypt.hash(new_password, 10);
+    const hashedPassword = await bcrypt.hash(new_password, 10);
 
     // Update the user's password in the database
-    let updatedPassword = await this.prisma.users.update({
+    const updatedPassword = await this.prisma.users.update({
       where: { email },
       data: { password_hash: hashedPassword },
     });
@@ -77,18 +77,18 @@ export class AuthService {
     database_token: string,
     request_token: string,
   ): Promise<boolean> {
-    let isValidToken = await bcrypt.compare(request_token, database_token);
+    const isValidToken = await bcrypt.compare(request_token, database_token);
     return isValidToken;
   }
 
   async requestPasswordReset(requestPasswordResetDto: RequestPasswordResetDto) {
-    let { email } = requestPasswordResetDto;
+    const { email } = requestPasswordResetDto;
 
     if (!email) {
       throw new BadRequestException('Incorrect API request');
     }
 
-    let user = await this.prisma.users.findUnique({
+    const user = await this.prisma.users.findUnique({
       where: { email },
     });
 
@@ -96,9 +96,9 @@ export class AuthService {
       throw new BadRequestException('Email not found');
     }
 
-    let resetToken = uuidv4();
-    let hashedResetToken = await bcrypt.hash(resetToken, 10);
-    let resetTokenExpiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour from now
+    const resetToken = uuidv4();
+    const hashedResetToken = await bcrypt.hash(resetToken, 10);
+    const resetTokenExpiresAt = new Date(Date.now() + 3600 * 1000); // 1 hour from now
 
     await this.prisma.users.update({
       where: { email },
@@ -114,10 +114,10 @@ export class AuthService {
   }
 
   private async sendResetEmail(email: string, resetToken: string) {
-    let resetLink = `${process.env.WEBAPP_URL}/b2c/login/reset-password?token=${resetToken}&email=${email}`;
+    const resetLink = `${process.env.WEBAPP_URL}/b2c/login/reset-password?token=${resetToken}&email=${email}`;
 
     // Create a transporter object using the default SMTP transport
-    let transporter = nodemailer.createTransport({
+    const transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST,
       port: Number(process.env.SMTP_PORT),
       //secure: false,
@@ -128,7 +128,7 @@ export class AuthService {
     });
 
     // Send mail with defined transport object
-    let info = await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `${process.env.EMAIL_SENDING_ADDRESS}`,
       to: email,
       subject: 'Panora | Password Reset Request',
@@ -141,7 +141,7 @@ export class AuthService {
 
   async verifyUser(verifyUser: VerifyUserDto) {
     try {
-      let user = await this.prisma.users.findUnique({
+      const user = await this.prisma.users.findUnique({
         where: {
           id_user: verifyUser.id_user,
         },
@@ -171,7 +171,7 @@ export class AuthService {
 
   async register(user: CreateUserDto) {
     try {
-      let foundUser = await this.prisma.users.findFirst({
+      const foundUser = await this.prisma.users.findFirst({
         where: { email: user.email },
       });
 
@@ -188,9 +188,9 @@ export class AuthService {
 
   async createUser(user: CreateUserDto, id_user?: string) {
     try {
-      let hashedPassword = await bcrypt.hash(user.password_hash, 10);
-      let uuid_user = id_user || uuidv4();
-      let user_ = await this.prisma.users.create({
+      const hashedPassword = await bcrypt.hash(user.password_hash, 10);
+      const uuid_user = id_user || uuidv4();
+      const user_ = await this.prisma.users.create({
         data: {
           id_user: uuid_user,
           password_hash: hashedPassword,
@@ -224,7 +224,7 @@ export class AuthService {
 
   async login(user: LoginDto) {
     try {
-      let foundUser = await this.prisma.users.findFirst({
+      const foundUser = await this.prisma.users.findFirst({
         where: {
           email: user.email,
         },
@@ -234,7 +234,7 @@ export class AuthService {
         throw new ReferenceError('User undefined!');
       }
 
-      let project = await this.prisma.projects.findFirst({
+      const project = await this.prisma.projects.findFirst({
         where: {
           id_user: foundUser.id_user,
         },
@@ -244,7 +244,7 @@ export class AuthService {
         throw new ReferenceError('Project undefined!');
       }
 
-      let isEq = await bcrypt.compare(
+      const isEq = await bcrypt.compare(
         user.password_hash,
         foundUser.password_hash,
       );
@@ -254,9 +254,9 @@ export class AuthService {
           'Bcrypt Invalid credentials, mismatch in password.',
         );
 
-      let { ...userData } = foundUser;
+      const { ...userData } = foundUser;
 
-      let payload = {
+      const payload = {
         email: userData.email,
         sub: userData.id_user,
         first_name: userData.first_name,
@@ -288,7 +288,7 @@ export class AuthService {
     last_name: string,
   ) {
     try {
-      let payload = {
+      const payload = {
         email: email,
         sub: id_user,
         first_name: first_name,
@@ -319,7 +319,7 @@ export class AuthService {
     userId: number | string,
   ): Promise<{ access_token: string }> {
     try {
-      let jwtPayload = {
+      const jwtPayload = {
         sub: userId,
         project_id: projectId,
       };
@@ -341,13 +341,13 @@ export class AuthService {
   ): Promise<{ api_key: string }> {
     try {
       // Check project & User exist
-      let foundProject = await this.prisma.projects.findUnique({
+      const foundProject = await this.prisma.projects.findUnique({
         where: { id_project: projectId },
       });
       if (!foundProject) {
         throw new ReferenceError('Project not found');
       }
-      let foundUser = await this.prisma.users.findUnique({
+      const foundUser = await this.prisma.users.findUnique({
         where: { id_user: userId },
       });
       if (!foundUser) {
@@ -358,17 +358,17 @@ export class AuthService {
         throw new ReferenceError('User is not inside the project');
       }*/
       // Generate a new API key (use a secure method for generation)
-      //let { access_token } = await this.generateApiKey(projectId, userId);
+      //const { access_token } = await this.generateApiKey(projectId, userId);
       // Store the API key in the database associated with the user
-      //let hashed_token = this.hashApiKey(access_token);"
+      //const hashed_token = this.hashApiKey(access_token);"
 
-      let base_key = `sk_${process.env.ENV}_${uuidv4()}`;
-      let hashed_key = crypto
+      const base_key = `sk_${process.env.ENV}_${uuidv4()}`;
+      const hashed_key = crypto
         .createHash('sha256')
         .update(base_key)
         .digest('hex');
 
-      let new_api_key = await this.prisma.api_keys.create({
+      const new_api_key = await this.prisma.api_keys.create({
         data: {
           id_api_key: uuidv4(),
           api_key_hash: hashed_key,
@@ -401,7 +401,7 @@ export class AuthService {
 
   async getProjectIdForApiKey(hashed_apiKey: string) {
     try {
-      let saved_api_key = await this.prisma.api_keys.findUnique({
+      const saved_api_key = await this.prisma.api_keys.findUnique({
         where: {
           api_key_hash: hashed_apiKey,
         },
@@ -418,20 +418,20 @@ export class AuthService {
       // TO DO : add Expiration in part 3
 
       // Decode the JWT to verify if it's valid and get the payload
-      // let decoded = this.jwtService.verify(apiKey, {
+      // const decoded = this.jwtService.verify(apiKey, {
       //   secret: process.env.JWT_SECRET,
       // });
 
       // pseudo-code:
       // 1 - SHA256 the API key from the header
-      let hashed_key = crypto
+      const hashed_key = crypto
         .createHash('sha256')
         .update(apiKey)
         .digest('hex');
 
       // 2- check against DB
       // if not found, return false
-      let saved_api_key = await this.prisma.api_keys.findUnique({
+      const saved_api_key = await this.prisma.api_keys.findUnique({
         where: {
           api_key_hash: hashed_key,
         },
