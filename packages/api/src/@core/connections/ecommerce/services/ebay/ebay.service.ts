@@ -56,16 +56,16 @@ export class EbayConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
 
-      var access_token = JSON.parse(
+      const access_token = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
       config.headers = {
@@ -91,8 +91,8 @@ export class EbayConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, code } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'ebay',
@@ -100,17 +100,17 @@ export class EbayConnectionService extends AbstractBaseConnectionService {
         },
       });
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         grant_type: 'authorization_code',
         redirect_uri: CREDENTIALS.RUVALUE,
         code: code,
       });
-      var res = await axios.post(
+      const res = await axios.post(
         'https://api.ebay.com/identity/v1/oauth2/token',
         formData.toString(),
         {
@@ -122,10 +122,10 @@ export class EbayConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: EbayOAuthResponse = res.data;
+      const data: EbayOAuthResponse = res.data;
       // save tokens for this customer inside our db
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
       if (isNotUnique) {
         // Update existing connection
@@ -184,19 +184,19 @@ export class EbayConnectionService extends AbstractBaseConnectionService {
 
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      var { connectionId, refreshToken, projectId } = opts;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const { connectionId, refreshToken, projectId } = opts;
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
         scope: CONNECTORS_METADATA['ecommerce']['ebay'].scopes,
       });
 
-      var res = await axios.post(
+      const res = await axios.post(
         'https://login.ebay.com/api/1/login/oauth/provider/tokens',
         formData.toString(),
         {
@@ -208,8 +208,8 @@ export class EbayConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: EbayOAuthResponse = res.data;
-      var res_ = await this.prisma.connections.update({
+      const data: EbayOAuthResponse = res.data;
+      const res_ = await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
         },
