@@ -37,7 +37,7 @@ export class GorgiasContactMapper implements IContactMapper {
     }[],
   ): UnifiedTicketingContactOutput | UnifiedTicketingContactOutput[] {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    let sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((contact) =>
       this.mapSingleContactToUnified(
@@ -56,7 +56,7 @@ export class GorgiasContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingContactOutput {
-    const unifiedContact: UnifiedTicketingContactOutput = {
+    let unifiedContact: UnifiedTicketingContactOutput = {
       remote_id: String(contact.id),
       remote_data: contact,
       name: contact.name,
