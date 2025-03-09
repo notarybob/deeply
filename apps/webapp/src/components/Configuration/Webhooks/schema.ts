@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export let webhookSchema = z.object({
+export const webhookSchema = z.object({
   scope: z.string(),
   url: z.string(),
   endpoint_description: z.string(),
