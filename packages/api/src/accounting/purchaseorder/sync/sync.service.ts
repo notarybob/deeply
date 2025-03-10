@@ -42,15 +42,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -71,8 +71,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IPurchaseOrderService =
+      var { integrationId, linkedUserId } = param;
+      var service: IPurchaseOrderService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -101,11 +101,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccPurchaseOrder[]> {
     try {
-      const purchaseOrderResults: AccPurchaseOrder[] = [];
+      var purchaseOrderResults: AccPurchaseOrder[] = [];
 
       for (let i = 0; i < purchaseOrders.length; i++) {
-        const purchaseOrder = purchaseOrders[i];
-        const originId = purchaseOrder.remote_id;
+        var purchaseOrder = purchaseOrders[i];
+        var originId = purchaseOrder.remote_id;
 
         let existingPurchaseOrder =
           await this.prisma.acc_purchase_orders.findFirst({
@@ -115,7 +115,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
             },
           });
 
-        const purchaseOrderData = {
+        var purchaseOrderData = {
           status: purchaseOrder.status,
           issue_date: purchaseOrder.issue_date,
           purchase_order_number: purchaseOrder.purchase_order_number,
@@ -192,8 +192,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
     purchaseOrderId: string,
     lineItems: LineItem[],
   ): Promise<void> {
-    for (const lineItem of lineItems) {
-      const lineItemData = {
+    for (var lineItem of lineItems) {
+      var lineItemData = {
         description: lineItem.description,
         unit_price: lineItem.unit_price ? Number(lineItem.unit_price) : null,
         quantity: lineItem.quantity ? Number(lineItem.quantity) : null,
@@ -211,7 +211,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         id_acc_purchase_order: purchaseOrderId,
       };
 
-      const existingLineItem =
+      var existingLineItem =
         await this.prisma.acc_purchase_orders_line_items.findFirst({
           where: {
             remote_id: lineItem.remote_id,
@@ -239,7 +239,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
     }
 
     // Remove any existing line items that are not in the current set
-    const currentRemoteIds = lineItems.map((item) => item.remote_id);
+    var currentRemoteIds = lineItems.map((item) => item.remote_id);
     await this.prisma.acc_purchase_orders_line_items.deleteMany({
       where: {
         id_acc_purchase_order: purchaseOrderId,
