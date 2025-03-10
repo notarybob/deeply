@@ -32,10 +32,10 @@ export class ContactService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingContactOutput> {
     try {
-      let service = this.serviceRegistry.getService(integrationId);
-      let resp = await service.addContact(unifiedContactData, linkedUserId);
+      const service = this.serviceRegistry.getService(integrationId);
+      const resp = await service.addContact(unifiedContactData, linkedUserId);
 
-      let savedContact = await this.prisma.acc_contacts.create({
+      const savedContact = await this.prisma.acc_contacts.create({
         data: {
           id_acc_contact: uuidv4(),
           ...unifiedContactData,
@@ -46,7 +46,7 @@ export class ContactService {
         },
       });
 
-      let result: UnifiedAccountingContactOutput = {
+      const result: UnifiedAccountingContactOutput = {
         ...savedContact,
         currency: savedContact.currency as CurrencyCode,
         id: savedContact.id_acc_contact,
@@ -71,7 +71,7 @@ export class ContactService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingContactOutput> {
     try {
-      let contact = await this.prisma.acc_contacts.findUnique({
+      const contact = await this.prisma.acc_contacts.findUnique({
         where: { id_acc_contact: id_acc_contact },
       });
 
@@ -79,18 +79,18 @@ export class ContactService {
         throw new Error(`Contact with ID ${id_acc_contact} not found.`);
       }
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: contact.id_acc_contact },
         },
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedContact: UnifiedAccountingContactOutput = {
+      const unifiedContact: UnifiedAccountingContactOutput = {
         id: contact.id_acc_contact,
         name: contact.name,
         is_supplier: contact.is_supplier,
@@ -108,7 +108,7 @@ export class ContactService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: contact.id_acc_contact },
         });
         unifiedContact.remote_data = remoteDataRecord
@@ -152,30 +152,30 @@ export class ContactService {
     previous_cursor: string | null;
   }> {
     try {
-      let contacts = await this.prisma.acc_contacts.findMany({
+      const contacts = await this.prisma.acc_contacts.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_contact: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      let hasNextPage = contacts.length > limit;
+      const hasNextPage = contacts.length > limit;
       if (hasNextPage) contacts.pop();
 
-      let unifiedContacts = await Promise.all(
+      const unifiedContacts = await Promise.all(
         contacts.map(async (contact) => {
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: contact.id_acc_contact },
             },
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedContact: UnifiedAccountingContactOutput = {
+          const unifiedContact: UnifiedAccountingContactOutput = {
             id: contact.id_acc_contact,
             name: contact.name,
             is_supplier: contact.is_supplier,
@@ -193,7 +193,7 @@ export class ContactService {
           };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: contact.id_acc_contact },
             });
             unifiedContact.remote_data = remoteDataRecord
