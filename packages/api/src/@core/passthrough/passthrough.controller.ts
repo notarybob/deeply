@@ -47,7 +47,7 @@ export class PassthroughController {
     @Body() requestParams: PassThroughRequestDto,
     @Headers('x-connection-token') connection_token: string,
   ): Promise<PassthroughResponse> {
-    const {
+    let {
       linkedUserId,
       remoteSource: integrationId,
       connectionId,
