@@ -32,7 +32,7 @@ export class WoocommerceOrderMapper implements IOrderMapper {
       remote_id: string;
     }[],
   ): Promise<WoocommerceOrderInput> {
-    let result: Partial<WoocommerceOrderInput> = {
+    const result: Partial<WoocommerceOrderInput> = {
       status: this.mapUnifiedStatusToWooCommerce(source.order_status),
       currency: source.currency,
       total: source.total_price?.toString(),
@@ -105,7 +105,7 @@ export class WoocommerceOrderMapper implements IOrderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceOrderOutput> {
-    let result: UnifiedEcommerceOrderOutput = {
+    const result: UnifiedEcommerceOrderOutput = {
       remote_id: order.id?.toString(),
       remote_data: order,
       order_status: this.mapWooCommerceStatusToUnified(order.status),
@@ -139,7 +139,7 @@ export class WoocommerceOrderMapper implements IOrderMapper {
 
     if (customFieldMappings && order.meta_data) {
       result.field_mappings = order.meta_data.reduce((acc, meta) => {
-        let mapping = customFieldMappings.find((m) => m.slug === meta.key);
+        const mapping = customFieldMappings.find((m) => m.slug === meta.key);
         if (mapping) {
           acc[mapping.remote_id] = meta.value;
         }
