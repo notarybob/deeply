@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: ITaxRateService =
+      var { integrationId, linkedUserId } = param;
+      var service: ITaxRateService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -91,11 +91,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccTaxRate[]> {
     try {
-      const taxRateResults: AccTaxRate[] = [];
+      var taxRateResults: AccTaxRate[] = [];
 
       for (let i = 0; i < taxRates.length; i++) {
-        const taxRate = taxRates[i];
-        const originId = taxRate.remote_id;
+        var taxRate = taxRates[i];
+        var originId = taxRate.remote_id;
 
         let existingTaxRate = await this.prisma.acc_tax_rates.findFirst({
           where: {
@@ -104,7 +104,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        const taxRateData = {
+        var taxRateData = {
           description: taxRate.description,
           total_tax_ratge: taxRate.total_tax_ratge
             ? Number(taxRate.total_tax_ratge)
