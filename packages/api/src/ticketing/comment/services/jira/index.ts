@@ -34,7 +34,7 @@ export class JiraService implements ICommentService {
     remoteIdTicket: string,
   ): Promise<ApiResponse<JiraCommentOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'jira',
@@ -43,7 +43,7 @@ export class JiraService implements ICommentService {
       });
 
       // Send request without attachments
-      var resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/3/issue/${remoteIdTicket}/comment`,
         JSON.stringify(commentData),
         {
@@ -59,11 +59,11 @@ export class JiraService implements ICommentService {
       //add attachments
       // Process attachments
       let uploads = [];
-      var uuids = commentData.attachments;
+      const uuids = commentData.attachments;
       if (uuids && uuids.length > 0) {
         uploads = await Promise.all(
           uuids.map(async (uuid) => {
-            var attachment = await this.prisma.tcg_attachments.findUnique({
+            const attachment = await this.prisma.tcg_attachments.findUnique({
               where: {
                 id_tcg_attachment: uuid,
               },
@@ -82,16 +82,16 @@ export class JiraService implements ICommentService {
       }
 
       if (uploads.length > 0) {
-        var formData = new FormData();
+        const formData = new FormData();
 
         uploads.forEach((fileStream, index) => {
-          var stats = fs.statSync(fileStream);
-          var fileSizeInBytes = stats.size;
+          const stats = fs.statSync(fileStream);
+          const fileSizeInBytes = stats.size;
           formData.append('file', fileStream, { knownLength: fileSizeInBytes });
         });
 
         // Send request with attachments
-        var resp_ = await axios.post(
+        const resp_ = await axios.post(
           `${connection.account_url}/3/issue/${remoteIdTicket}/attachments`,
           formData,
           {
@@ -118,9 +118,9 @@ export class JiraService implements ICommentService {
   }
   async sync(data: SyncParam): Promise<ApiResponse<JiraCommentOutput[]>> {
     try {
-      var { linkedUserId, id_ticket } = data;
+      const { linkedUserId, id_ticket } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'jira',
@@ -128,7 +128,7 @@ export class JiraService implements ICommentService {
         },
       });
       //retrieve ticket remote id so we can retrieve the comments in the original software
-      var ticket = await this.prisma.tcg_tickets.findUnique({
+      const ticket = await this.prisma.tcg_tickets.findUnique({
         where: {
           id_tcg_ticket: id_ticket as string,
         },
@@ -136,7 +136,7 @@ export class JiraService implements ICommentService {
           remote_id: true,
         },
       });
-      var resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/3/issue/${ticket.remote_id}/comment`,
         {
           headers: {
