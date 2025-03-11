@@ -29,19 +29,19 @@ export class DropboxService implements IFileService {
     connection: any,
   ): Promise<DropboxFileOutput[]> {
     // ref: https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
-    var files: DropboxFileOutput[] = [];
+    const files: DropboxFileOutput[] = [];
     let cursor: string | null = null;
     let hasMore = true;
 
     while (hasMore) {
-      var url = cursor
+      const url = cursor
         ? `${connection.account_url}/files/list_folder/continue`
         : `${connection.account_url}/files/list_folder`;
 
-      var data = cursor ? { cursor } : { path: folderPath, recursive: false };
+      const data = cursor ? { cursor } : { path: folderPath, recursive: false };
 
       try {
-        var response = await axios.post(url, data, {
+        const response = await axios.post(url, data, {
           headers: {
             Authorization: `Bearer ${this.cryptoService.decrypt(
               connection.access_token,
@@ -50,7 +50,7 @@ export class DropboxService implements IFileService {
           },
         });
 
-        var { entries, has_more, cursor: newCursor } = response.data;
+        const { entries, has_more, cursor: newCursor } = response.data;
 
         // Collect all file entries
         files.push(...entries.filter((entry: any) => entry['.tag'] === 'file'));
@@ -68,10 +68,10 @@ export class DropboxService implements IFileService {
 
   async sync(data: SyncParam): Promise<ApiResponse<DropboxFileOutput[]>> {
     try {
-      var { linkedUserId, id_folder } = data;
+      const { linkedUserId, id_folder } = data;
       if (!id_folder) return;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'dropbox',
@@ -79,21 +79,21 @@ export class DropboxService implements IFileService {
         },
       });
 
-      var folder = await this.prisma.fs_folders.findUnique({
+      const folder = await this.prisma.fs_folders.findUnique({
         where: {
           id_fs_folder: id_folder as string,
         },
       });
 
-      var remote_data = await this.prisma.remote_data.findFirst({
+      const remote_data = await this.prisma.remote_data.findFirst({
         where: {
           ressource_owner_id: folder.id_fs_folder,
         },
       });
 
-      var folder_remote_data = JSON.parse(remote_data.data);
+      const folder_remote_data = JSON.parse(remote_data.data);
 
-      var files = await this.getAllFilesInFolder(
+      const files = await this.getAllFilesInFolder(
         folder_remote_data.path_display,
         connection,
       );
@@ -111,7 +111,7 @@ export class DropboxService implements IFileService {
   }
 
   async downloadFile(fileId: string, connection: any): Promise<Buffer> {
-    var response = await axios.get(
+    const response = await axios.get(
       `${connection.account_url}/files/download`,
       {
         headers: {
