@@ -24,8 +24,8 @@ export abstract class BaseConnectionService {
     input: PassthroughInput,
     connectionId: string,
   ): Promise<PassthroughConfig> {
-    const { method, path, headers, req_type, overrideBaseUrl, data } = input;
-    const connection = await this.prisma.connections.findUnique({
+    var { method, path, headers, req_type, overrideBaseUrl, data } = input;
+    var connection = await this.prisma.connections.findUnique({
       where: {
         id_connection: connectionId,
       },
@@ -33,10 +33,10 @@ export abstract class BaseConnectionService {
 
     //TODO: {{PARAMS}} to construct the right url (would be done in the 3rd party service class)
 
-    const base = overrideBaseUrl || `${connection.account_url}`;
-    const url = `${base}/${path}`;
+    var base = overrideBaseUrl || `${connection.account_url}`;
+    var url = `${base}/${path}`;
 
-    const auth =
+    var auth =
       CONNECTORS_METADATA[connection.vertical.toLowerCase()][
         connection.provider_slug.toLowerCase()
       ].authStrategy;
@@ -74,8 +74,8 @@ export abstract class BaseConnectionService {
           ...HEADERS,
           'Content-Type': 'multipart/form-data',
         };
-        const formData = new FormData();
-        for (const obj of data as MultipartData[]) {
+        var formData = new FormData();
+        for (var obj of data as MultipartData[]) {
           formData.append(
             obj.name,
             obj.file_name ? fs.createReadStream(obj.file_name) : obj.data,
