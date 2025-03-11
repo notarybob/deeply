@@ -57,7 +57,7 @@ export class FieldMappingController {
   @Get('internal/attributes')
   @UseGuards(JwtAuthGuard)
   getInternalAttributes(@Request() req: any) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.fieldMappingService.getAttributes(id_project);
   }
 
@@ -86,7 +86,7 @@ export class FieldMappingController {
     @Request() req: any,
     @Body() defineTargetFieldDto: DefineTargetFieldDto,
   ) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.fieldMappingService.defineTargetField(
       defineTargetFieldDto,
       id_project,
@@ -118,7 +118,7 @@ export class FieldMappingController {
     @Request() req: any,
     @Body() data: CustomFieldCreateDto,
   ) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.fieldMappingService.createCustomField(data, id_project);
   }
 
@@ -152,7 +152,7 @@ export class FieldMappingController {
   @Get('attributes')
   @UseGuards(ApiKeyAuthGuard)
   getAttributes(@Request() req: any) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.fieldMappingService.getAttributes(id_project);
   }
 
@@ -168,7 +168,7 @@ export class FieldMappingController {
     @Request() req: any,
     @Body() defineTargetFieldDto: DefineTargetFieldDto,
   ) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.fieldMappingService.defineTargetField(
       defineTargetFieldDto,
       id_project,
@@ -184,7 +184,7 @@ export class FieldMappingController {
   @Post()
   @UseGuards(ApiKeyAuthGuard)
   createCustomField(@Request() req: any, @Body() data: CustomFieldCreateDto) {
-    const { id_project } = req.user;
+    let { id_project } = req.user;
     return this.fieldMappingService.createCustomField(data, id_project);
   }
 
