@@ -26,7 +26,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<PipedriveEngagementInput> {
-    const result: PipedriveEngagementInput = {
+    var result: PipedriveEngagementInput = {
       subject: source.subject || null,
       public_description: source.content || null,
     };
@@ -38,15 +38,15 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (source.start_at && source.end_time) {
-      const startDate = new Date(source.start_at);
-      const endDate = new Date(source.end_time);
+      var startDate = new Date(source.start_at);
+      var endDate = new Date(source.end_time);
 
-      const diffMilliseconds = endDate.getTime() - startDate.getTime();
-      const durationInSeconds = Math.round(diffMilliseconds / 1000);
+      var diffMilliseconds = endDate.getTime() - startDate.getTime();
+      var durationInSeconds = Math.round(diffMilliseconds / 1000);
 
-      const dueDate = startDate.toISOString().split('T')[0];
-      const dueTime = startDate.toTimeString().split(' ')[0].substring(0, 5);
-      const duration = `${String(Math.floor(durationInSeconds / 60)).padStart(
+      var dueDate = startDate.toISOString().split('T')[0];
+      var dueTime = startDate.toTimeString().split(' ')[0].substring(0, 5);
+      var duration = `${String(Math.floor(durationInSeconds / 60)).padStart(
         2,
         '0',
       )}:${String(durationInSeconds % 60).padStart(2, '0')}`;
@@ -57,13 +57,13 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.user_id = Number(owner_id);
       }
     }
     if (source.contacts && source.contacts.length > 0) {
-      const id = await this.utils.getRemoteIdFromContactUuid(
+      var id = await this.utils.getRemoteIdFromContactUuid(
         source.contacts[0],
       );
       if (id) {
@@ -71,7 +71,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       }
     }
     if (source.company_id) {
-      const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+      var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
       if (id) {
         result.org_id = Number(id);
       }
@@ -194,18 +194,18 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
-    const opts: any = {
+    var opts: any = {
       contacts: [],
     };
     if (engagement.user_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         String(engagement.user_id),
         connectionId,
       );
@@ -214,7 +214,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.org_id) {
-      const company_id = await this.utils.getCompanyUuidFromRemoteId(
+      var company_id = await this.utils.getCompanyUuidFromRemoteId(
         String(engagement.org_id),
         connectionId,
       );
@@ -224,7 +224,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.person_id) {
-      const person_id = await this.utils.getContactUuidFromRemoteId(
+      var person_id = await this.utils.getContactUuidFromRemoteId(
         String(engagement.person_id),
         connectionId,
       );
@@ -234,9 +234,9 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.attendee && engagement.attendee.length > 0) {
-      for (const p of engagement.attendee) {
+      for (var p of engagement.attendee) {
         if (p.person_id) {
-          const id = await this.utils.getContactUuidFromRemoteId(
+          var id = await this.utils.getContactUuidFromRemoteId(
             String(p.person_id),
             connectionId,
           );
@@ -248,9 +248,9 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.participants && engagement.participants.length > 0) {
-      for (const p of engagement.participants) {
+      for (var p of engagement.participants) {
         if (p.person_id) {
-          const id = await this.utils.getContactUuidFromRemoteId(
+          var id = await this.utils.getContactUuidFromRemoteId(
             String(p.person_id),
             connectionId,
           );
@@ -282,9 +282,9 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
@@ -293,7 +293,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       contacts: [],
     };
     if (engagement.user_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         String(engagement.user_id),
         connectionId,
       );
@@ -305,7 +305,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.org_id) {
-      const company_id = await this.utils.getCompanyUuidFromRemoteId(
+      var company_id = await this.utils.getCompanyUuidFromRemoteId(
         String(engagement.org_id),
         connectionId,
       );
@@ -315,7 +315,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.person_id) {
-      const person_id = await this.utils.getContactUuidFromRemoteId(
+      var person_id = await this.utils.getContactUuidFromRemoteId(
         String(engagement.person_id),
         connectionId,
       );
@@ -325,9 +325,9 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.attendee && engagement.attendee.length > 0) {
-      for (const p of engagement.attendee) {
+      for (var p of engagement.attendee) {
         if (p.person_id) {
-          const id = await this.utils.getContactUuidFromRemoteId(
+          var id = await this.utils.getContactUuidFromRemoteId(
             String(p.person_id),
             connectionId,
           );
@@ -339,9 +339,9 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.participants && engagement.participants.length > 0) {
-      for (const p of engagement.participants) {
+      for (var p of engagement.participants) {
         if (p.person_id) {
-          const id = await this.utils.getContactUuidFromRemoteId(
+          var id = await this.utils.getContactUuidFromRemoteId(
             String(p.person_id),
             connectionId,
           );
@@ -372,18 +372,18 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmEngagementOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = engagement[mapping.remote_id];
       }
     }
 
-    const opts: any = {
+    var opts: any = {
       contacts: [],
     };
     if (engagement.user_id) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         String(engagement.user_id),
         connectionId,
       );
@@ -392,7 +392,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
       }
     }
     if (engagement.org_id) {
-      const company_id = await this.utils.getCompanyUuidFromRemoteId(
+      var company_id = await this.utils.getCompanyUuidFromRemoteId(
         String(engagement.org_id),
         connectionId,
       );
@@ -402,7 +402,7 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.person_id) {
-      const person_id = await this.utils.getContactUuidFromRemoteId(
+      var person_id = await this.utils.getContactUuidFromRemoteId(
         String(engagement.person_id),
         connectionId,
       );
@@ -412,9 +412,9 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.attendee && engagement.attendee.length > 0) {
-      for (const p of engagement.attendee) {
+      for (var p of engagement.attendee) {
         if (p.person_id) {
-          const id = await this.utils.getContactUuidFromRemoteId(
+          var id = await this.utils.getContactUuidFromRemoteId(
             String(p.person_id),
             connectionId,
           );
@@ -426,9 +426,9 @@ export class PipedriveEngagementMapper implements IEngagementMapper {
     }
 
     if (engagement.participants && engagement.participants.length > 0) {
-      for (const p of engagement.participants) {
+      for (var p of engagement.participants) {
         if (p.person_id) {
-          const id = await this.utils.getContactUuidFromRemoteId(
+          var id = await this.utils.getContactUuidFromRemoteId(
             String(p.person_id),
             connectionId,
           );
