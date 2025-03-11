@@ -63,10 +63,10 @@ export class JiraConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers, req_type } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers, req_type } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -101,8 +101,8 @@ export class JiraConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, code } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'jira',
@@ -111,24 +111,24 @@ export class JiraConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the githubend it must be the same
-      var REDIRECT_URI = `${
+      const REDIRECT_URI = `${
         this.env.getDistributionMode() == 'selfhost'
           ? this.env.getTunnelIngress()
           : this.env.getPanoraBaseUrl()
       }/connections/oauth/callback`;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
         redirect_uri: REDIRECT_URI,
         code: code,
         grant_type: 'authorization_code',
       });
-      var res = await axios.post(
+      const res = await axios.post(
         `https://auth.atlassian.com/oauth/token`,
         formData.toString(),
         {
@@ -137,14 +137,14 @@ export class JiraConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: JiraOAuthResponse = res.data;
+      const data: JiraOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : jira ticketing ' + JSON.stringify(data),
       );
 
       // get the cloud id from atlassian jira, it is used across requests to the api
       //TODO: add a field inside our connections db to handle it
-      var res_ = await axios.get(
+      const res_ = await axios.get(
         `https://api.atlassian.com/oauth/token/accessible-resources`,
         {
           headers: {
@@ -153,15 +153,15 @@ export class JiraConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var sites_scopes: JiraCloudIdInformation[] = res_.data;
+      const sites_scopes: JiraCloudIdInformation[] = res_.data;
 
-      var cloud_id: string = sites_scopes[0].id;
+      const cloud_id: string = sites_scopes[0].id;
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
-      var access_token = this.cryptoService.encrypt(data.access_token);
-      var refresh_token = this.cryptoService.encrypt(data.refresh_token);
-      var BASE_API_URL = (
+      const access_token = this.cryptoService.encrypt(data.access_token);
+      const refresh_token = this.cryptoService.encrypt(data.refresh_token);
+      const BASE_API_URL = (
         CONNECTORS_METADATA['ticketing']['jira'].urls.apiUrl as DynamicApiUrl
       )(cloud_id);
 
@@ -219,21 +219,21 @@ export class JiraConnectionService extends AbstractBaseConnectionService {
 
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      var { connectionId, refreshToken, projectId } = opts;
+      const { connectionId, refreshToken, projectId } = opts;
 
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = {
+      const formData = {
         grant_type: 'refresh_token',
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
         refresh_token: this.cryptoService.decrypt(refreshToken),
       };
 
-      var res = await axios.post(
+      const res = await axios.post(
         `https://auth.atlassian.com/oauth/token`,
         formData,
         {
@@ -242,7 +242,7 @@ export class JiraConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: JiraOAuthResponse = res.data;
+      const data: JiraOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
