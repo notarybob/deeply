@@ -47,6 +47,6 @@ interface OpportunityStatusChange {
 
 export type CloseStageOutput = Partial<OpportunityStatusChange>;
 
-export const commonStageCloseProperties = {
+export let commonStageCloseProperties = {
   dealstage: '',
 };
