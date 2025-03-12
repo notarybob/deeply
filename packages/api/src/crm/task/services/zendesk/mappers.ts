@@ -21,7 +21,7 @@ export class ZendeskTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<ZendeskTaskInput> {
-    var result: ZendeskTaskInput = {
+    const result: ZendeskTaskInput = {
       content: source.content,
       completed: source.status === 'COMPLETED',
     };
@@ -30,14 +30,14 @@ export class ZendeskTaskMapper implements ITaskMapper {
       result.due_date = source.due_date as any;
     }
     if (source.deal_id) {
-      var deal_id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      const deal_id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       if (deal_id) {
         result.resource_id = Number(deal_id);
         result.resource_type = 'deal';
       }
     }
     if (source.user_id) {
-      var user_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const user_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (user_id) {
         result.owner_id = Number(user_id);
       }
@@ -45,7 +45,7 @@ export class ZendeskTaskMapper implements ITaskMapper {
 
     if (source.company_id) {
       //then the resource mut be contact and nothign else
-      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -55,8 +55,8 @@ export class ZendeskTaskMapper implements ITaskMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -99,18 +99,18 @@ export class ZendeskTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmTaskOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = task[mapping.remote_id];
       }
     }
 
     let opts: any = {};
-    var type = task.resource_type;
+    const type = task.resource_type;
 
     if (type == 'deal') {
-      var deal_id = await this.utils.getDealUuidFromRemoteId(
+      const deal_id = await this.utils.getDealUuidFromRemoteId(
         String(task.resource_id),
         connectionId,
       );
@@ -123,7 +123,7 @@ export class ZendeskTaskMapper implements ITaskMapper {
     }
 
     if (type == 'contact') {
-      var company_id = await this.utils.getCompanyUuidFromRemoteId(
+      const company_id = await this.utils.getCompanyUuidFromRemoteId(
         String(task.resource_id),
         connectionId,
       );
@@ -136,7 +136,7 @@ export class ZendeskTaskMapper implements ITaskMapper {
     }
 
     if (task.owner_id) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         String(task.owner_id),
         connectionId,
       );
