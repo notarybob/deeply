@@ -35,7 +35,7 @@ export class DropboxService implements IFolderService {
     linkedUserId: string,
   ): Promise<ApiResponse<DropboxFolderOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'dropbox',
@@ -43,7 +43,7 @@ export class DropboxService implements IFolderService {
         },
       });
       // ref: https://www.dropbox.com/developers/documentation/http/documentation#files-create_folder
-      const resp = await axios.post(
+      var resp = await axios.post(
         `${connection.account_url}/files/create_folder_v2`,
         JSON.stringify(folderData),
         {
@@ -68,17 +68,17 @@ export class DropboxService implements IFolderService {
 
   async getAllFolders(connection: any): Promise<DropboxFolderOutput[]> {
     // ref: https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
-    const folders: DropboxFolderOutput[] = [];
+    var folders: DropboxFolderOutput[] = [];
     let cursor: string | null = null;
     let hasMore = true;
 
     while (hasMore) {
-      const url = cursor
+      var url = cursor
         ? `${connection.account_url}/files/list_folder/continue`
         : `${connection.account_url}/files/list_folder`;
-      const data = cursor ? { cursor } : { path: '', recursive: true };
+      var data = cursor ? { cursor } : { path: '', recursive: true };
 
-      const response = await axios.post(url, data, {
+      var response = await axios.post(url, data, {
         headers: {
           Authorization: `Bearer ${this.cryptoService.decrypt(
             connection.access_token,
@@ -87,7 +87,7 @@ export class DropboxService implements IFolderService {
         },
       });
 
-      const { entries, has_more, cursor: newCursor } = response.data;
+      var { entries, has_more, cursor: newCursor } = response.data;
 
       // Collect all folder entries
       folders.push(
@@ -103,9 +103,9 @@ export class DropboxService implements IFolderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<BoxFolderOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      var { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'dropbox',
@@ -113,7 +113,7 @@ export class DropboxService implements IFolderService {
         },
       });
 
-      const results = await this.getAllFolders(connection);
+      var results = await this.getAllFolders(connection);
       this.logger.log(`Synced dropbox folders !`);
 
       return {
