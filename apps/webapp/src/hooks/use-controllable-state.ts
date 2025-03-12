@@ -19,20 +19,20 @@ function useControllableState<T>({
   defaultProp,
   onChange = () => {},
 }: UseControllableStateParams<T>) {
-  let [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({
+  const [uncontrolledProp, setUncontrolledProp] = useUncontrolledState({
     defaultProp,
     onChange,
   })
-  let isControlled = prop !== undefined
-  let value = isControlled ? prop : uncontrolledProp
-  let handleChange = useCallbackRef(onChange)
+  const isControlled = prop !== undefined
+  const value = isControlled ? prop : uncontrolledProp
+  const handleChange = useCallbackRef(onChange)
 
-  let setValue: React.Dispatch<React.SetStateAction<T | undefined>> =
+  const setValue: React.Dispatch<React.SetStateAction<T | undefined>> =
     React.useCallback(
       (nextValue) => {
         if (isControlled) {
-          let setter = nextValue as SetStateFn<T>
-          let value =
+          const setter = nextValue as SetStateFn<T>
+          const value =
             typeof nextValue === "function" ? setter(prop) : nextValue
           if (value !== prop) handleChange(value as T)
         } else {
@@ -42,17 +42,17 @@ function useControllableState<T>({
       [isControlled, prop, setUncontrolledProp, handleChange]
     )
 
-  return [value, setValue] as let
+  return [value, setValue] as const
 }
 
 function useUncontrolledState<T>({
   defaultProp,
   onChange,
 }: Omit<UseControllableStateParams<T>, "prop">) {
-  let uncontrolledState = React.useState<T | undefined>(defaultProp)
-  let [value] = uncontrolledState
-  let prevValueRef = React.useRef(value)
-  let handleChange = useCallbackRef(onChange)
+  const uncontrolledState = React.useState<T | undefined>(defaultProp)
+  const [value] = uncontrolledState
+  const prevValueRef = React.useRef(value)
+  const handleChange = useCallbackRef(onChange)
 
   React.useEffect(() => {
     if (prevValueRef.current !== value) {
