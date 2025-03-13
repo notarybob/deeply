@@ -55,10 +55,10 @@ export class FrontConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -90,8 +90,8 @@ export class FrontConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'front',
@@ -100,22 +100,22 @@ export class FrontConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      const REDIRECT_URI = `${
+      var REDIRECT_URI = `${
         this.env.getDistributionMode() == 'selfhost'
           ? this.env.getTunnelIngress()
           : this.env.getPanoraBaseUrl()
       }/connections/oauth/callback`;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = {
+      var formData = {
         grant_type: 'authorization_code',
         redirect_uri: REDIRECT_URI,
         code: code,
       };
-      const res = await axios.post(
+      var res = await axios.post(
         `https://app.frontapp.com/oauth/token`,
         JSON.stringify(formData),
         {
@@ -127,13 +127,13 @@ export class FrontConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: FrontOAuthResponse = res.data;
+      var data: FrontOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : front ticketing ' + JSON.stringify(data),
       );
 
       let db_res;
-      const connection_token = uuidv4();
+      var connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -187,18 +187,18 @@ export class FrontConnectionService extends AbstractBaseConnectionService {
 
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      const { connectionId, refreshToken, projectId } = opts;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var { connectionId, refreshToken, projectId } = opts;
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const DATA = new URLSearchParams({
+      var DATA = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
       }).toString();
 
-      const config = {
+      var config = {
         method: 'post',
         url: 'https://app.frontapp.com/oauth/token',
         headers: {
@@ -210,9 +210,9 @@ export class FrontConnectionService extends AbstractBaseConnectionService {
         data: DATA,
       };
 
-      const res = await axios(config);
+      var res = await axios(config);
 
-      const data: FrontOAuthResponse = res.data;
+      var data: FrontOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
