@@ -23,10 +23,10 @@ export class ZendeskContactMapper implements IContactMapper {
     }[],
   ): Promise<ZendeskContactInput> {
     // Assuming 'email_addresses' array contains at least one email and 'phone_numbers' array contains at least one phone number
-    const primaryEmail = source.email_addresses?.[0]?.email_address;
-    const primaryPhone = source.phone_numbers?.[0]?.phone_number;
+    var primaryEmail = source.email_addresses?.[0]?.email_address;
+    var primaryPhone = source.phone_numbers?.[0]?.phone_number;
 
-    const result: ZendeskContactInput = {
+    var result: ZendeskContactInput = {
       name: `${source.first_name} ${source.last_name}`,
       first_name: source.first_name,
       last_name: source.last_name,
@@ -49,15 +49,15 @@ export class ZendeskContactMapper implements IContactMapper {
     }
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.owner_id = Number(owner_id);
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -105,17 +105,17 @@ export class ZendeskContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmContactOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact.custom_fields[mapping.remote_id];
       }
     }
     // Constructing the email and phone details
-    const email_addresses = contact.email
+    var email_addresses = contact.email
       ? [{ email_address: contact.email, email_address_type: 'PERSONAL' }]
       : [];
-    const phone_numbers = [];
+    var phone_numbers = [];
 
     if (contact.phone) {
       phone_numbers.push({ phone_number: contact.phone, phone_type: 'WORK' });
@@ -129,7 +129,7 @@ export class ZendeskContactMapper implements IContactMapper {
 
     let opts: any = {};
     if (contact.owner_id) {
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(contact.owner_id),
         connectionId,
       );
@@ -140,7 +140,7 @@ export class ZendeskContactMapper implements IContactMapper {
       }
     }
 
-    const address: Address = {
+    var address: Address = {
       street_1: contact.address.line1,
       city: contact.address.city,
       state: contact.address.state,
