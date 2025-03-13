@@ -44,15 +44,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = TICKETING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = TICKETING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -74,8 +74,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(data: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId, id_ticket } = data;
-      var service: ITagService =
+      const { integrationId, linkedUserId, id_ticket } = data;
+      const service: ITagService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -116,9 +116,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     id_ticket: string,
   ): Promise<TicketingTag[]> {
     try {
-      var tags_results: TicketingTag[] = [];
+      const tags_results: TicketingTag[] = [];
 
-      var updateOrCreateTag = async (
+      const updateOrCreateTag = async (
         tag: UnifiedTicketingTagOutput,
         originId: string,
         connection_id: string,
@@ -141,7 +141,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        var baseData: any = {
+        const baseData: any = {
           name: tag.name ?? null,
           modified_at: new Date(),
           id_tcg_ticket: id_ticket ?? null,
@@ -168,16 +168,16 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < tags.length; i++) {
-        var tag = tags[i];
-        var originId = tag.remote_id;
+        const tag = tags[i];
+        const originId = tag.remote_id;
 
-        var res = await updateOrCreateTag(
+        const res = await updateOrCreateTag(
           tag,
           originId,
           connection_id,
           id_ticket,
         );
-        var tag_id = res.id_tcg_tag;
+        const tag_id = res.id_tcg_tag;
         tags_results.push(res);
 
         // Process field mappings
