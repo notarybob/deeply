@@ -30,7 +30,7 @@ export class CrmUnificationService implements IUnification {
       remote_id: string;
     }[];
   }): Promise<CrmObjectInput> {
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'crm',
       targetType_,
       providerName,
@@ -64,8 +64,8 @@ export class CrmUnificationService implements IUnification {
     extraParams?: { [key: string]: any };
   }): Promise<UnifyReturnType> {
     if (targetType_ == 'engagement') {
-      const engagementType = extraParams.engagement_type;
-      const mapping = this.mappersRegistry.getService(
+      let engagementType = extraParams.engagement_type;
+      let mapping = this.mappersRegistry.getService(
         'crm',
         targetType_,
         providerName,
@@ -77,7 +77,7 @@ export class CrmUnificationService implements IUnification {
         customFieldMappings,
       );
     }
-    const mapping = this.mappersRegistry.getService(
+    let mapping = this.mappersRegistry.getService(
       'crm',
       targetType_,
       providerName,
