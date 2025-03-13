@@ -38,7 +38,7 @@ export class GitlabCommentMapper implements ICommentMapper {
 
     // TODO - Add attachments attribute
 
-    var result: GitlabCommentInput = {
+    const result: GitlabCommentInput = {
       body: source.body,
       internal: source.is_private || false,
     };
@@ -82,7 +82,7 @@ export class GitlabCommentMapper implements ICommentMapper {
     let opts: any = {};
 
     if (comment.attachment && comment.attachment.length > 0) {
-      var attachments = (await this.coreUnificationService.unify<
+      const attachments = (await this.coreUnificationService.unify<
         OriginalAttachmentOutput[]
       >({
         sourceObject: comment.attachment,
@@ -98,7 +98,7 @@ export class GitlabCommentMapper implements ICommentMapper {
       };
     }
     if (comment.author.id) {
-      var user_id = await this.utils.getUserUuidFromRemoteId(
+      const user_id = await this.utils.getUserUuidFromRemoteId(
         String(comment.author.id),
         connectionId,
       );
@@ -107,7 +107,7 @@ export class GitlabCommentMapper implements ICommentMapper {
       }
     }
     if (comment.noteable_id) {
-      var ticket_id = await this.utils.getTicketUuidFromRemoteId(
+      const ticket_id = await this.utils.getTicketUuidFromRemoteId(
         String(comment.noteable_id),
         connectionId,
       );
