@@ -24,14 +24,14 @@ export class MicrosoftdynamicssalesNoteMapper implements INoteMapper {
         let opts: any = {};
 
         if (source.company_id) {
-            const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+            var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
             opts = {
                 ...opts,
                 "objectid_account@odata.bind": `/accounts(${id})`
             }
         }
         if (source.contact_id) {
-            const id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
+            var id = await this.utils.getRemoteIdFromContactUuid(source.contact_id);
             opts = {
                 ...opts,
                 "objectid_contact@odata.bind": `/contacts(${id})`
@@ -42,7 +42,7 @@ export class MicrosoftdynamicssalesNoteMapper implements INoteMapper {
 
 
 
-        const result: MicrosoftdynamicssalesNoteInput = {
+        var result: MicrosoftdynamicssalesNoteInput = {
             notetext: source.content,
             ...opts
         };
@@ -81,9 +81,9 @@ export class MicrosoftdynamicssalesNoteMapper implements INoteMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmNoteOutput> {
-        const field_mappings: { [key: string]: any } = {};
+        var field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (const mapping of customFieldMappings) {
+            for (var mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = note[mapping.remote_id];
             }
         }
@@ -91,7 +91,7 @@ export class MicrosoftdynamicssalesNoteMapper implements INoteMapper {
         let opts: any = {};
 
         if (note._ownerid_value) {
-            const user_id = await this.utils.getUserUuidFromRemoteId(
+            var user_id = await this.utils.getUserUuidFromRemoteId(
                 note._ownerid_value,
                 connectionId
             );
@@ -105,7 +105,7 @@ export class MicrosoftdynamicssalesNoteMapper implements INoteMapper {
 
         // This could only contain either contact, comapany or deal id
         if (note._objectid_value) {
-            const company_id = await this.utils.getCompanyUuidFromRemoteId(
+            var company_id = await this.utils.getCompanyUuidFromRemoteId(
                 note._objectid_value,
                 connectionId
             );
@@ -116,7 +116,7 @@ export class MicrosoftdynamicssalesNoteMapper implements INoteMapper {
                 }
             }
 
-            const contact_id = await this.utils.getContactUuidFromRemoteId(
+            var contact_id = await this.utils.getContactUuidFromRemoteId(
                 note._objectid_value,
                 connectionId
             );
@@ -127,7 +127,7 @@ export class MicrosoftdynamicssalesNoteMapper implements INoteMapper {
                 }
             }
 
-            const deal_id = await this.utils.getDealUuidFromRemoteId(
+            var deal_id = await this.utils.getDealUuidFromRemoteId(
                 note._objectid_value,
                 connectionId
             );
