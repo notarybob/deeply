@@ -33,7 +33,7 @@ export class PhoneNumberService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingPhonenumberOutput> {
     try {
-      const phoneNumber = await this.prisma.acc_phone_numbers.findUnique({
+      let phoneNumber = await this.prisma.acc_phone_numbers.findUnique({
         where: { id_acc_phone_number: id_acc_phone_number },
       });
 
@@ -43,18 +43,18 @@ export class PhoneNumberService {
         );
       }
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: phoneNumber.id_acc_phone_number },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedPhoneNumber: UnifiedAccountingPhonenumberOutput = {
+      let unifiedPhoneNumber: UnifiedAccountingPhonenumberOutput = {
         id: phoneNumber.id_acc_phone_number,
         number: phoneNumber.number,
         type: phoneNumber.type,
@@ -66,7 +66,7 @@ export class PhoneNumberService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: phoneNumber.id_acc_phone_number },
         });
         unifiedPhoneNumber.remote_data = remoteDataRecord
@@ -110,30 +110,30 @@ export class PhoneNumberService {
     previous_cursor: string | null;
   }> {
     try {
-      const phoneNumbers = await this.prisma.acc_phone_numbers.findMany({
+      let phoneNumbers = await this.prisma.acc_phone_numbers.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_phone_number: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = phoneNumbers.length > limit;
+      let hasNextPage = phoneNumbers.length > limit;
       if (hasNextPage) phoneNumbers.pop();
 
-      const unifiedPhoneNumbers = await Promise.all(
+      let unifiedPhoneNumbers = await Promise.all(
         phoneNumbers.map(async (phoneNumber) => {
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: phoneNumber.id_acc_phone_number },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedPhoneNumber: UnifiedAccountingPhonenumberOutput = {
+          let unifiedPhoneNumber: UnifiedAccountingPhonenumberOutput = {
             id: phoneNumber.id_acc_phone_number,
             number: phoneNumber.number,
             type: phoneNumber.type,
@@ -145,7 +145,7 @@ export class PhoneNumberService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: phoneNumber.id_acc_phone_number },
             });
             unifiedPhoneNumber.remote_data = remoteDataRecord
