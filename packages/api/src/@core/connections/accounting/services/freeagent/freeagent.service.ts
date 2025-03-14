@@ -56,10 +56,10 @@ export class FreeagentConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -91,8 +91,8 @@ export class FreeagentConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, code } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'freeagent',
@@ -101,18 +101,18 @@ export class FreeagentConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the githubend it must be the same
-      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         redirect_uri: REDIRECT_URI,
         code: code,
         grant_type: 'authorization_code',
       });
-      var res = await axios.post(
+      const res = await axios.post(
         'https://api.freeagent.com/v2/token_endpoint',
         formData.toString(),
         {
@@ -124,13 +124,13 @@ export class FreeagentConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: FreeagentOAuthResponse = res.data;
+      const data: FreeagentOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : freeagent accounting ' + JSON.stringify(data),
       );
 
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -188,17 +188,17 @@ export class FreeagentConnectionService extends AbstractBaseConnectionService {
 
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      var { connectionId, refreshToken, projectId } = opts;
-      var formData = new URLSearchParams({
+      const { connectionId, refreshToken, projectId } = opts;
+      const formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
       });
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var res = await axios.post(
+      const res = await axios.post(
         'https://api.freeagent.com/v2/token_endpoint',
         formData.toString(),
         {
@@ -210,7 +210,7 @@ export class FreeagentConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: FreeagentOAuthResponse = res.data;
+      const data: FreeagentOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
