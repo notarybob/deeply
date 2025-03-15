@@ -31,7 +31,7 @@ export class MicrosoftdynamicssalesService implements ICompanyService {
         linkedUserId: string,
     ): Promise<ApiResponse<MicrosoftdynamicssalesCompanyOutput>> {
         try {
-            let connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -39,7 +39,7 @@ export class MicrosoftdynamicssalesService implements ICompanyService {
                 },
             });
 
-            let respToPost = await axios.post(
+            const respToPost = await axios.post(
                 `${connection.account_url}/api/data/v9.2/accounts`,
                 JSON.stringify(companyData),
                 {
@@ -52,10 +52,10 @@ export class MicrosoftdynamicssalesService implements ICompanyService {
                 },
             );
 
-            let postCompanyId = respToPost.headers['location'].split("/").pop();
+            const postCompanyId = respToPost.headers['location'].split("/").pop();
             // console.log(res.headers['location'].split('(')[1].split(')')[0])
 
-            let resp = await axios.get(
+            const resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/${postCompanyId}`,
                 {
                     headers: {
@@ -79,16 +79,16 @@ export class MicrosoftdynamicssalesService implements ICompanyService {
 
     async sync(data: SyncParam): Promise<ApiResponse<MicrosoftdynamicssalesCompanyOutput[]>> {
         try {
-            let { linkedUserId } = data;
+            const { linkedUserId } = data;
 
-            let connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
                     vertical: 'crm',
                 },
             });
-            let resp = await axios.get(
+            const resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/accounts`,
                 {
                     headers: {
