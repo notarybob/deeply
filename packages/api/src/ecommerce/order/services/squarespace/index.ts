@@ -27,16 +27,16 @@ export class SquarespaceService implements IOrderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SquarespaceOrderOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'squarespace',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/1.0/commerce/orders`,
         {
           headers: {
@@ -47,7 +47,7 @@ export class SquarespaceService implements IOrderService {
           },
         },
       );
-      let orders: SquarespaceOrderOutput[] = resp.data.result;
+      const orders: SquarespaceOrderOutput[] = resp.data.result;
       this.logger.log(`Synced squarespace orders !`);
 
       return {
