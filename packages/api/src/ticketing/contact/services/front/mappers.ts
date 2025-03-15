@@ -32,7 +32,7 @@ export class FrontContactMapper implements IContactMapper {
     }[],
   ): UnifiedTicketingContactOutput | UnifiedTicketingContactOutput[] {
     // If the source is not an array, convert it to an array for mapping
-    let sourcesArray = Array.isArray(source) ? source : [source];
+    const sourcesArray = Array.isArray(source) ? source : [source];
 
     return sourcesArray.map((contact) =>
       this.mapSingleContactToUnified(
@@ -51,20 +51,20 @@ export class FrontContactMapper implements IContactMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingContactOutput {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = contact.custom_fields[mapping.remote_id];
       }
     }
-    let emailHandle = contact.handles.find(
+    const emailHandle = contact.handles.find(
       (handle) => handle.source === 'email',
     );
-    let phoneHandle = contact.handles.find(
+    const phoneHandle = contact.handles.find(
       (handle) => handle.source === 'phone',
     );
 
-    let unifiedContact: UnifiedTicketingContactOutput = {
+    const unifiedContact: UnifiedTicketingContactOutput = {
       remote_id: contact.id,
       remote_data: contact,
       name: contact.name,
