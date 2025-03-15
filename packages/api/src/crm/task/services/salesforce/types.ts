@@ -18,7 +18,7 @@ export interface SalesforceTaskOutput extends SalesforceTaskInput {
   IsClosed: boolean;
 }
 
-export const commonTaskSalesforceProperties = {
+export let commonTaskSalesforceProperties = {
   Id: '',
   Subject: '',
   Description: '',
