@@ -21,19 +21,19 @@ export class PipedriveDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<PipedriveDealInput> {
-    var result: PipedriveDealInput = {
+    const result: PipedriveDealInput = {
       title: source.name,
       value: source.amount,
     };
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.user_id = Number(owner_id);
       }
     }
     if (source.company_id) {
-      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -42,7 +42,7 @@ export class PipedriveDealMapper implements IDealMapper {
     }
 
     if (source.stage_id) {
-      var stage_id = await this.utils.getStageIdFromStageUuid(
+      const stage_id = await this.utils.getStageIdFromStageUuid(
         source.stage_id,
       );
       if (stage_id) {
@@ -51,8 +51,8 @@ export class PipedriveDealMapper implements IDealMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -96,16 +96,16 @@ export class PipedriveDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmDealOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = deal[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (deal.creator_user_id && deal.creator_user_id.id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         String(deal.creator_user_id.id),
         connectionId,
       );
@@ -117,7 +117,7 @@ export class PipedriveDealMapper implements IDealMapper {
       }
     }
     if (deal.stage_id) {
-      var stage_id = await this.utils.getStageUuidFromRemoteId(
+      const stage_id = await this.utils.getStageUuidFromRemoteId(
         String(deal.stage_id),
         connectionId,
       );
