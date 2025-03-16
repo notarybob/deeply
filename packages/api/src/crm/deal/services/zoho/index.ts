@@ -29,14 +29,14 @@ export class ZohoService implements IDealService {
     linkedUserId: string,
   ): Promise<ApiResponse<ZohoDealOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v5/Deals`,
         { data: [dealData] },
         {
@@ -48,7 +48,7 @@ export class ZohoService implements IDealService {
           },
         },
       );
-      const final_res = await axios.get(
+      let final_res = await axios.get(
         `${connection.account_url}/v5/Deals/${resp.data.data[0].details.id}`,
         {
           headers: {
@@ -71,18 +71,18 @@ export class ZohoService implements IDealService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZohoDealOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zoho',
           vertical: 'crm',
         },
       });
-      const fields =
+      let fields =
         'Owner,Description,Deal_Name,Account_Name,Stage,Amount,Contact_Name';
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/v5/Deals?fields=${fields}`,
         {
           headers: {
