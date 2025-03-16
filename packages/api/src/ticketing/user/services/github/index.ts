@@ -26,10 +26,10 @@ export class GithubService implements IUserService {
     }
 
     async sync(data: SyncParam): Promise<ApiResponse<GithubUserOutput[]>> {
-        const { linkedUserId } = data;
+        let { linkedUserId } = data;
 
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'github',
@@ -37,7 +37,7 @@ export class GithubService implements IUserService {
                 },
             });
 
-            const resp = await axios.get(`${connection.account_url}/users`, {
+            let resp = await axios.get(`${connection.account_url}/users`, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${this.cryptoService.decrypt(
