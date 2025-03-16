@@ -81,16 +81,16 @@ export class SharepointFileMapper implements IFileMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageFileOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = file[mapping.remote_id];
       }
     }
 
-    let opts: any = {};
+    const opts: any = {};
     if (file.permissions?.length) {
-      let permissions = await this.coreUnificationService.unify<
+      const permissions = await this.coreUnificationService.unify<
         OriginalPermissionOutput[]
       >({
         sourceObject: file.permissions,
@@ -104,7 +104,7 @@ export class SharepointFileMapper implements IFileMapper {
 
       // shared link
       if (file.permissions.some((p) => p.link)) {
-        let sharedLinks =
+        const sharedLinks =
           await this.coreUnificationService.unify<OriginalSharedLinkOutput>({
             sourceObject: file.permissions.find((p) => p.link),
             targetType: FileStorageObject.sharedlink,
