@@ -38,15 +38,15 @@ export class FolderService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestorageFolderOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
-      var customFieldMappings =
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
+      const customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           'filestorage.folder',
         );
 
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedFilestorageFolderInput>({
           sourceObject: unifiedFolderData,
           targetType: FileStorageObject.folder,
@@ -61,13 +61,13 @@ export class FolderService {
         'desunified object is ' + JSON.stringify(desunifiedObject),
       );
 
-      var service = this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalFolderOutput> = await service.addFolder(
+      const service = this.serviceRegistry.getService(integrationId);
+      const resp: ApiResponse<OriginalFolderOutput> = await service.addFolder(
         desunifiedObject,
         linkedUserId,
       );
 
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalFolderOutput[]
       >({
         sourceObject: [resp.data],
@@ -78,10 +78,10 @@ export class FolderService {
         customFieldMappings: customFieldMappings,
       })) as UnifiedFilestorageFolderOutput[];
 
-      var source_folder = resp.data;
-      var target_folder = unifiedObject[0];
+      const source_folder = resp.data;
+      const target_folder = unifiedObject[0];
 
-      var unique_fs_folder_id = await this.saveOrUpdateFolder(
+      const unique_fs_folder_id = await this.saveOrUpdateFolder(
         target_folder,
         connection_id,
       );
@@ -98,7 +98,7 @@ export class FolderService {
         source_folder,
       );
 
-      var result_folder = await this.getFolder(
+      const result_folder = await this.getFolder(
         unique_fs_folder_id,
         undefined,
         undefined,
@@ -107,8 +107,8 @@ export class FolderService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -136,7 +136,7 @@ export class FolderService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -147,11 +147,11 @@ export class FolderService {
     folder: UnifiedFilestorageFolderOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingFolder = await this.prisma.fs_folders.findFirst({
+    const existingFolder = await this.prisma.fs_folders.findFirst({
       where: { remote_id: folder.remote_id, id_connection: connection_id },
     });
 
-    var data: any = {
+    const data: any = {
       folder_url: folder.folder_url,
       size: folder.size,
       name: folder.name,
@@ -163,7 +163,7 @@ export class FolderService {
     };
 
     if (existingFolder) {
-      var res = await this.prisma.fs_folders.update({
+      const res = await this.prisma.fs_folders.update({
         where: { id_fs_folder: existingFolder.id_fs_folder },
         data: data,
       });
@@ -174,7 +174,7 @@ export class FolderService {
       data.id_connection = connection_id;
       data.id_fs_folder = uuidv4();
 
-      var newFolder = await this.prisma.fs_folders.create({ data: data });
+      const newFolder = await this.prisma.fs_folders.create({ data: data });
       return newFolder.id_fs_folder;
     }
   }
@@ -188,14 +188,14 @@ export class FolderService {
     remote_data?: boolean,
   ): Promise<UnifiedFilestorageFolderOutput> {
     try {
-      var folder = await this.prisma.fs_folders.findUnique({
+      const folder = await this.prisma.fs_folders.findUnique({
         where: {
           id_fs_folder: id_fs_folder,
         },
       });
 
       // Fetch field mappings for the folder
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: folder.id_fs_folder,
@@ -207,17 +207,17 @@ export class FolderService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
       let permissions;
       if (folder.id_fs_permissions?.length > 0) {
-        var perms = await this.prisma.fs_permissions.findMany({
+        const perms = await this.prisma.fs_permissions.findMany({
           where: {
             id_fs_permission: {
               in: folder.id_fs_permissions,
@@ -227,14 +227,14 @@ export class FolderService {
         permissions = perms;
       }
 
-      var sharedLink = await this.prisma.fs_shared_links.findFirst({
+      const sharedLink = await this.prisma.fs_shared_links.findFirst({
         where: {
           id_fs_folder: folder.id_fs_folder,
         },
       });
 
       // Transform to UnifiedFilestorageFolderOutput format
-      var unifiedFolder: UnifiedFilestorageFolderOutput = {
+      const unifiedFolder: UnifiedFilestorageFolderOutput = {
         id: folder.id_fs_folder,
         folder_url: folder.folder_url,
         size: String(folder.size),
@@ -254,12 +254,12 @@ export class FolderService {
       };
 
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: folder.id_fs_folder,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
         unifiedFolder.remote_data = remote_data;
       }
       if (linkedUserId && integrationId) {
@@ -303,7 +303,7 @@ export class FolderService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.fs_folders.findFirst({
+        const isCursorPresent = await this.prisma.fs_folders.findFirst({
           where: {
             id_connection: connection_id,
             id_fs_folder: cursor,
@@ -314,7 +314,7 @@ export class FolderService {
         }
       }
 
-      var folders = await this.prisma.fs_folders.findMany({
+      const folders = await this.prisma.fs_folders.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -340,11 +340,11 @@ export class FolderService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedFolders: UnifiedFilestorageFolderOutput[] =
+      const unifiedFolders: UnifiedFilestorageFolderOutput[] =
         await Promise.all(
           folders.map(async (folder) => {
             // Fetch field mappings for the folder
-            var values = await this.prisma.value.findMany({
+            const values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id: folder.id_fs_folder,
@@ -356,21 +356,21 @@ export class FolderService {
             });
 
             // Create a map to store unique field mappings
-            var fieldMappingsMap = new Map();
+            const fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            var field_mappings = Array.from(
+            const field_mappings = Array.from(
               fieldMappingsMap,
               ([key, value]) => ({ [key]: value }),
             );
 
             let permissions;
             if (folder.id_fs_permissions?.length > 0) {
-              var perms = await this.prisma.fs_permissions.findMany({
+              const perms = await this.prisma.fs_permissions.findMany({
                 where: {
                   id_fs_permission: {
                     in: folder.id_fs_permissions,
@@ -380,7 +380,7 @@ export class FolderService {
               permissions = perms;
             }
 
-            var sharedLink = await this.prisma.fs_shared_links.findFirst({
+            const sharedLink = await this.prisma.fs_shared_links.findFirst({
               where: {
                 id_fs_folder: folder.id_fs_folder,
               },
@@ -411,15 +411,15 @@ export class FolderService {
       let res: UnifiedFilestorageFolderOutput[] = unifiedFolders;
 
       if (remote_data) {
-        var remote_array_data: UnifiedFilestorageFolderOutput[] =
+        const remote_array_data: UnifiedFilestorageFolderOutput[] =
           await Promise.all(
             res.map(async (folder) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: folder.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...folder, remote_data };
             }),
           );
