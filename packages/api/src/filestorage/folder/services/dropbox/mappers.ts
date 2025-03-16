@@ -34,14 +34,14 @@ export class DropboxFolderMapper implements IFolderMapper {
       remote_id: string;
     }[],
   ): Promise<DropboxFolderInput> {
-    let result: DropboxFolderInput = {
+    const result: DropboxFolderInput = {
       path: `/${source.name}`,
       autorename: true,
     };
 
     if (customFieldMappings && source.field_mappings) {
-      for (let [k, v] of Object.entries(source.field_mappings)) {
-        let mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -86,7 +86,7 @@ export class DropboxFolderMapper implements IFolderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageFolderOutput> {
-    let result: UnifiedFilestorageFolderOutput = {
+    const result: UnifiedFilestorageFolderOutput = {
       remote_id: folder.id,
       remote_data: folder,
       name: folder.name,
@@ -101,7 +101,7 @@ export class DropboxFolderMapper implements IFolderMapper {
     };
 
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         result.field_mappings[mapping.slug] = folder[mapping.remote_id];
       }
     }
