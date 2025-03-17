@@ -44,7 +44,7 @@ export class SalesforceTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<SalesforceTaskInput> {
-    var result: SalesforceTaskInput = {
+    const result: SalesforceTaskInput = {
       Subject: source.subject || '',
       Description: source.content || '',
       Status: this.reverseMapToTaskStatus(source.status as TaskStatus),
@@ -52,23 +52,23 @@ export class SalesforceTaskMapper implements ITaskMapper {
     };
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.OwnerId = owner_id;
       }
     }
 
     if (source.deal_id) {
-      var id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      const id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       result.WhatId = id;
     } else if (source.company_id) {
-      var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+      const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
       result.WhatId = id;
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -111,16 +111,16 @@ export class SalesforceTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmTaskOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = task[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (task.OwnerId) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         task.OwnerId,
         connectionId,
       );
