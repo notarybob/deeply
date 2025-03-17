@@ -29,7 +29,7 @@ export class OrderService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -38,7 +38,7 @@ export class OrderService {
 
   async validateCustomerId(id?: string) {
     if (id) {
-      var res = await this.prisma.ecom_customers.findUnique({
+      const res = await this.prisma.ecom_customers.findUnique({
         where: { id_ecom_customer: id },
       });
       if (!res)
@@ -57,10 +57,10 @@ export class OrderService {
     remote_data?: boolean,
   ): Promise<UnifiedEcommerceOrderOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
       await this.validateCustomerId(unifiedEcommerceOrderData.customer_id);
 
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedEcommerceOrderInput>({
           sourceObject: unifiedEcommerceOrderData,
           targetType: EcommerceObject.order,
@@ -69,14 +69,14 @@ export class OrderService {
           customFieldMappings: [],
         });
 
-      var service: IOrderService =
+      const service: IOrderService =
         this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalOrderOutput> = await service.addOrder(
+      const resp: ApiResponse<OriginalOrderOutput> = await service.addOrder(
         desunifiedObject,
         linkedUserId,
       );
 
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalOrderOutput[]
       >({
         sourceObject: [resp.data],
@@ -87,10 +87,10 @@ export class OrderService {
         customFieldMappings: [],
       })) as UnifiedEcommerceOrderOutput[];
 
-      var source_order = resp.data;
-      var target_order = unifiedObject[0];
+      const source_order = resp.data;
+      const target_order = unifiedObject[0];
 
-      var unique_ecommerce_order_id = await this.saveOrUpdateOrder(
+      const unique_ecommerce_order_id = await this.saveOrUpdateOrder(
         target_order,
         connection_id,
       );
@@ -100,7 +100,7 @@ export class OrderService {
         source_order,
       );
 
-      var result_order = await this.getOrder(
+      const result_order = await this.getOrder(
         unique_ecommerce_order_id,
         undefined,
         undefined,
@@ -109,8 +109,8 @@ export class OrderService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -143,11 +143,11 @@ export class OrderService {
     order: UnifiedEcommerceOrderOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingOrder = await this.prisma.ecom_orders.findFirst({
+    const existingOrder = await this.prisma.ecom_orders.findFirst({
       where: { remote_id: order.remote_id, id_connection: connection_id },
     });
 
-    var data: any = {
+    const data: any = {
       order_status: order.order_status,
       order_number: order.order_number,
       payment_status: order.payment_status,
@@ -162,7 +162,7 @@ export class OrderService {
     };
 
     if (existingOrder) {
-      var res = await this.prisma.ecom_orders.update({
+      const res = await this.prisma.ecom_orders.update({
         where: { id_ecom_order: existingOrder.id_ecom_order },
         data: data,
       });
@@ -174,7 +174,7 @@ export class OrderService {
       data.id_connection = connection_id;
       data.id_ecom_order = uuidv4();
 
-      var newOrder = await this.prisma.ecom_orders.create({ data: data });
+      const newOrder = await this.prisma.ecom_orders.create({ data: data });
 
       return newOrder.id_ecom_order;
     }
@@ -189,7 +189,7 @@ export class OrderService {
     remote_data?: boolean,
   ): Promise<UnifiedEcommerceOrderOutput> {
     try {
-      var order = await this.prisma.ecom_orders.findUnique({
+      const order = await this.prisma.ecom_orders.findUnique({
         where: {
           id_ecom_order: id_ecom_order,
         },
@@ -200,7 +200,7 @@ export class OrderService {
       }
 
       // Fetch field mappings for the order
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: order.id_ecom_order,
@@ -212,17 +212,17 @@ export class OrderService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedEcommerceOrderOutput format
-      var UnifiedEcommerceOrder: UnifiedEcommerceOrderOutput = {
+      const UnifiedEcommerceOrder: UnifiedEcommerceOrderOutput = {
         id: order.id_ecom_order,
         order_status: order.order_status,
         order_number: order.order_number,
@@ -242,12 +242,12 @@ export class OrderService {
 
       let res: UnifiedEcommerceOrderOutput = UnifiedEcommerceOrder;
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: order.id_ecom_order,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -294,7 +294,7 @@ export class OrderService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.ecom_orders.findFirst({
+        const isCursorPresent = await this.prisma.ecom_orders.findFirst({
           where: {
             id_connection: connection_id,
             id_ecom_order: cursor,
@@ -305,7 +305,7 @@ export class OrderService {
         }
       }
 
-      var orders = await this.prisma.ecom_orders.findMany({
+      const orders = await this.prisma.ecom_orders.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -331,11 +331,11 @@ export class OrderService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var UnifiedEcommerceOrders: UnifiedEcommerceOrderOutput[] =
+      const UnifiedEcommerceOrders: UnifiedEcommerceOrderOutput[] =
         await Promise.all(
           orders.map(async (order) => {
             // Fetch field mappings for the order
-            var values = await this.prisma.value.findMany({
+            const values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id: order.id_ecom_order,
@@ -347,14 +347,14 @@ export class OrderService {
             });
 
             // Create a map to store unique field mappings
-            var fieldMappingsMap = new Map();
+            const fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            var field_mappings = Object.fromEntries(fieldMappingsMap);
+            const field_mappings = Object.fromEntries(fieldMappingsMap);
 
             // Transform to UnifiedEcommerceOrderOutput format
             return {
@@ -380,15 +380,15 @@ export class OrderService {
       let res: UnifiedEcommerceOrderOutput[] = UnifiedEcommerceOrders;
 
       if (remote_data) {
-        var remote_array_data: UnifiedEcommerceOrderOutput[] =
+        const remote_array_data: UnifiedEcommerceOrderOutput[] =
           await Promise.all(
             res.map(async (order) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: order.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...order, remote_data };
             }),
           );
