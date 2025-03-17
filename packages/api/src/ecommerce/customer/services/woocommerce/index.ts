@@ -28,22 +28,22 @@ export class WoocommerceService implements ICustomerService {
     data: SyncParam,
   ): Promise<ApiResponse<WoocommerceCustomerOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'woocommerce',
           vertical: 'ecommerce',
         },
       });
-      const decryptedData = JSON.parse(
+      let decryptedData = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
 
-      const { username, password } = decryptedData;
+      let { username, password } = decryptedData;
 
-      const resp = await axios.get(`${connection.account_url}/v3/customers`, {
+      let resp = await axios.get(`${connection.account_url}/v3/customers`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Basic ${Buffer.from(
@@ -51,7 +51,7 @@ export class WoocommerceService implements ICustomerService {
           ).toString('base64')}`,
         },
       });
-      const customers: WoocommerceCustomerOutput[] = resp.data;
+      let customers: WoocommerceCustomerOutput[] = resp.data;
       this.logger.log(`Synced woocommerce customers !`);
 
       return {
