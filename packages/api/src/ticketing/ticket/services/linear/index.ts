@@ -30,7 +30,7 @@ export class LinearService implements ITicketService {
         linkedUserId: string,
     ): Promise<ApiResponse<LinearTicketOutput>> {
         try {
-            var connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'linear',
@@ -44,7 +44,7 @@ export class LinearService implements ITicketService {
                 );
             }
 
-            var createIssueMutation = {
+            const createIssueMutation = {
                 "query": `mutation ($issueCreateInput: IssueCreateInput!) { issueCreate(input: $issueCreateInput) { issue { id title description dueDate parent{ id } state { name } project{ id } labels { nodes { id } } completedAt priorityLabel assignee { id } comments { nodes { id } } } }}`,
                 "variables": {
                     "issueCreateInput": {
@@ -84,9 +84,9 @@ export class LinearService implements ITicketService {
     }
     async sync(data: SyncParam): Promise<ApiResponse<LinearTicketOutput[]>> {
         try {
-            var { linkedUserId } = data;
+            const { linkedUserId } = data;
 
-            var connection = await this.prisma.connections.findFirst({
+            const connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'linear',
@@ -94,7 +94,7 @@ export class LinearService implements ITicketService {
                 },
             });
 
-            var issueQuery = {
+            const issueQuery = {
                 "query": "query { issues { nodes { id title description dueDate parent{ id } state { name } project{ id } labels { nodes { id } } completedAt priorityLabel assignee { id } comments { nodes { id } } } }}"
             };
 
