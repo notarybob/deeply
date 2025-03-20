@@ -70,17 +70,17 @@ export class HubspotService implements IEngagementService {
     linkedUserId: string,
   ): Promise<ApiResponse<HubspotEngagementCallOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
           vertical: 'crm',
         },
       });
-      let dataBody = {
+      const dataBody = {
         properties: engagementData,
       };
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/crm/v3/objects/calls`,
         JSON.stringify(dataBody),
         {
@@ -107,17 +107,17 @@ export class HubspotService implements IEngagementService {
     linkedUserId: string,
   ): Promise<ApiResponse<HubspotEngagementMeetingOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
           vertical: 'crm',
         },
       });
-      let dataBody = {
+      const dataBody = {
         properties: engagementData,
       };
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/crm/v3/objects/meetings`,
         JSON.stringify(dataBody),
         {
@@ -144,17 +144,17 @@ export class HubspotService implements IEngagementService {
     linkedUserId: string,
   ): Promise<ApiResponse<HubspotEngagementEmailOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
           vertical: 'crm',
         },
       });
-      let dataBody = {
+      const dataBody = {
         properties: engagementData,
       };
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/crm/v3/objects/emails`,
         JSON.stringify(dataBody),
         {
@@ -178,7 +178,7 @@ export class HubspotService implements IEngagementService {
 
   async sync(data: SyncParam): Promise<ApiResponse<HubspotEngagementOutput[]>> {
     try {
-      let { linkedUserId, custom_properties, engagement_type } = data;
+      const { linkedUserId, custom_properties, engagement_type } = data;
 
       switch (engagement_type as string) {
         case 'CALL':
@@ -197,7 +197,7 @@ export class HubspotService implements IEngagementService {
 
   private async syncCalls(linkedUserId: string, custom_properties?: string[]) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
@@ -205,17 +205,17 @@ export class HubspotService implements IEngagementService {
         },
       });
 
-      let commonPropertyNames = Object.keys(commonCallHubspotProperties);
-      let allProperties = [...commonPropertyNames, ...custom_properties];
-      let baseURL = `${connection.account_url}/crm/v3/objects/call`;
+      const commonPropertyNames = Object.keys(commonCallHubspotProperties);
+      const allProperties = [...commonPropertyNames, ...custom_properties];
+      const baseURL = `${connection.account_url}/crm/v3/objects/call`;
 
-      let queryString = allProperties
+      const queryString = allProperties
         .map((prop) => `properties=${encodeURIComponent(prop)}`)
         .join('&');
 
-      let url = `${baseURL}?${queryString}`;
+      const url = `${baseURL}?${queryString}`;
 
-      let resp = await axios.get(url, {
+      const resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -240,7 +240,7 @@ export class HubspotService implements IEngagementService {
     custom_properties?: string[],
   ) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
@@ -248,17 +248,17 @@ export class HubspotService implements IEngagementService {
         },
       });
 
-      let commonPropertyNames = Object.keys(commonMeetingHubspotProperties);
-      let allProperties = [...commonPropertyNames, ...custom_properties];
-      let baseURL = `${connection.account_url}/crm/v3/objects/meeting`;
+      const commonPropertyNames = Object.keys(commonMeetingHubspotProperties);
+      const allProperties = [...commonPropertyNames, ...custom_properties];
+      const baseURL = `${connection.account_url}/crm/v3/objects/meeting`;
 
-      let queryString = allProperties
+      const queryString = allProperties
         .map((prop) => `properties=${encodeURIComponent(prop)}`)
         .join('&');
 
-      let url = `${baseURL}?${queryString}`;
+      const url = `${baseURL}?${queryString}`;
 
-      let resp = await axios.get(url, {
+      const resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -280,7 +280,7 @@ export class HubspotService implements IEngagementService {
 
   private async syncEmails(linkedUserId: string, custom_properties?: string[]) {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'hubspot',
@@ -288,17 +288,17 @@ export class HubspotService implements IEngagementService {
         },
       });
 
-      let commonPropertyNames = Object.keys(commonEmailHubspotProperties);
-      let allProperties = [...commonPropertyNames, ...custom_properties];
-      let baseURL = `${connection.account_url}/crm/v3/objects/emails`;
+      const commonPropertyNames = Object.keys(commonEmailHubspotProperties);
+      const allProperties = [...commonPropertyNames, ...custom_properties];
+      const baseURL = `${connection.account_url}/crm/v3/objects/emails`;
 
-      let queryString = allProperties
+      const queryString = allProperties
         .map((prop) => `properties=${encodeURIComponent(prop)}`)
         .join('&');
 
-      let url = `${baseURL}?${queryString}`;
+      const url = `${baseURL}?${queryString}`;
 
-      let resp = await axios.get(url, {
+      const resp = await axios.get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
