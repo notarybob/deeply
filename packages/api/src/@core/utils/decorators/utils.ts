@@ -21,7 +21,7 @@ interface ProviderMetadata {
 }
 
 export async function generatePanoraParamsSpec(spec: any) {
-  let verticals = {
+  const verticals = {
     crm: [CRM_PROVIDERS, CrmObject],
     accounting: [ACCOUNTING_PROVIDERS, AccountingObject],
     ticketing: [TICKETING_PROVIDERS, TicketingObject],
@@ -33,13 +33,13 @@ export async function generatePanoraParamsSpec(spec: any) {
     ecommerce: [ECOMMERCE_PROVIDERS, EcommerceObject],
   };
 
-  for (let [vertical, [providers, COMMON_OBJECTS]] of Object.entries(
+  for (const [vertical, [providers, COMMON_OBJECTS]] of Object.entries(
     verticals,
   )) {
-    for (let objectKey of Object.values(COMMON_OBJECTS)) {
-      for (let provider of providers as string[]) {
+    for (const objectKey of Object.values(COMMON_OBJECTS)) {
+      for (const provider of providers as string[]) {
         try {
-          let metadataPath = path.join(
+          const metadataPath = path.join(
             process.cwd(),
             'src',
             vertical.toLowerCase(),
@@ -49,13 +49,13 @@ export async function generatePanoraParamsSpec(spec: any) {
             'metadata.json',
           );
 
-          let metadataRaw = fs.readFileSync(metadataPath, 'utf8');
-          let metadata: ProviderMetadata = JSON.parse(metadataRaw);
+          const metadataRaw = fs.readFileSync(metadataPath, 'utf8');
+          const metadata: ProviderMetadata = JSON.parse(metadataRaw);
 
           if (metadata) {
             metadata.actions.forEach((action, index) => {
-              let path = `/${vertical.toLowerCase()}/${objectKey}s`;
-              let op =
+              const path = `/${vertical.toLowerCase()}/${objectKey}s`;
+              const op =
                 action === 'list' ? 'get' : action === 'create' ? 'post' : '';
 
               if (spec.paths[path] && spec.paths[path][op]) {
@@ -69,7 +69,7 @@ export async function generatePanoraParamsSpec(spec: any) {
                   spec.paths[path][op]['x-panora-remote-platforms'][provider] =
                     []; // Initialize as an array
                 }
-                for (let field of metadata.supportedFields[index]) {
+                for (const field of metadata.supportedFields[index]) {
                   spec.paths[path][op]['x-panora-remote-platforms'][
                     provider
                   ].push(field);
