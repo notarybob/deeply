@@ -29,7 +29,7 @@ export class MicrosoftdynamicssalesService implements IDealService {
         linkedUserId: string,
     ): Promise<ApiResponse<MicrosoftdynamicssalesDealOutput>> {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -37,7 +37,7 @@ export class MicrosoftdynamicssalesService implements IDealService {
                 },
             });
 
-            const respToPost = await axios.post(
+            let respToPost = await axios.post(
                 `${connection.account_url}/api/data/v9.2/opportunities`,
                 JSON.stringify(dealData),
                 {
@@ -50,9 +50,9 @@ export class MicrosoftdynamicssalesService implements IDealService {
                 },
             );
 
-            const postDealId = respToPost.headers['location'].split("/").pop();
+            let postDealId = respToPost.headers['location'].split("/").pop();
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/${postDealId}`,
                 {
                     headers: {
@@ -81,16 +81,16 @@ export class MicrosoftdynamicssalesService implements IDealService {
 
     async sync(data: SyncParam): Promise<ApiResponse<MicrosoftdynamicssalesDealOutput[]>> {
         try {
-            const { linkedUserId } = data;
+            let { linkedUserId } = data;
 
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
                     vertical: 'crm',
                 },
             });
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/opportunities`,
                 {
                     headers: {
