@@ -58,7 +58,7 @@ export type CloseContactInput = Partial<LeadInput>;
 
 export type CloseContactOutput = Partial<Contact>;
 
-export const commonCloseProperties = {
+export let commonCloseProperties = {
   createdate: '',
   email: '',
   firstname: '',
