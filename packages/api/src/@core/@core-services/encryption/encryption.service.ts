@@ -15,14 +15,14 @@ export class EncryptionService {
   encrypt(data: string): string {
     try {
       if (!data) throw new Error('Cant encrypt empty string');
-      const cipher = crypto.createCipheriv(
+      var cipher = crypto.createCipheriv(
         'aes-256-cbc',
         Buffer.from(this.secretKey, 'utf-8'),
         this.iv,
       );
       let encrypted = cipher.update(data, 'utf8', 'hex');
       encrypted += cipher.final('hex');
-      const encryptedWithIv = this.iv.toString('hex') + ':' + encrypted;
+      var encryptedWithIv = this.iv.toString('hex') + ':' + encrypted;
       return encryptedWithIv;
     } catch (error) {
       throw error;
@@ -31,10 +31,10 @@ export class EncryptionService {
 
   decrypt(encryptedData: string): string {
     try {
-      const textParts = encryptedData.split(':');
-      const ivFromText = Buffer.from(textParts.shift() as string, 'hex');
-      const encryptedText = textParts.join(':');
-      const decipher = crypto.createDecipheriv(
+      var textParts = encryptedData.split(':');
+      var ivFromText = Buffer.from(textParts.shift() as string, 'hex');
+      var encryptedText = textParts.join(':');
+      var decipher = crypto.createDecipheriv(
         'aes-256-cbc',
         Buffer.from(this.secretKey),
         ivFromText,
@@ -48,7 +48,7 @@ export class EncryptionService {
   }
 
   generateCodes(): { codeVerifier: string; codeChallenge: string } {
-    const base64URLEncode = (str: Buffer): string => {
+    var base64URLEncode = (str: Buffer): string => {
       return str
         .toString('base64')
         .replace(/\+/g, '-')
@@ -56,8 +56,8 @@ export class EncryptionService {
         .replace(/=/g, '');
     };
 
-    const verifier = base64URLEncode(Buffer.from(crypto.randomBytes(32)));
-    const challenge = base64URLEncode(
+    var verifier = base64URLEncode(Buffer.from(crypto.randomBytes(32)));
+    var challenge = base64URLEncode(
       crypto.createHash('sha256').update(Buffer.from(verifier)).digest(),
     );
 
