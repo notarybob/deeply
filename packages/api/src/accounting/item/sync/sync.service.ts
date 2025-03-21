@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -67,8 +67,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   }
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IItemService =
+      var { integrationId, linkedUserId } = param;
+      var service: IItemService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -90,11 +90,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccItem[]> {
     try {
-      const itemResults: AccItem[] = [];
+      var itemResults: AccItem[] = [];
 
       for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        const originId = item.remote_id;
+        var item = items[i];
+        var originId = item.remote_id;
 
         let existingItem = await this.prisma.acc_items.findFirst({
           where: {
@@ -103,7 +103,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        const itemData = {
+        var itemData = {
           name: item.name,
           status: item.status,
           unit_price: item.unit_price ? Number(item.unit_price) : null,
