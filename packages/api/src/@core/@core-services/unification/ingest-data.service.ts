@@ -52,7 +52,7 @@ export class IngestDataService {
         `Syncing ${integrationId} ${commonObject}s for linkedUser ${linkedUserId}`,
       );
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: integrationId,
@@ -67,27 +67,27 @@ export class IngestDataService {
         return;
       }
 
-      const customFieldMappings =
+      var customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           `${vertical}.${commonObject}`,
         );
 
-      const remoteProperties: string[] = customFieldMappings.map(
+      var remoteProperties: string[] = customFieldMappings.map(
         (mapping) => mapping.remote_id,
       );
 
-      const serviceParams = params
+      var serviceParams = params
         .filter((p) => p.shouldPassToService)
         .map((p) => p.param);
 
-      const ingestParams = params
+      var ingestParams = params
         .filter((p) => p.shouldPassToIngest)
         .reduce((acc, p) => ({ ...acc, [p.paramName]: p.param }), {});
 
       // Construct the syncParam object dynamically
-      const syncParam: SyncParam = {
+      var syncParam: SyncParam = {
         linkedUserId,
         custom_properties: remoteProperties,
         custom_field_mappings: customFieldMappings,
@@ -95,7 +95,7 @@ export class IngestDataService {
       };
 
       serviceParams.forEach((param, index) => {
-        const paramName = params[index].paramName;
+        var paramName = params[index].paramName;
         syncParam[paramName] = param;
       });
 
@@ -127,7 +127,7 @@ export class IngestDataService {
           return;
         }
 
-        const sourceObject: U[] = resp.data;
+        var sourceObject: U[] = resp.data;
 
         await this.ingestData<T, U>(
           sourceObject,
@@ -179,7 +179,7 @@ export class IngestDataService {
     }[],
     extraParams?: { [key: string]: any },
   ): Promise<any[]> {
-    const unifiedObject = (await this.coreUnification.unify<U[]>({
+    var unifiedObject = (await this.coreUnification.unify<U[]>({
       sourceObject,
       targetType: commonObject as TargetObject,
       providerName: integrationId,
@@ -191,13 +191,13 @@ export class IngestDataService {
 
     if (unifiedObject == null) {
     }
-    const { linkedUserId, projectId } =
+    var { linkedUserId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionId(
         connectionId,
       );
 
     // insert the data in the DB with the fieldMappings (value table)
-    const data = await this.syncRegistry
+    var data = await this.syncRegistry
       .getService(vertical, commonObject)
       .saveToDb(
         connectionId,
@@ -211,7 +211,7 @@ export class IngestDataService {
     // insert the files in our s3 bucket so we can process them for our RAG
     /*if (vertical === 'filestorage' && commonObject === 'file') {
       try {
-        const filesInfo: FileInfo[] = data
+        var filesInfo: FileInfo[] = data
           .filter((file: FileStorageFile) => file.mime_type !== null)
           .map((file: FileStorageFile) => ({
             id: file.id_fs_file,
@@ -241,7 +241,7 @@ export class IngestDataService {
       }
     }*/
 
-    const event = await this.prisma.events.create({
+    var event = await this.prisma.events.create({
       data: {
         id_connection: connectionId,
         id_project: projectId,
@@ -272,7 +272,7 @@ export class IngestDataService {
     linkedUserId: string,
   ) {
     if (field_mappings && field_mappings.length > 0) {
-      const entity = await this.prisma.entity.create({
+      var entity = await this.prisma.entity.create({
         data: {
           id_entity: uuidv4(),
           ressource_owner_id: ressource_owner_id,
@@ -281,8 +281,8 @@ export class IngestDataService {
         },
       });
 
-      for (const [slug, value] of Object.entries(field_mappings)) {
-        const attribute = await this.prisma.attribute.findFirst({
+      for (var [slug, value] of Object.entries(field_mappings)) {
+        var attribute = await this.prisma.attribute.findFirst({
           where: {
             slug: slug,
             source: originSource,
