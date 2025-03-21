@@ -24,7 +24,7 @@ export class WebhookProcessor {
 
   @Process({ concurrency: 5 })
   async processWebhooks(job: Job) {
-    var id_webhook_delivery = job.data.webhook_delivery_id;
+    const id_webhook_delivery = job.data.webhook_delivery_id;
 
     this.logger.log(`Start delivering webhook id ${id_webhook_delivery}...`);
 
@@ -36,7 +36,7 @@ export class WebhookProcessor {
     });
 
     // Retrieve the webhook delivery attempt
-    var deliveryAttempt =
+    const deliveryAttempt =
       await this.prisma.webhook_delivery_attempts.findUnique({
         where: { id_webhook_delivery_attempt: id_webhook_delivery },
         include: {
@@ -45,7 +45,7 @@ export class WebhookProcessor {
         },
       });
 
-    var event = await this.prisma.events.findUnique({
+    const event = await this.prisma.events.findUnique({
       where: {
         id_event: deliveryAttempt.id_event,
       },
@@ -56,7 +56,7 @@ export class WebhookProcessor {
       try {
         // Send the payload to the endpoint URL
         //create a signature
-        var signature = this.webhookService.generateSignature(
+        const signature = this.webhookService.generateSignature(
           deliveryAttempt.webhooks_payloads.data,
           deliveryAttempt.webhook_endpoints.secret,
         );
@@ -97,7 +97,7 @@ export class WebhookProcessor {
         this.logger.log('Webhook delivered !');
       } catch (error) {
         // TODO: If the POST request fails, set a next retry time and reinsert the job in the queue
-        /*var nextRetry = new Date();
+        /*const nextRetry = new Date();
         nextRetry.setSeconds(nextRetry.getSeconds() + 60); // Retry after 60 seconds
 
         await this.prisma.webhook_delivery_attempts.update({
