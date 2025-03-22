@@ -57,10 +57,10 @@ export class AcceloConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -92,9 +92,9 @@ export class AcceloConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
+      const { linkedUserId, projectId, code } = opts;
       // this.logger.log('linkeduserid is ' + linkedUserId + ' inside callback accelo',);
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'accelo',
@@ -102,18 +102,18 @@ export class AcceloConnectionService extends AbstractBaseConnectionService {
         },
       });
       //reconstruct the redirect URI that was passed in the frontend it must be the same
-      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         grant_type: 'authorization_code',
         redirect_uri: REDIRECT_URI,
         code: code,
       });
-      var res = await axios.post(
+      const res = await axios.post(
         `https://${CREDENTIALS.SUBDOMAIN}.api.accelo.com/oauth2/v0/token`,
         formData.toString(),
         {
@@ -126,13 +126,13 @@ export class AcceloConnectionService extends AbstractBaseConnectionService {
         },
       );
 
-      var data: AcceloOAuthResponse = res.data;
+      const data: AcceloOAuthResponse = res.data;
 
       // Saving the token of customer inside db
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
       //get the right BASE URL API
-      var BASE_API_URL = (
+      const BASE_API_URL = (
         CONNECTORS_METADATA['crm']['accelo'].urls.apiUrl as DynamicApiUrl
       )(CREDENTIALS.SUBDOMAIN);
 
@@ -192,18 +192,18 @@ export class AcceloConnectionService extends AbstractBaseConnectionService {
   // It is not required for Accelo as it does not provide refresh_token
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      var { connectionId, refreshToken, projectId } = opts;
-      var formData = new URLSearchParams({
+      const { connectionId, refreshToken, projectId } = opts;
+      const formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
       });
-      //var subdomain = 'panora'; //TODO: if custom oauth then get the actual domain from customer
-      var CREDENTIALS = (await this.cService.getCredentials(
+      //const subdomain = 'panora'; //TODO: if custom oauth then get the actual domain from customer
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var res = await axios.post(
+      const res = await axios.post(
         `https://${CREDENTIALS.SUBDOMAIN}.api.accelo.com/oauth2/v0/token`,
         formData.toString(),
         {
@@ -215,7 +215,7 @@ export class AcceloConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: AcceloOAuthResponse = res.data;
+      const data: AcceloOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
