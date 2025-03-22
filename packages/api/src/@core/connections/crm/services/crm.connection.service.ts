@@ -33,15 +33,15 @@ export class CrmConnectionsService implements IConnectionCategory {
     type_strategy: 'oauth2' | 'apikey' | 'basic',
   ) {
     try {
-      let serviceName = providerName.toLowerCase();
+      const serviceName = providerName.toLowerCase();
 
-      let service = this.serviceRegistry.getService(serviceName);
+      const service = this.serviceRegistry.getService(serviceName);
 
       if (!service) {
         throw new ReferenceError(`Unknown provider, found ${providerName}`);
       }
-      let data: Connection = await service.handleCallback(callbackOpts);
-      let event = await this.prisma.events.create({
+      const data: Connection = await service.handleCallback(callbackOpts);
+      const event = await this.prisma.events.create({
         data: {
           id_connection: data.id_connection,
           id_project: data.id_project,
@@ -76,12 +76,12 @@ export class CrmConnectionsService implements IConnectionCategory {
     account_url?: string,
   ) {
     try {
-      let serviceName = providerName.toLowerCase();
-      let service = this.serviceRegistry.getService(serviceName);
+      const serviceName = providerName.toLowerCase();
+      const service = this.serviceRegistry.getService(serviceName);
       if (!service) {
         throw new ReferenceError(`Unknown provider, found ${providerName}`);
       }
-      let refreshOpts: RefreshParams = {
+      const refreshOpts: RefreshParams = {
         connectionId: connectionId,
         refreshToken: refresh_token,
         account_url: account_url,
@@ -98,13 +98,13 @@ export class CrmConnectionsService implements IConnectionCategory {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      let connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
-      let serviceName = connection.provider_slug.toLowerCase();
-      let service = this.serviceRegistry.getService(serviceName);
+      const serviceName = connection.provider_slug.toLowerCase();
+      const service = this.serviceRegistry.getService(serviceName);
       if (!service) {
         throw new ReferenceError(`Unknown provider, found ${serviceName}`);
       }
