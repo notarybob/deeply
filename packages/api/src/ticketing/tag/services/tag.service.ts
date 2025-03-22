@@ -20,14 +20,14 @@ export class TagService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingTagOutput> {
     try {
-      var tag = await this.prisma.tcg_tags.findUnique({
+      const tag = await this.prisma.tcg_tags.findUnique({
         where: {
           id_tcg_tag: id_ticketing_tag,
         },
       });
 
       // Fetch field mappings for the ticket
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: tag.id_tcg_tag,
@@ -39,17 +39,17 @@ export class TagService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedTicketingTagOutput format
-      var unifiedTag: UnifiedTicketingTagOutput = {
+      const unifiedTag: UnifiedTicketingTagOutput = {
         id: tag.id_tcg_tag,
         name: tag.name,
         field_mappings: field_mappings,
@@ -59,12 +59,12 @@ export class TagService {
       };
 
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: tag.id_tcg_tag,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
         unifiedTag.remote_data = remote_data;
       }
       await this.prisma.events.create({
@@ -109,7 +109,7 @@ export class TagService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.tcg_tags.findFirst({
+        const isCursorPresent = await this.prisma.tcg_tags.findFirst({
           where: {
             id_connection: connection_id,
             id_tcg_tag: cursor,
@@ -120,7 +120,7 @@ export class TagService {
         }
       }
 
-      var tags = await this.prisma.tcg_tags.findMany({
+      const tags = await this.prisma.tcg_tags.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -146,10 +146,10 @@ export class TagService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedTags: UnifiedTicketingTagOutput[] = await Promise.all(
+      const unifiedTags: UnifiedTicketingTagOutput[] = await Promise.all(
         tags.map(async (tag) => {
           // Fetch field mappings for the tag
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: tag.id_tcg_tag,
@@ -160,7 +160,7 @@ export class TagService {
             },
           });
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -168,7 +168,7 @@ export class TagService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-          var field_mappings = Object.fromEntries(fieldMappingsMap);
+          const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedTicketingTagOutput format
           return {
@@ -185,15 +185,15 @@ export class TagService {
       let res: UnifiedTicketingTagOutput[] = unifiedTags;
 
       if (remote_data) {
-        var remote_array_data: UnifiedTicketingTagOutput[] =
+        const remote_array_data: UnifiedTicketingTagOutput[] =
           await Promise.all(
             res.map(async (tag) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: tag.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...tag, remote_data };
             }),
           );
