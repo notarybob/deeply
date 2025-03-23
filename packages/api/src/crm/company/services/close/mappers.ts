@@ -22,7 +22,7 @@ export class CloseCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<CloseCompanyInput> {
-    var result: CloseCompanyInput = {
+    const result: CloseCompanyInput = {
       name: source?.name,
       addresses: source?.addresses?.map((address) => ({
         address_1: address.street_1,
@@ -36,8 +36,8 @@ export class CloseCompanyMapper implements ICompanyMapper {
     };
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -83,15 +83,15 @@ export class CloseCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmCompanyOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = company[`custom.${mapping.remote_id}`];
       }
     }
     let opts: any = {};
     if (company?.created_by || company?.custom?.close_owner_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         (company?.created_by || company?.custom?.close_owner_id) as string,
         connectionId,
       );
