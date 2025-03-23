@@ -20,12 +20,12 @@ export class CloseNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<CloseNoteInput> {
-    var result: CloseNoteInput = {
+    const result: CloseNoteInput = {
       note: source.content,
     };
 
     if (source.company_id) {
-      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -34,8 +34,8 @@ export class CloseNoteMapper implements INoteMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -78,16 +78,16 @@ export class CloseNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmNoteOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = note[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (note.created_by || note.user_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         note.created_by || note.user_id,
         connectionId,
       );
@@ -99,7 +99,7 @@ export class CloseNoteMapper implements INoteMapper {
       }
     }
     if (note.contact_id) {
-      var contact_id = await this.utils.getContactUuidFromRemoteId(
+      const contact_id = await this.utils.getContactUuidFromRemoteId(
         note.contact_id,
         connectionId,
       );
@@ -111,7 +111,7 @@ export class CloseNoteMapper implements INoteMapper {
       }
     }
     if (note.lead_id) {
-      var lead_id = await this.utils.getCompanyUuidFromRemoteId(
+      const lead_id = await this.utils.getCompanyUuidFromRemoteId(
         note.lead_id,
         connectionId,
       );
