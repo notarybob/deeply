@@ -27,20 +27,20 @@ export class PipedriveService implements IStageService {
 
   async sync(data: SyncParam): Promise<ApiResponse<PipedriveStageOutput[]>> {
     try {
-      let { linkedUserId, deal_id } = data;
+      const { linkedUserId, deal_id } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      let res = await this.prisma.crm_deals.findUnique({
+      const res = await this.prisma.crm_deals.findUnique({
         where: { id_crm_deal: deal_id as string },
       });
 
-      let deals = await axios.get(`${connection.account_url}/v1/deals`, {
+      const deals = await axios.get(`${connection.account_url}/v1/deals`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -49,10 +49,10 @@ export class PipedriveService implements IStageService {
         },
       });
 
-      let deal = deals.data.data.find(
+      const deal = deals.data.data.find(
         (item) => String(item.id) === res.remote_id,
       );
-      let resp = await axios.get(`${connection.account_url}/v1/stages`, {
+      const resp = await axios.get(`${connection.account_url}/v1/stages`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -60,9 +60,9 @@ export class PipedriveService implements IStageService {
           )}`,
         },
       });
-      let remote_stage_id: number = deal.stage_id;
+      const remote_stage_id: number = deal.stage_id;
       //filter stages for the specific deal_id
-      let finalRes = resp.data.data.find(
+      const finalRes = resp.data.data.find(
         (item) => item.id === remote_stage_id,
       );
       return {
