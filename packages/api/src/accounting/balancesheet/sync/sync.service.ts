@@ -40,15 +40,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = ACCOUNTING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = ACCOUNTING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   }
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IBalanceSheetService =
+      var { integrationId, linkedUserId } = param;
+      var service: IBalanceSheetService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -91,11 +91,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccBalanceSheet[]> {
     try {
-      const balanceSheetResults: AccBalanceSheet[] = [];
+      var balanceSheetResults: AccBalanceSheet[] = [];
 
       for (let i = 0; i < balanceSheets.length; i++) {
-        const balanceSheet = balanceSheets[i];
-        const originId = balanceSheet.remote_id;
+        var balanceSheet = balanceSheets[i];
+        var originId = balanceSheet.remote_id;
 
         let existingBalanceSheet =
           await this.prisma.acc_balance_sheets.findFirst({
@@ -105,7 +105,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
             },
           });
 
-        const balanceSheetData = {
+        var balanceSheetData = {
           name: balanceSheet.name,
           currency: balanceSheet.currency as CurrencyCode,
           id_acc_company_info: balanceSheet.company_info_id,
@@ -174,8 +174,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
     lineItems: LineItem[],
     balanceSheetId: string,
   ): Promise<void> {
-    for (const lineItem of lineItems) {
-      const lineItemData = {
+    for (var lineItem of lineItems) {
+      var lineItemData = {
         name: lineItem.name,
         value: lineItem.value ? Number(lineItem.value) : null,
         parent_item: lineItem.parent_item,
@@ -184,7 +184,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         modified_at: new Date(),
       };
 
-      const existingReportItem =
+      var existingReportItem =
         await this.prisma.acc_balance_sheets_report_items.findFirst({
           where: {
             remote_id: lineItem.remote_id,
@@ -211,7 +211,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
     }
 
     // Remove any existing report items that are not in the current set
-    const currentRemoteIds = lineItems.map((item) => item.remote_id);
+    var currentRemoteIds = lineItems.map((item) => item.remote_id);
     await this.prisma.acc_balance_sheets_report_items.deleteMany({
       where: {
         remote_id: {
