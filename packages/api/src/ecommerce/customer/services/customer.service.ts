@@ -19,7 +19,7 @@ export class CustomerService {
     remote_data?: boolean,
   ): Promise<UnifiedEcommerceCustomerOutput> {
     try {
-      const customer = await this.prisma.ecom_customers.findUnique({
+      var customer = await this.prisma.ecom_customers.findUnique({
         where: {
           id_ecom_customer: id_ecommerce_customer,
         },
@@ -33,7 +33,7 @@ export class CustomerService {
       }
 
       // Fetch field mappings for the customer
-      const values = await this.prisma.value.findMany({
+      var values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: customer.id_ecom_customer,
@@ -45,17 +45,17 @@ export class CustomerService {
       });
 
       // Create a map to store unique field mappings
-      const fieldMappingsMap = new Map();
+      var fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      const field_mappings = Object.fromEntries(fieldMappingsMap);
+      var field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedEcommerceCustomerOutput format
-      const UnifiedEcommerceCustomer: UnifiedEcommerceCustomerOutput = {
+      var UnifiedEcommerceCustomer: UnifiedEcommerceCustomerOutput = {
         id: customer.id_ecom_customer,
         email: customer.email,
         first_name: customer.first_name,
@@ -70,12 +70,12 @@ export class CustomerService {
 
       let res: UnifiedEcommerceCustomerOutput = UnifiedEcommerceCustomer;
       if (remote_data) {
-        const resp = await this.prisma.remote_data.findFirst({
+        var resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: customer.id_ecom_customer,
           },
         });
-        const remote_data = JSON.parse(resp.data);
+        var remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -122,7 +122,7 @@ export class CustomerService {
       let next_cursor = null;
 
       if (cursor) {
-        const isCursorPresent = await this.prisma.ecom_customers.findFirst({
+        var isCursorPresent = await this.prisma.ecom_customers.findFirst({
           where: {
             id_connection: connection_id,
             id_ecom_customer: cursor,
@@ -133,7 +133,7 @@ export class CustomerService {
         }
       }
 
-      const customers = await this.prisma.ecom_customers.findMany({
+      var customers = await this.prisma.ecom_customers.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -162,10 +162,10 @@ export class CustomerService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      const UnifiedEcommerceCustomers: UnifiedEcommerceCustomerOutput[] = await Promise.all(
+      var UnifiedEcommerceCustomers: UnifiedEcommerceCustomerOutput[] = await Promise.all(
         customers.map(async (customer) => {
           // Fetch field mappings for the customer
-          const values = await this.prisma.value.findMany({
+          var values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: customer.id_ecom_customer,
@@ -177,14 +177,14 @@ export class CustomerService {
           });
 
           // Create a map to store unique field mappings
-          const fieldMappingsMap = new Map();
+          var fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
           });
 
           // Convert the map to an array of objects
-          const field_mappings = Object.fromEntries(fieldMappingsMap);
+          var field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedEcommerceCustomerOutput format
           return {
@@ -205,14 +205,14 @@ export class CustomerService {
       let res: UnifiedEcommerceCustomerOutput[] = UnifiedEcommerceCustomers;
 
       if (remote_data) {
-        const remote_array_data: UnifiedEcommerceCustomerOutput[] = await Promise.all(
+        var remote_array_data: UnifiedEcommerceCustomerOutput[] = await Promise.all(
           res.map(async (customer) => {
-            const resp = await this.prisma.remote_data.findFirst({
+            var resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: customer.id,
               },
             });
-            const remote_data = JSON.parse(resp.data);
+            var remote_data = JSON.parse(resp.data);
             return { ...customer, remote_data };
           }),
         );
