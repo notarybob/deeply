@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = ACCOUNTING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = ACCOUNTING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IAttachmentService =
+      const { integrationId, linkedUserId } = param;
+      const service: IAttachmentService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -91,11 +91,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<AccAttachment[]> {
     try {
-      var attachmentResults: AccAttachment[] = [];
+      const attachmentResults: AccAttachment[] = [];
 
       for (let i = 0; i < attachments.length; i++) {
-        var attachment = attachments[i];
-        var originId = attachment.remote_id;
+        const attachment = attachments[i];
+        const originId = attachment.remote_id;
 
         let existingAttachment = await this.prisma.acc_attachments.findFirst({
           where: {
@@ -104,7 +104,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           },
         });
 
-        var attachmentData = {
+        const attachmentData = {
           file_name: attachment.file_name,
           file_url: attachment.file_url,
           id_acc_account: attachment.account_id,
