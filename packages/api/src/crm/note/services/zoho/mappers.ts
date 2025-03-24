@@ -20,7 +20,7 @@ export class ZohoNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<ZohoNoteInput> {
-    const module = source.deal_id
+    let module = source.deal_id
       ? {
           api_name: 'Deals',
           id: await this.utils.getRemoteIdFromDealUuid(source.deal_id),
@@ -37,7 +37,7 @@ export class ZohoNoteMapper implements INoteMapper {
         }
       : { api_name: null, id: null };
 
-    const result: ZohoNoteInput = {
+    let result: ZohoNoteInput = {
       Note_Content: source.content,
       Parent_Id: {
         module: {
@@ -48,8 +48,8 @@ export class ZohoNoteMapper implements INoteMapper {
     };
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (let [k, v] of Object.entries(source.field_mappings)) {
+        let mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -92,37 +92,37 @@ export class ZohoNoteMapper implements INoteMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmNoteOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = note[mapping.remote_id];
       }
     }
 
-    const res: UnifiedCrmNoteOutput = {
+    let res: UnifiedCrmNoteOutput = {
       remote_id: note.id,
       remote_data: note,
       content: note.Note_Content,
       field_mappings,
     };
 
-    const module = note.Parent_Id;
+    let module = note.Parent_Id;
     if (module && module.id) {
-      const a = await this.utils.getDealUuidFromRemoteId(
+      let a = await this.utils.getDealUuidFromRemoteId(
         module.id,
         connectionId,
       );
       if (a) {
         res.deal_id = a;
       } else {
-        const b = await this.utils.getCompanyUuidFromRemoteId(
+        let b = await this.utils.getCompanyUuidFromRemoteId(
           module.id,
           connectionId,
         );
         if (b) {
           res.company_id = b;
         } else {
-          const c = await this.utils.getContactUuidFromRemoteId(
+          let c = await this.utils.getContactUuidFromRemoteId(
             module.id,
             connectionId,
           );
