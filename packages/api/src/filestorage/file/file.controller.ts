@@ -52,7 +52,7 @@ export class FileController {
     @Query() query: QueryDto,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
@@ -81,11 +81,11 @@ export class FileController {
     @Query() query: QueryDto,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
-      let { remote_data, limit, cursor } = query;
+      const { remote_data, limit, cursor } = query;
 
       return this.fileService.getFiles(
         connectionId,
@@ -135,7 +135,7 @@ export class FileController {
     @Param('id') id: string,
     @Query('remote_data') remote_data?: boolean,
   ) {
-    let { linkedUserId, remoteSource, connectionId, projectId } =
+    const { linkedUserId, remoteSource, connectionId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionToken(
         connection_token,
       );
@@ -178,7 +178,7 @@ export class FileController {
     @Query('remote_data') remote_data?: boolean,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
