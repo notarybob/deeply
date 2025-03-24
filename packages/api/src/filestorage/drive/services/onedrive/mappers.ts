@@ -65,14 +65,14 @@ export class OnedriveDriveMapper implements IDriveMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageDriveOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = drive[mapping.remote_id];
       }
     }
 
-    let result: UnifiedFilestorageDriveOutput = {
+    const result: UnifiedFilestorageDriveOutput = {
       remote_id: drive.id,
       remote_data: drive,
       name: drive.name,
