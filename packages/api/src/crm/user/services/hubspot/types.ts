@@ -13,7 +13,7 @@ export interface HubspotUserOutput {
   [key: string]: any;
 }
 
-export const commonUserHubspotProperties = {
+export let commonUserHubspotProperties = {
   email: '',
   firstName: '',
   lastName: '',
