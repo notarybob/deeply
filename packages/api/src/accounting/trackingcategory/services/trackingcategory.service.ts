@@ -28,7 +28,7 @@ export class TrackingCategoryService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingTrackingcategoryOutput> {
     try {
-      let trackingCategory =
+      const trackingCategory =
         await this.prisma.acc_tracking_categories.findUnique({
           where: { id_acc_tracking_category: id_acc_tracking_category },
         });
@@ -39,7 +39,7 @@ export class TrackingCategoryService {
         );
       }
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: trackingCategory.id_acc_tracking_category,
@@ -48,11 +48,11 @@ export class TrackingCategoryService {
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedTrackingCategory: UnifiedAccountingTrackingcategoryOutput = {
+      const unifiedTrackingCategory: UnifiedAccountingTrackingcategoryOutput = {
         id: trackingCategory.id_acc_tracking_category,
         name: trackingCategory.name,
         status: trackingCategory.status,
@@ -65,7 +65,7 @@ export class TrackingCategoryService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: trackingCategory.id_acc_tracking_category,
           },
@@ -111,7 +111,7 @@ export class TrackingCategoryService {
     previous_cursor: string | null;
   }> {
     try {
-      let trackingCategories =
+      const trackingCategories =
         await this.prisma.acc_tracking_categories.findMany({
           take: limit + 1,
           cursor: cursor ? { id_acc_tracking_category: cursor } : undefined,
@@ -119,12 +119,12 @@ export class TrackingCategoryService {
           orderBy: { created_at: 'asc' },
         });
 
-      let hasNextPage = trackingCategories.length > limit;
+      const hasNextPage = trackingCategories.length > limit;
       if (hasNextPage) trackingCategories.pop();
 
-      let unifiedTrackingCategories = await Promise.all(
+      const unifiedTrackingCategories = await Promise.all(
         trackingCategories.map(async (trackingCategory) => {
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: trackingCategory.id_acc_tracking_category,
@@ -133,11 +133,11 @@ export class TrackingCategoryService {
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedTrackingCategory: UnifiedAccountingTrackingcategoryOutput =
+          const unifiedTrackingCategory: UnifiedAccountingTrackingcategoryOutput =
             {
               id: trackingCategory.id_acc_tracking_category,
               name: trackingCategory.name,
@@ -151,7 +151,7 @@ export class TrackingCategoryService {
             };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: trackingCategory.id_acc_tracking_category,
               },
