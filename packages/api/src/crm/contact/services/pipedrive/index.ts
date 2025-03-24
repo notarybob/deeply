@@ -30,7 +30,7 @@ export class PipedriveService implements IContactService {
     linkedUserId: string,
   ): Promise<ApiResponse<PipedriveContactOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
@@ -38,7 +38,7 @@ export class PipedriveService implements IContactService {
         },
       });
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v1/persons`,
         JSON.stringify(contactData),
         {
@@ -62,16 +62,16 @@ export class PipedriveService implements IContactService {
 
   async sync(data: SyncParam): Promise<ApiResponse<PipedriveContactOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      const resp = await axios.get(`${connection.account_url}/v1/persons`, {
+      let resp = await axios.get(`${connection.account_url}/v1/persons`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
