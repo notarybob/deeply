@@ -27,9 +27,9 @@ export class FrontService implements IAccountService {
 
   async sync(data: SyncParam): Promise<ApiResponse<FrontAccountOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'front',
@@ -37,7 +37,7 @@ export class FrontService implements IAccountService {
         },
       });
 
-      let resp = await axios.get(`${connection.account_url}/accounts`, {
+      const resp = await axios.get(`${connection.account_url}/accounts`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
