@@ -20,13 +20,13 @@ export class OAuthTokenRefreshService implements OnModuleInit {
   // This will run every 30 minutes
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handleCron() {
-    let now = new Date();
+    const now = new Date();
 
     // refresh tokens that expire in less than 48 hours from now
     // Keep the time window wide to be able to react to incidents
-    let timeWindow = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+    const timeWindow = new Date(now.getTime() + 48 * 60 * 60 * 1000);
 
-    let connectionsToRefresh = await this.prisma.connections.findMany({
+    const connectionsToRefresh = await this.prisma.connections.findMany({
       where: {
         expiration_timestamp: {
           lte: timeWindow.toISOString(),
@@ -34,10 +34,10 @@ export class OAuthTokenRefreshService implements OnModuleInit {
       },
     });
 
-    for (let connection of connectionsToRefresh) {
+    for (const connection of connectionsToRefresh) {
       try {
         if (connection.refresh_token) {
-          let account_url =
+          const account_url =
             connection.provider_slug === 'zoho' ? connection.account_url : '';
 
           await this.categoryConnectionRegistry
