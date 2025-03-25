@@ -8,4 +8,4 @@ export enum ConnectorCategory {
     Ecommerce = 'ecommerce'
 }
 
-export const categoriesVerticals: ConnectorCategory[] = Object.values(ConnectorCategory);
+export let categoriesVerticals: ConnectorCategory[] = Object.values(ConnectorCategory);
