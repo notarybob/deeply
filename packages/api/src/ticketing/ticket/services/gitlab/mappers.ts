@@ -35,11 +35,11 @@ export class GitlabTicketMapper implements ITicketMapper {
     }[],
     connectionId?: string,
   ): Promise<GitlabTicketInput> {
-    const remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
+    var remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
       source.collections[0] as string,
     );
 
-    const result: GitlabTicketInput = {
+    var result: GitlabTicketInput = {
       title: source.name,
       description: source.description ? source.description : null,
       project_id: Number(remote_project_id),
@@ -52,20 +52,20 @@ export class GitlabTicketMapper implements ITicketMapper {
     }
 
     if (source.assigned_to && source.assigned_to.length > 0) {
-      const data = await this.utils.getAsigneeRemoteIdFromUserUuid(
+      var data = await this.utils.getAsigneeRemoteIdFromUserUuid(
         source.assigned_to[0],
       );
       result.assignee = {
         id: Number(data),
       };
     }
-    const tags = source.tags as string[];
+    var tags = source.tags as string[];
     if (tags) {
       result.labels = tags;
     }
 
     if (source.comment) {
-      const comment =
+      var comment =
         (await this.coreUnificationService.desunify<UnifiedTicketingCommentOutput>({
           sourceObject: source.comment,
           targetType: TicketingObject.comment,
@@ -80,8 +80,8 @@ export class GitlabTicketMapper implements ITicketMapper {
     // TODO - Custom fields mapping
     // if (customFieldMappings && source.field_mappings) {
     //   result.meta = {}; // Ensure meta exists
-    //   for (const [k, v] of Object.entries(source.field_mappings)) {
-    //     const mapping = customFieldMappings.find(
+    //   for (var [k, v] of Object.entries(source.field_mappings)) {
+    //     var mapping = customFieldMappings.find(
     //       (mapping) => mapping.slug === k,
     //     );
     //     if (mapping) {
@@ -101,7 +101,7 @@ export class GitlabTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingTicketOutput | UnifiedTicketingTicketOutput[]> {
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    var sourcesArray = Array.isArray(source) ? source : [source];
     return Promise.all(
       sourcesArray.map(async (ticket) =>
         this.mapSingleTicketToUnified(
@@ -121,9 +121,9 @@ export class GitlabTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingTicketOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = ticket[mapping.remote_id];
       }
     }
@@ -135,7 +135,7 @@ export class GitlabTicketMapper implements ITicketMapper {
 
     if (ticket.assignee && ticket.assignee[0]) {
       //fetch the right assignee uuid from remote id
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         String(ticket.assignee[0].id),
         connectionId,
       );
@@ -145,7 +145,7 @@ export class GitlabTicketMapper implements ITicketMapper {
     }
 
     if (ticket.labels) {
-      const tags = await this.ingestService.ingestData<
+      var tags = await this.ingestService.ingestData<
         UnifiedTicketingTagOutput,
         GitlabTagOutput
       >(
@@ -168,7 +168,7 @@ export class GitlabTicketMapper implements ITicketMapper {
     }
 
     if (ticket.project_id) {
-      const tcg_collection_id = await this.utils.getCollectionUuidFromRemoteId(
+      var tcg_collection_id = await this.utils.getCollectionUuidFromRemoteId(
         String(ticket.project_id),
         connectionId,
       );
@@ -177,7 +177,7 @@ export class GitlabTicketMapper implements ITicketMapper {
       }
     }
 
-    const unifiedTicket: UnifiedTicketingTicketOutput = {
+    var unifiedTicket: UnifiedTicketingTicketOutput = {
       remote_id: String(ticket.id),
       remote_data: ticket,
       name: ticket.title,
