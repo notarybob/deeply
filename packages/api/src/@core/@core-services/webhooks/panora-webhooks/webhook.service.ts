@@ -44,7 +44,7 @@ export class WebhookService {
           if (value.toJSON && typeof value.toJSON === 'function') {
             return value.toJSON();
           }
-          const proto = Object.getPrototypeOf(value);
+          let proto = Object.getPrototypeOf(value);
           if (
             proto &&
             proto.constructor &&
@@ -142,7 +142,7 @@ export class WebhookService {
       );
       //just create an entry in webhook
       //search if an endpoint webhook exists for such a projectId and such a scope
-      const webhooks = await this.prisma.webhook_endpoints.findMany({
+      let webhooks = await this.prisma.webhook_endpoints.findMany({
         where: {
           id_project: projectId,
           active: true,
@@ -152,8 +152,8 @@ export class WebhookService {
       // we dont deliver the webhook
       if (!webhooks) return;
 
-      const webhook = webhooks.find((wh) => {
-        const scopes = wh.scope;
+      let webhook = webhooks.find((wh) => {
+        let scopes = wh.scope;
         return scopes.includes(eventType);
       });
 
@@ -161,8 +161,8 @@ export class WebhookService {
       if (!webhook) return;
 
       this.logger.log('handling webhook payload....');
-      const serializedData = this.safeSerialize(data);
-      const w_payload = await this.prisma.webhooks_payloads.create({
+      let serializedData = this.safeSerialize(data);
+      let w_payload = await this.prisma.webhooks_payloads.create({
         data: {
           id_webhooks_payload: uuidv4(),
           data: JSON.stringify(serializedData),
@@ -170,7 +170,7 @@ export class WebhookService {
       });
       this.logger.log('handling webhook delivery....');
 
-      const w_delivery = await this.prisma.webhook_delivery_attempts.create({
+      let w_delivery = await this.prisma.webhook_delivery_attempts.create({
         data: {
           id_webhook_delivery_attempt: uuidv4(),
           id_event: eventId,
@@ -201,7 +201,7 @@ export class WebhookService {
       this.logger.log('handling webhook....');
       //just create an entry in webhook
       //search if an endpoint webhook exists for such a projectId and such a scope
-      const webhooks = await this.prisma.webhook_endpoints.findMany({
+      let webhooks = await this.prisma.webhook_endpoints.findMany({
         where: {
           id_project: projectId,
           active: true,
@@ -209,8 +209,8 @@ export class WebhookService {
       });
       if (!webhooks) return;
 
-      const webhook = webhooks.find((wh) => {
-        const scopes = wh.scope;
+      let webhook = webhooks.find((wh) => {
+        let scopes = wh.scope;
         return scopes.includes(eventType);
       });
 
@@ -218,7 +218,7 @@ export class WebhookService {
 
       this.logger.log('handling webhook payload....');
 
-      const w_payload = await this.prisma.webhooks_payloads.create({
+      let w_payload = await this.prisma.webhooks_payloads.create({
         data: {
           id_webhooks_payload: uuidv4(),
           data: JSON.stringify(data),
@@ -226,7 +226,7 @@ export class WebhookService {
       });
       this.logger.log('handling webhook delivery....');
 
-      const w_delivery = await this.prisma.webhook_delivery_attempts.create({
+      let w_delivery = await this.prisma.webhook_delivery_attempts.create({
         data: {
           id_webhook_delivery_attempt: uuidv4(),
           id_event: eventId,
@@ -240,7 +240,7 @@ export class WebhookService {
       this.logger.log('sending the webhook to the client ');
       // we send the delivery webhook to the queue so it can be processed by our dispatcher worker
       // Retrieve the webhook delivery attempt details
-      const deliveryAttempt =
+      let deliveryAttempt =
         await this.prisma.webhook_delivery_attempts.findUnique({
           where: {
             id_webhook_delivery_attempt: w_delivery.id_webhook_delivery_attempt,
@@ -255,7 +255,7 @@ export class WebhookService {
       if (deliveryAttempt.webhook_endpoints.active) {
         try {
           // Send the payload to the endpoint URL
-          const response = await axios.post(
+          let response = await axios.post(
             deliveryAttempt.webhook_endpoints.url,
             {
               id_event: deliveryAttempt.id_event,
@@ -291,7 +291,7 @@ export class WebhookService {
           });
         } catch (error) {
           // If the POST request fails, set a next retry time and reinsert the job in the queue
-          const nextRetry = new Date();
+          let nextRetry = new Date();
           nextRetry.setSeconds(nextRetry.getSeconds() + 60); // Retry after 60 seconds
 
           await this.prisma.webhook_delivery_attempts.update({
@@ -335,7 +335,7 @@ export class WebhookService {
     secret: string,
   ) {
     try {
-      const expected = this.generateSignature(payload.data, secret);
+      let expected = this.generateSignature(payload.data, secret);
       if (expected !== signature) {
         throw new WebhooksError({
           name: 'INVALID_SIGNATURE_ERROR',
