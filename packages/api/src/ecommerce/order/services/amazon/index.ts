@@ -16,7 +16,7 @@ type Marketplace = {
   countryCode: string;
 };
 
-const marketplaces: Marketplace[] = [
+let marketplaces: Marketplace[] = [
   { country: 'Canada', marketplaceId: 'A2EUQ1WTGCTBG2', countryCode: 'CA' },
   {
     country: 'United States of America',
@@ -81,19 +81,19 @@ export class AmazonService implements IOrderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<AmazonOrderOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'amazon',
           vertical: 'ecommerce',
         },
       });
-      const specificMarketplaceIds = marketplaces.map(
+      let specificMarketplaceIds = marketplaces.map(
         (marketplace) => marketplace.marketplaceId,
       );
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/orders/v0/orders?MarketplaceIds=${specificMarketplaceIds}&CreatedAfter=2010-10-10`,
         {
           headers: {
@@ -104,10 +104,10 @@ export class AmazonService implements IOrderService {
           },
         },
       );
-      const orders: AmazonOrderOutput[] = resp.data.payload.Orders;
-      const ordersWithLineItems = await Promise.all(
+      let orders: AmazonOrderOutput[] = resp.data.payload.Orders;
+      let ordersWithLineItems = await Promise.all(
         orders.map(async (order) => {
-          const res = await axios.get(
+          let res = await axios.get(
             `${connection.account_url}/orders/${order.AmazonOrderId}/orderItems`,
             {
               headers: {
