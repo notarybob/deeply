@@ -29,7 +29,7 @@ export class BoxFolderMapper implements IFolderMapper {
       remote_id: string;
     }[],
   ): Promise<BoxFolderInput> {
-    const result = {
+    var result = {
       name: source.name,
       parent: {
         id: await this.utils.getRemoteFolderParentId(source.parent_folder_id),
@@ -37,8 +37,8 @@ export class BoxFolderMapper implements IFolderMapper {
     };
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -84,16 +84,16 @@ export class BoxFolderMapper implements IFolderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageFolderOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = folder[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (folder.shared_link) {
-      const sharedLinks = (await this.coreUnificationService.unify<
+      var sharedLinks = (await this.coreUnificationService.unify<
         OriginalSharedLinkOutput[]
       >({
         sourceObject: [folder.shared_link],
