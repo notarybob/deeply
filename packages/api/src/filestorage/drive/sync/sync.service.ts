@@ -39,15 +39,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = FILESTORAGE_PROVIDERS;
-          for (const provider of providers) {
+          var providers = FILESTORAGE_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IDriveService =
+      var { integrationId, linkedUserId } = param;
+      var service: IDriveService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -91,20 +91,20 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<FileStorageDrive[]> {
     try {
-      const drives_results: FileStorageDrive[] = [];
+      var drives_results: FileStorageDrive[] = [];
 
-      const updateOrCreateDrive = async (
+      var updateOrCreateDrive = async (
         drive: UnifiedFilestorageDriveOutput,
         originId: string,
       ) => {
-        const existingDrive = await this.prisma.fs_drives.findFirst({
+        var existingDrive = await this.prisma.fs_drives.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        const baseData: any = {
+        var baseData: any = {
           name: drive.name ?? null,
           remote_created_at: drive.remote_created_at ?? null,
           drive_url: drive.drive_url ?? null,
@@ -132,15 +132,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < drives.length; i++) {
-        const drive = drives[i];
-        const originId = drive.remote_id;
+        var drive = drives[i];
+        var originId = drive.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        const res = await updateOrCreateDrive(drive, originId);
-        const drive_id = res.id_fs_drive;
+        var res = await updateOrCreateDrive(drive, originId);
+        var drive_id = res.id_fs_drive;
         drives_results.push(res);
 
         // Process field mappings
