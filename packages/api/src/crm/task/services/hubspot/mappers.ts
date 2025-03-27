@@ -39,7 +39,7 @@ export class HubspotTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<HubspotTaskInput> {
-    var result: any = {
+    const result: any = {
       properties: {
         hs_task_subject: source.subject || null,
         hs_task_body: source.content || null,
@@ -54,7 +54,7 @@ export class HubspotTaskMapper implements ITaskMapper {
     }
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.hubspot_owner_id = owner_id;
       }
@@ -62,7 +62,7 @@ export class HubspotTaskMapper implements ITaskMapper {
 
     if (source.deal_id) {
       result.associations = result.associations ? [...result.associations] : [];
-      var id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      const id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       result.associations.push({
         to: {
           id: id,
@@ -78,7 +78,7 @@ export class HubspotTaskMapper implements ITaskMapper {
 
     if (source.company_id) {
       result.associations = result.associations ? [...result.associations] : [];
-      var id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
+      const id = await this.utils.getRemoteIdFromCompanyUuid(source.company_id);
       result.associations.push({
         to: {
           id: id,
@@ -93,8 +93,8 @@ export class HubspotTaskMapper implements ITaskMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -137,15 +137,15 @@ export class HubspotTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmTaskOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = task.properties[mapping.remote_id];
       }
     }
     let opts: any = {};
     if (task.properties.hubspot_owner_id) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         task.properties.hubspot_owner_id,
         connectionId,
       );
@@ -161,14 +161,14 @@ export class HubspotTaskMapper implements ITaskMapper {
     }
     if (task.associations) {
       if (task.associations.deals) {
-        var remote_id = task.associations.deals.results[0].id;
+        const remote_id = task.associations.deals.results[0].id;
         opts.deal_id = await this.utils.getDealUuidFromRemoteId(
           remote_id,
           connectionId,
         );
       }
       if (task.associations.companies) {
-        var remote_id = task.associations.companies.results[0].id;
+        const remote_id = task.associations.companies.results[0].id;
         opts.company_id = await this.utils.getCompanyUuidFromRemoteId(
           remote_id,
           connectionId,
