@@ -26,10 +26,10 @@ export class BoxService implements IFileService {
 
   async sync(data: SyncParam): Promise<ApiResponse<BoxFileOutput[]>> {
     try {
-      const { linkedUserId, id_folder } = data;
+      let { linkedUserId, id_folder } = data;
       if (!id_folder) return;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'box',
@@ -37,13 +37,13 @@ export class BoxService implements IFileService {
         },
       });
 
-      const folder = await this.prisma.fs_folders.findUnique({
+      let folder = await this.prisma.fs_folders.findUnique({
         where: {
           id_fs_folder: id_folder as string,
         },
       });
 
-      const resp = await axios.get(
+      let resp = await axios.get(
         `${connection.account_url}/2.0/folders/${folder.remote_id}/items`,
         {
           headers: {
@@ -54,7 +54,7 @@ export class BoxService implements IFileService {
           },
         },
       );
-      const files: BoxFileOutput[] = resp.data.entries.filter(
+      let files: BoxFileOutput[] = resp.data.entries.filter(
         (elem) => elem.type == 'file',
       );
       this.logger.log(`Synced box files !`);
@@ -70,7 +70,7 @@ export class BoxService implements IFileService {
   }
 
   async downloadFile(fileId: string, connection: any): Promise<Buffer> {
-    const response = await axios.get(
+    let response = await axios.get(
       `${connection.account_url}/2.0/files/${fileId}/content`,
       {
         headers: {
