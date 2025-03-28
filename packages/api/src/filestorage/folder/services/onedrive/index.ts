@@ -42,7 +42,7 @@ export class OnedriveService implements IFolderService {
     linkedUserId: string,
   ): Promise<ApiResponse<OnedriveFolderOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'onedrive',
@@ -54,7 +54,7 @@ export class OnedriveService implements IFolderService {
         throw new Error('OneDrive connection not found.');
       }
 
-      const config: AxiosRequestConfig = {
+      var config: AxiosRequestConfig = {
         timeout: 30000,
         method: 'post',
         url: `${connection.account_url}/v1.0/drive/root/children`,
@@ -71,7 +71,7 @@ export class OnedriveService implements IFolderService {
         },
       };
 
-      const resp: AxiosResponse = await this.makeRequestWithRetry(config);
+      var resp: AxiosResponse = await this.makeRequestWithRetry(config);
 
       return {
         data: resp.data,
@@ -87,9 +87,9 @@ export class OnedriveService implements IFolderService {
   async sync(data: SyncParam): Promise<ApiResponse<OnedriveFolderOutput[]>> {
     try {
       this.logger.log('Syncing OneDrive folders');
-      const { linkedUserId } = data;
+      var { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'onedrive',
@@ -101,7 +101,7 @@ export class OnedriveService implements IFolderService {
         throw new Error('OneDrive connection not found.');
       }
 
-      const lastSyncTime = await this.getLastSyncTime(connection.id_connection);
+      var lastSyncTime = await this.getLastSyncTime(connection.id_connection);
 
       let folders;
 
@@ -139,7 +139,7 @@ export class OnedriveService implements IFolderService {
     connection: Connection,
   ): Promise<OnedriveFolderOutput[]> {
     try {
-      const rootConfig: AxiosRequestConfig = {
+      var rootConfig: AxiosRequestConfig = {
         method: 'get',
         url: `${connection.account_url}/v1.0/me/drive/root`,
         headers: {
@@ -150,7 +150,7 @@ export class OnedriveService implements IFolderService {
         },
       };
 
-      const rootFolderData: AxiosResponse = await this.makeRequestWithRetry(
+      var rootFolderData: AxiosResponse = await this.makeRequestWithRetry(
         rootConfig,
       );
 
@@ -182,7 +182,7 @@ export class OnedriveService implements IFolderService {
           break;
         }
 
-        const nestedFoldersPromises: Promise<OnedriveFolderOutput[]>[] =
+        var nestedFoldersPromises: Promise<OnedriveFolderOutput[]>[] =
           batch.map(
             async (folder: {
               remote_folder_id: string;
@@ -190,7 +190,7 @@ export class OnedriveService implements IFolderService {
               internal_parent_folder_id: string;
             }) => {
               try {
-                const childrenConfig: AxiosRequestConfig = {
+                var childrenConfig: AxiosRequestConfig = {
                   timeout: 30000,
                   method: 'get',
                   url: `${connection.account_url}/v1.0/me/drive/items/${folder.remote_folder_id}/children`,
@@ -202,11 +202,11 @@ export class OnedriveService implements IFolderService {
                   },
                 };
 
-                const resp: AxiosResponse = await this.makeRequestWithRetry(
+                var resp: AxiosResponse = await this.makeRequestWithRetry(
                   childrenConfig,
                 );
 
-                const folders: OnedriveFolderOutput[] = resp.data.value.filter(
+                var folders: OnedriveFolderOutput[] = resp.data.value.filter(
                   (driveItem: any) => driveItem.folder,
                 );
 
@@ -217,7 +217,7 @@ export class OnedriveService implements IFolderService {
                 }));
               } catch (error: any) {
                 if (error.response && error.response.status === 404) {
-                  const f = await this.prisma.fs_folders.findFirst({
+                  var f = await this.prisma.fs_folders.findFirst({
                     where: {
                       remote_id: folder.remote_folder_id,
                       id_connection: connection.id_connection,
@@ -234,7 +234,7 @@ export class OnedriveService implements IFolderService {
             },
           );
 
-        const nestedFolders: OnedriveFolderOutput[][] = await Promise.all(
+        var nestedFolders: OnedriveFolderOutput[][] = await Promise.all(
           nestedFoldersPromises,
         );
 
@@ -264,7 +264,7 @@ export class OnedriveService implements IFolderService {
       connection.account_url
     }/v1.0/me/drive/root/delta?token=${lastSyncTime.toISOString()}`;
 
-    const deltaConfig: AxiosRequestConfig = {
+    var deltaConfig: AxiosRequestConfig = {
       timeout: 30000,
       method: 'get',
       url: deltaLink,
@@ -276,10 +276,10 @@ export class OnedriveService implements IFolderService {
       },
     };
 
-    const onedriveFolders: OnedriveFolderOutput[] = [];
+    var onedriveFolders: OnedriveFolderOutput[] = [];
 
     do {
-      const deltaResponse = await this.makeRequestWithRetry(deltaConfig);
+      var deltaResponse = await this.makeRequestWithRetry(deltaConfig);
       if (!deltaResponse.data.value) {
         break;
       }
@@ -290,29 +290,29 @@ export class OnedriveService implements IFolderService {
     } while (deltaLink);
 
     // Sort folders by lastModifiedDateTime in descending order (newest first)
-    const sortedFolders = [...onedriveFolders].sort((a, b) => {
-      const dateA = new Date(a.lastModifiedDateTime).getTime();
-      const dateB = new Date(b.lastModifiedDateTime).getTime();
+    var sortedFolders = [...onedriveFolders].sort((a, b) => {
+      var dateA = new Date(a.lastModifiedDateTime).getTime();
+      var dateB = new Date(b.lastModifiedDateTime).getTime();
       return dateB - dateA;
     });
 
-    const uniqueFolders = sortedFolders.reduce((acc, folder) => {
+    var uniqueFolders = sortedFolders.reduce((acc, folder) => {
       if (!acc.has(folder.id)) {
         acc.set(folder.id, folder);
       }
       return acc;
     }, new Map<string, OnedriveFolderOutput>());
 
-    const deletedFolders = Array.from(uniqueFolders.values()).filter(
+    var deletedFolders = Array.from(uniqueFolders.values()).filter(
       (f: any) => f.deleted,
     );
 
-    const updatedFolders = Array.from(uniqueFolders.values()).filter(
+    var updatedFolders = Array.from(uniqueFolders.values()).filter(
       (f: any) => !f.deleted,
     );
 
     // handle updated folders
-    const foldersToSync = await this.assignParentIds(
+    var foldersToSync = await this.assignParentIds(
       updatedFolders,
       connection,
     );
@@ -330,17 +330,17 @@ export class OnedriveService implements IFolderService {
     allFolders: OnedriveFolderOutput[],
     connection: Connection,
   ): Promise<OnedriveFolderOutput[]> {
-    const allPermissions: OnedrivePermissionOutput[] = [];
-    const folderIdToRemotePermissionIdMap: Map<string, string[]> = new Map();
-    const batchSize = 4; // simultaneous requests
+    var allPermissions: OnedrivePermissionOutput[] = [];
+    var folderIdToRemotePermissionIdMap: Map<string, string[]> = new Map();
+    var batchSize = 4; // simultaneous requests
 
-    const folders = allFolders.filter((f) => !f.deleted);
+    var folders = allFolders.filter((f) => !f.deleted);
 
     for (let i = 0; i < folders.length; i += batchSize) {
-      const batch = folders.slice(i, i + batchSize);
-      const permissions = await Promise.all(
+      var batch = folders.slice(i, i + batchSize);
+      var permissions = await Promise.all(
         batch.map(async (folder) => {
-          const permissionConfig: AxiosRequestConfig = {
+          var permissionConfig: AxiosRequestConfig = {
             timeout: 30000,
             method: 'get',
             url: `${connection.account_url}/v1.0/me/drive/items/${folder.id}/permissions`,
@@ -352,8 +352,8 @@ export class OnedriveService implements IFolderService {
             },
           };
 
-          const resp = await this.makeRequestWithRetry(permissionConfig);
-          const permissions = resp.data.value;
+          var resp = await this.makeRequestWithRetry(permissionConfig);
+          var permissions = resp.data.value;
           folderIdToRemotePermissionIdMap.set(
             folder.id,
             permissions.map((p) => p.id),
@@ -365,7 +365,7 @@ export class OnedriveService implements IFolderService {
       allPermissions.push(...permissions.flat());
     }
 
-    const uniquePermissions = Array.from(
+    var uniquePermissions = Array.from(
       new Map(
         allPermissions.map((permission) => [permission.id, permission]),
       ).values(),
@@ -373,7 +373,7 @@ export class OnedriveService implements IFolderService {
 
     await this.assignUserAndGroupIdsToPermissions(uniquePermissions);
 
-    const syncedPermissions = await this.ingestService.ingestData<
+    var syncedPermissions = await this.ingestService.ingestData<
       UnifiedFilestoragePermissionOutput,
       OnedrivePermissionOutput
     >(
@@ -388,7 +388,7 @@ export class OnedriveService implements IFolderService {
       `Ingested ${syncedPermissions.length} permissions for folders.`,
     );
 
-    const permissionIdMap: Map<string, string> = new Map(
+    var permissionIdMap: Map<string, string> = new Map(
       syncedPermissions.map((permission) => [
         permission.remote_id,
         permission.id_fs_permission,
@@ -410,17 +410,17 @@ export class OnedriveService implements IFolderService {
   private async assignUserAndGroupIdsToPermissions(
     permissions: OnedrivePermissionOutput[],
   ): Promise<void> {
-    const userLookupCache: Map<string, string> = new Map();
-    const groupLookupCache: Map<string, string> = new Map();
+    var userLookupCache: Map<string, string> = new Map();
+    var groupLookupCache: Map<string, string> = new Map();
 
-    for (const permission of permissions) {
+    for (var permission of permissions) {
       if (permission.grantedToV2?.user?.id) {
-        const remote_user_id = permission.grantedToV2.user.id;
+        var remote_user_id = permission.grantedToV2.user.id;
         if (userLookupCache.has(remote_user_id)) {
           permission.internal_user_id = userLookupCache.get(remote_user_id);
           continue;
         }
-        const user = await this.prisma.fs_users.findFirst({
+        var user = await this.prisma.fs_users.findFirst({
           where: {
             remote_id: remote_user_id,
           },
@@ -435,12 +435,12 @@ export class OnedriveService implements IFolderService {
       }
 
       if (permission.grantedToV2?.group?.id) {
-        const remote_group_id = permission.grantedToV2.group.id;
+        var remote_group_id = permission.grantedToV2.group.id;
         if (groupLookupCache.has(remote_group_id)) {
           permission.internal_group_id = groupLookupCache.get(remote_group_id);
           continue;
         }
-        const group = await this.prisma.fs_groups.findFirst({
+        var group = await this.prisma.fs_groups.findFirst({
           where: {
             remote_id: remote_group_id,
           },
@@ -465,17 +465,17 @@ export class OnedriveService implements IFolderService {
     folders: OnedriveFolderOutput[],
     connection: Connection,
   ): Promise<OnedriveFolderOutput[]> {
-    const folderIdToInternalIdMap: Map<string, string> = new Map();
-    const foldersToSync: OnedriveFolderOutput[] = [];
+    var folderIdToInternalIdMap: Map<string, string> = new Map();
+    var foldersToSync: OnedriveFolderOutput[] = [];
     let remainingFolders: OnedriveFolderOutput[] = [...folders];
-    const parentLookupCache: Map<string, string | null> = new Map();
+    var parentLookupCache: Map<string, string | null> = new Map();
 
     while (remainingFolders.length > 0) {
-      const foldersStillPending: OnedriveFolderOutput[] = [];
+      var foldersStillPending: OnedriveFolderOutput[] = [];
 
-      for (const folder of remainingFolders) {
-        const parentId = folder.parentReference?.id || 'root';
-        const internalParentId = await this.resolveParentId(
+      for (var folder of remainingFolders) {
+        var parentId = folder.parentReference?.id || 'root';
+        var internalParentId = await this.resolveParentId(
           parentId,
           folderIdToInternalIdMap,
           connection.id_connection,
@@ -483,7 +483,7 @@ export class OnedriveService implements IFolderService {
         );
 
         if (internalParentId) {
-          const folder_internal_id = await this.getIntenalIdForFolder(
+          var folder_internal_id = await this.getIntenalIdForFolder(
             folder.id,
             connection,
           );
@@ -500,7 +500,7 @@ export class OnedriveService implements IFolderService {
       }
 
       if (foldersStillPending.length === remainingFolders.length) {
-        const remote_folders = new Map(
+        var remote_folders = new Map(
           foldersToSync.map((folder) => [folder.id, folder]),
         );
 
@@ -525,7 +525,7 @@ export class OnedriveService implements IFolderService {
     folderId: string,
     connection: Connection,
   ) {
-    const folder = await this.prisma.fs_folders.findFirst({
+    var folder = await this.prisma.fs_folders.findFirst({
       where: { remote_id: folderId, id_connection: connection.id_connection },
       select: { id_fs_folder: true },
     });
@@ -558,7 +558,7 @@ export class OnedriveService implements IFolderService {
       return cache.get(parentId);
     }
 
-    const parentFolder = await this.prisma.fs_folders.findFirst({
+    var parentFolder = await this.prisma.fs_folders.findFirst({
       where: {
         remote_id: parentId,
         id_connection: connectionId,
@@ -566,7 +566,7 @@ export class OnedriveService implements IFolderService {
       select: { id_fs_folder: true },
     });
 
-    const result = parentFolder?.id_fs_folder || null;
+    var result = parentFolder?.id_fs_folder || null;
     cache.set(parentId, result);
     return result;
   }
@@ -590,11 +590,11 @@ export class OnedriveService implements IFolderService {
       `${pending.length} folders could not be resolved in the initial pass. Attempting to resolve remaining folders.`,
     );
 
-    const getInternalParentRecursive = async (
+    var getInternalParentRecursive = async (
       folder: OnedriveFolderOutput,
       visitedIds: Set<string> = new Set(),
     ): Promise<string | null> => {
-      const remote_parent_id = folder.parentReference?.id || 'root';
+      var remote_parent_id = folder.parentReference?.id || 'root';
 
       if (visitedIds.has(remote_parent_id)) {
         this.logger.warn(`Circular reference detected for folder ${folder.id}`);
@@ -603,7 +603,7 @@ export class OnedriveService implements IFolderService {
 
       visitedIds.add(remote_parent_id);
 
-      const internal_parent_id = await this.resolveParentId(
+      var internal_parent_id = await this.resolveParentId(
         remote_parent_id,
         idCache,
         connection.id_connection,
@@ -616,7 +616,7 @@ export class OnedriveService implements IFolderService {
 
       // Try to get parent from remote folders map or API
       try {
-        const parentFolder =
+        var parentFolder =
           remote_folders.get(remote_parent_id) ||
           (await this.makeRequestWithRetry({
             timeout: 30000,
@@ -649,8 +649,8 @@ export class OnedriveService implements IFolderService {
 
     await Promise.all(
       pending.map(async (folder) => {
-        const internal_parent_id = await getInternalParentRecursive(folder);
-        const folder_internal_id = uuidv4();
+        var internal_parent_id = await getInternalParentRecursive(folder);
+        var folder_internal_id = uuidv4();
         idCache.set(folder.id, folder_internal_id);
         output.push({
           ...folder,
@@ -667,7 +667,7 @@ export class OnedriveService implements IFolderService {
    * @param connection - The connection object containing the connection details.
    */
   async handleDeletedFolder(folderId: string, connection: Connection) {
-    const folder = await this.prisma.fs_folders.findFirst({
+    var folder = await this.prisma.fs_folders.findFirst({
       where: {
         id_fs_folder: folderId,
         id_connection: connection.id_connection,
@@ -705,7 +705,7 @@ export class OnedriveService implements IFolderService {
     connection: Connection,
   ) {
     try {
-      const remoteFolder = await this.makeRequestWithRetry({
+      var remoteFolder = await this.makeRequestWithRetry({
         timeout: 30000,
         method: 'get',
         url: `${connection.account_url}/v1.0/me/drive/items/${folder.remote_id}?$select=id,deleted`,
@@ -733,7 +733,7 @@ export class OnedriveService implements IFolderService {
    * @returns The last sync time or null if no sync time is found.
    */
   private async getLastSyncTime(connectionId: string): Promise<Date | null> {
-    const lastSync = await this.prisma.fs_folders.findFirst({
+    var lastSync = await this.prisma.fs_folders.findFirst({
       where: { id_connection: connectionId },
       orderBy: { remote_modified_at: { sort: 'desc', nulls: 'last' } },
     });
@@ -756,17 +756,17 @@ export class OnedriveService implements IFolderService {
 
     while (attempts < this.MAX_RETRIES) {
       try {
-        const response: AxiosResponse = await axios(config);
+        var response: AxiosResponse = await axios(config);
         return response;
       } catch (error: any) {
         attempts++;
 
         // Handle rate limiting
         if (error.response && error.response.status === 429) {
-          const retryAfter: number = this.getRetryAfter(
+          var retryAfter: number = this.getRetryAfter(
             error.response.headers['retry-after'],
           );
-          const delayTime: number = Math.max(retryAfter * 1000, backoff);
+          var delayTime: number = Math.max(retryAfter * 1000, backoff);
 
           this.logger.warn(
             `Rate limit hit. Retrying request in ${delayTime}ms (Attempt ${attempts}/${this.MAX_RETRIES})`,
@@ -783,7 +783,7 @@ export class OnedriveService implements IFolderService {
           error.code === 'ETIMEDOUT' ||
           error.response?.code === 'ETIMEDOUT'
         ) {
-          const delayTime: number = backoff;
+          var delayTime: number = backoff;
 
           this.logger.warn(
             `Request timeout. Retrying in ${delayTime}ms (Attempt ${attempts}/${this.MAX_RETRIES})`,
@@ -796,7 +796,7 @@ export class OnedriveService implements IFolderService {
 
         // Handle server errors (500+)
         if (error.response && error.response.status >= 500) {
-          const delayTime: number = backoff;
+          var delayTime: number = backoff;
 
           this.logger.warn(
             `Server error ${error.response.status}. Retrying in ${delayTime}ms (Attempt ${attempts}/${this.MAX_RETRIES})`,
@@ -834,7 +834,7 @@ export class OnedriveService implements IFolderService {
       return 1; // Default to 1 second if header is missing
     }
 
-    const retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
+    var retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
     return isNaN(retryAfterSeconds) ? 1 : retryAfterSeconds + 0.5;
   }
 
