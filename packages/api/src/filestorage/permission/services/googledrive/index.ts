@@ -32,11 +32,11 @@ export class GoogledriveService implements IPermissionService {
     data: SyncParam,
   ): Promise<ApiResponse<GoogledrivePermissionOutput[]>> {
     try {
-      var { linkedUserId, extra } = data;
+      const { linkedUserId, extra } = data;
       // TODO: Determine the source of 'extra'
       // extra?: { object_name: 'folder' | 'file'; value: string },
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'googledrive',
@@ -55,7 +55,7 @@ export class GoogledriveService implements IPermissionService {
       let remote_id: string;
 
       if (extra.object_name === 'folder') {
-        var folder = await this.prisma.fs_folders.findUnique({
+        const folder = await this.prisma.fs_folders.findUnique({
           where: {
             id_fs_folder: extra.value,
           },
@@ -67,7 +67,7 @@ export class GoogledriveService implements IPermissionService {
 
         remote_id = folder.remote_id;
       } else if (extra.object_name === 'file') {
-        var file = await this.prisma.fs_files.findUnique({
+        const file = await this.prisma.fs_files.findUnique({
           where: {
             id_fs_file: extra.value,
           },
@@ -82,13 +82,13 @@ export class GoogledriveService implements IPermissionService {
         throw new Error('Invalid object name');
       }
 
-      var auth = new OAuth2Client();
+      const auth = new OAuth2Client();
       auth.setCredentials({
         access_token: this.cryptoService.decrypt(connection.access_token),
       });
-      var drive = google.drive({ version: 'v3', auth });
+      const drive = google.drive({ version: 'v3', auth });
 
-      var resp: any = await drive.permissions.list({
+      const resp: any = await drive.permissions.list({
         fileId: remote_id,
         fields: 'permissions(id, emailAddress, role, type, expirationTime)',
         supportsAllDrives: true,
