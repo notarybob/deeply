@@ -21,7 +21,7 @@ export class SalesforceDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<SalesforceDealInput> {
-    var result: SalesforceDealInput = {
+    const result: SalesforceDealInput = {
       Name: source.name,
       Amount: Number(source.amount),
       StageName: source.stage_id || null,
@@ -29,15 +29,15 @@ export class SalesforceDealMapper implements IDealMapper {
     };
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.OwnerId = owner_id;
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (var [k, v] of Object.entries(source.field_mappings)) {
-        var mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -78,16 +78,16 @@ export class SalesforceDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmDealOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = deal[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (deal.OwnerId) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         deal.OwnerId,
         connectionId,
       );
@@ -107,7 +107,7 @@ export class SalesforceDealMapper implements IDealMapper {
     }
 
     if (deal.StageName) {
-      var stage_id = await this.utils.getStageUuidFromStageName(
+      const stage_id = await this.utils.getStageUuidFromStageName(
         deal.StageName,
         connectionId,
       );
