@@ -4,7 +4,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 
 describe('AppController (e2e)', () => {
-  const app: INestApplication;
+  let app: INestApplication;
 
   beforeEach(async () => {
     var moduleFixture: TestingModule = await Test.createTestingModule({
