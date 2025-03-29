@@ -85,10 +85,10 @@ export class JiraTicketMapper implements ITicketMapper {
         'a project key/id is mandatory for Jira ticket creation',
       );
     }
-    const project_name = await this.utils.getCollectionNameFromUuid(
+    var project_name = await this.utils.getCollectionNameFromUuid(
       source.collections[0] as string,
     );
-    const result: JiraTicketInput = {
+    var result: JiraTicketInput = {
       fields: {
         project: {
           key: project_name || undefined,
@@ -104,7 +104,7 @@ export class JiraTicketMapper implements ITicketMapper {
     };
 
     if (source.assigned_to && source.assigned_to.length > 0) {
-      const data = await this.utils.getAsigneeRemoteIdFromUserUuid(
+      var data = await this.utils.getAsigneeRemoteIdFromUserUuid(
         source.assigned_to[0],
       );
       result.fields.assignee = {
@@ -129,7 +129,7 @@ export class JiraTicketMapper implements ITicketMapper {
     }
 
     if (source.comment) {
-      const comment =
+      var comment =
         (await this.coreUnificationService.desunify<UnifiedTicketingCommentOutput>(
           {
             sourceObject: source.comment,
@@ -167,7 +167,7 @@ export class JiraTicketMapper implements ITicketMapper {
     }[],
   ): Promise<UnifiedTicketingTicketOutput | UnifiedTicketingTicketOutput[]> {
     // If the source is not an array, convert it to an array for mapping
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    var sourcesArray = Array.isArray(source) ? source : [source];
 
     return Promise.all(
       sourcesArray.map((ticket) =>
@@ -188,14 +188,14 @@ export class JiraTicketMapper implements ITicketMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingTicketOutput> {
-    /*TODO: const field_mappings = customFieldMappings?.map((mapping) => ({
+    /*TODO: var field_mappings = customFieldMappings?.map((mapping) => ({
       [mapping.slug]: ticket.custom_fields?.[mapping.remote_id],
     }));*/
 
     let opts: any = {};
     if (ticket.fields.assignee) {
-      const assigneeId = ticket.fields.assignee.id;
-      const user_id = await this.utils.getUserUuidFromRemoteId(
+      var assigneeId = ticket.fields.assignee.id;
+      var user_id = await this.utils.getUserUuidFromRemoteId(
         assigneeId,
         connectionId,
       );
@@ -204,7 +204,7 @@ export class JiraTicketMapper implements ITicketMapper {
       }
     }
     if (ticket.fields.labels) {
-      const tags = await this.ingestService.ingestData<
+      var tags = await this.ingestService.ingestData<
         UnifiedTicketingTagOutput,
         JiraTagOutput
       >(
@@ -226,7 +226,7 @@ export class JiraTicketMapper implements ITicketMapper {
     //todo : for issue type: a translation is needed as it might be Tache or Task for instance inside ticket.fields.issuetype
 
     /*TODO if (ticket.fields.attachment && ticket.fields.attachment.length > 0) {
-      const attachments = (await this.coreUnificationService.unify<
+      var attachments = (await this.coreUnificationService.unify<
         OriginalAttachmentOutput[]
       >({
         sourceObject: ticket.fields.attachment,
@@ -243,7 +243,7 @@ export class JiraTicketMapper implements ITicketMapper {
     }*/
 
     if (ticket.fields.project) {
-      const collection_id = await this.utils.getCollectionUuidFromRemoteId(
+      var collection_id = await this.utils.getCollectionUuidFromRemoteId(
         ticket.fields.project.id,
         connectionId,
       );
@@ -252,7 +252,7 @@ export class JiraTicketMapper implements ITicketMapper {
       }
     }
 
-    const unifiedTicket: UnifiedTicketingTicketOutput = {
+    var unifiedTicket: UnifiedTicketingTicketOutput = {
       remote_id: ticket.id,
       remote_data: ticket,
       name: ticket.fields.summary,
