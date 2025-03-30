@@ -21,11 +21,11 @@ export class MicrosoftdynamicssalesCompanyMapper implements ICompanyMapper {
             remote_id: string;
         }[],
     ): Promise<MicrosoftdynamicssalesCompanyInput> {
-        var result: MicrosoftdynamicssalesCompanyInput = {
+        const result: MicrosoftdynamicssalesCompanyInput = {
             name: source.name,
         }
 
-        var industryToCodeJSON = {
+        const industryToCodeJSON = {
             "accounting": 1,
             "agriculture and non-petrol natural resource extraction": 2,
             "broadcasting printing and publishing": 3,
@@ -108,7 +108,7 @@ export class MicrosoftdynamicssalesCompanyMapper implements ICompanyMapper {
 
         // Cannot set read only property _createdby_value
         // if (source.user_id) {
-        //   var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+        //   const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
         //   if (owner_id) {
         //     result._createdby_value = source.user_id;
         //   }
@@ -118,8 +118,8 @@ export class MicrosoftdynamicssalesCompanyMapper implements ICompanyMapper {
         // Microsoftdynamicssales Company doest not have direct mapping of number of employees
 
         if (customFieldMappings && source.field_mappings) {
-            for (var [k, v] of Object.entries(source.field_mappings)) {
-                var mapping = customFieldMappings.find(
+            for (const [k, v] of Object.entries(source.field_mappings)) {
+                const mapping = customFieldMappings.find(
                     (mapping) => mapping.slug === k,
                 );
                 if (mapping) {
@@ -166,9 +166,9 @@ export class MicrosoftdynamicssalesCompanyMapper implements ICompanyMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedCrmCompanyOutput> {
-        var field_mappings: { [key: string]: any } = {};
+        const field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (var mapping of customFieldMappings) {
+            for (const mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = company[mapping.remote_id];
             }
         }
@@ -179,7 +179,7 @@ export class MicrosoftdynamicssalesCompanyMapper implements ICompanyMapper {
             phone_numbers: []
         };
 
-        var industryJSON = {
+        const industryJSON = {
             1: "Accounting",
             2: "Agriculture and Non-petrol Natural Resource Extraction",
             3: "Broadcasting Printing and Publishing",
@@ -283,7 +283,7 @@ export class MicrosoftdynamicssalesCompanyMapper implements ICompanyMapper {
 
 
         if (company._createdby_value) {
-            var owner_id = await this.utils.getUserUuidFromRemoteId(
+            const owner_id = await this.utils.getUserUuidFromRemoteId(
                 company._createdby_value,
                 connectionId,
             );
