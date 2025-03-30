@@ -18,7 +18,7 @@ export class TicketingWebhookHandlerService {
     data: { [key: string]: any },
     mw_ids: string[],
   ) {
-    const conn = await this.prisma.connections.findFirst({
+    let conn = await this.prisma.connections.findFirst({
       where: {
         id_connection: id_connection,
       },
