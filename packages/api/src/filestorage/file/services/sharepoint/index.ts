@@ -26,9 +26,9 @@ export class SharepointService implements IFileService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SharepointFileOutput[]>> {
     try {
-      const { linkedUserId, id_folder } = data;
+      let { linkedUserId, id_folder } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'sharepoint',
@@ -36,9 +36,9 @@ export class SharepointService implements IFileService {
         },
       });
 
-      const foldersToSync = ['root'];
+      let foldersToSync = ['root'];
       if (id_folder) {
-        const folder = await this.prisma.fs_folders.findUnique({
+        let folder = await this.prisma.fs_folders.findUnique({
           where: {
             id_fs_folder: id_folder as string,
           },
@@ -48,10 +48,10 @@ export class SharepointService implements IFileService {
         }
       }
 
-      const allFiles: SharepointFileOutput[] = [];
+      let allFiles: SharepointFileOutput[] = [];
 
-      for (const folderId of foldersToSync) {
-        const files = await this.syncFolder(connection, folderId);
+      for (let folderId of foldersToSync) {
+        let files = await this.syncFolder(connection, folderId);
         allFiles.push(...files);
       }
 
@@ -76,7 +76,7 @@ export class SharepointService implements IFileService {
     connection: any,
     folderId: string,
   ): Promise<SharepointFileOutput[]> {
-    const resp = await axios.get(
+    let resp = await axios.get(
       `${connection.account_url}/drive/items/${folderId}/children`,
       {
         headers: {
@@ -88,14 +88,14 @@ export class SharepointService implements IFileService {
       },
     );
 
-    const files: SharepointFileOutput[] = resp.data.value.filter(
+    let files: SharepointFileOutput[] = resp.data.value.filter(
       (elem) => !elem.folder, // files don't have a folder property
     );
 
     // Add permissions (shared link is also included in permissions in SharePoint)
     await Promise.all(
       files.map(async (driveItem) => {
-        const resp = await axios.get(
+        let resp = await axios.get(
           `${connection.account_url}/drive/items/${driveItem.id}/permissions`,
           {
             headers: {
@@ -114,7 +114,7 @@ export class SharepointService implements IFileService {
   }
 
   async downloadFile(fileId: string, connection: any): Promise<Buffer> {
-    const response = await axios.get(
+    let response = await axios.get(
       `${connection.account_url}/drive/items/${fileId}/content`,
       {
         headers: {
