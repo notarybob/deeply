@@ -40,15 +40,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = TICKETING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = TICKETING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -70,8 +70,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId, wh_real_time_trigger } = param;
-      var service: ITicketService =
+      const { integrationId, linkedUserId, wh_real_time_trigger } = param;
+      const service: ITicketService =
         this.serviceRegistry.getService(integrationId);
 
       if (!service) {
@@ -107,21 +107,21 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<TicketingTicket[]> {
     try {
-      var tickets_results: TicketingTicket[] = [];
+      const tickets_results: TicketingTicket[] = [];
 
-      var updateOrCreateTicket = async (
+      const updateOrCreateTicket = async (
         ticket: UnifiedTicketingTicketOutput,
         originId: string,
         connection_id: string,
       ) => {
-        var existingTicket = await this.prisma.tcg_tickets.findFirst({
+        const existingTicket = await this.prisma.tcg_tickets.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        var baseData: any = {
+        const baseData: any = {
           modified_at: new Date(),
           name: ticket.name ?? null,
           status: ticket.status ?? null,
@@ -156,15 +156,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < tickets.length; i++) {
-        var ticket = tickets[i];
-        var originId = ticket.remote_id;
+        const ticket = tickets[i];
+        const originId = ticket.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateTicket(ticket, originId, connection_id);
-        var ticket_id = res.id_tcg_ticket;
+        const res = await updateOrCreateTicket(ticket, originId, connection_id);
+        const ticket_id = res.id_tcg_ticket;
         tickets_results.push(res);
 
         // Process field mappings
@@ -184,7 +184,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           if (typeof ticket.collections[0] === 'string') {
             collections.push(ticket.collections[0]);
           } else {
-            var coll = await this.registry
+            const coll = await this.registry
               .getService('ticketing', 'collection')
               .saveToDb(
                 connection_id,
@@ -230,7 +230,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           if (typeof ticket.tags[0] === 'string') {
             TAGS = ticket.tags as string[];
           } else {
-            var tags = await this.registry
+            const tags = await this.registry
               .getService('ticketing', 'tag')
               .saveToDb(
                 connection_id,
@@ -261,7 +261,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
   }
 
   async removeInDb(connection_id: string, remote_id: string) {
-    var existingTicket = await this.prisma.tcg_tickets.findFirst({
+    const existingTicket = await this.prisma.tcg_tickets.findFirst({
       where: {
         remote_id: remote_id,
         id_connection: connection_id,
