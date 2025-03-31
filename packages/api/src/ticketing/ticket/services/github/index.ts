@@ -30,19 +30,19 @@ export class GithubService implements ITicketService {
         linkedUserId: string,
     ): Promise<ApiResponse<GithubTicketOutput>> {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            var connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'github',
                     vertical: 'ticketing',
                 },
             });
-            const { comment, collection_id, ...ticketD } = ticketData;
-            const DATA = {
+            var { comment, collection_id, ...ticketD } = ticketData;
+            var DATA = {
                 ...ticketD,
             };
 
-            const remote_data = await this.prisma.remote_data.findFirst({
+            var remote_data = await this.prisma.remote_data.findFirst({
                 where: {
                     ressource_owner_id: collection_id,
                 },
@@ -50,9 +50,9 @@ export class GithubService implements ITicketService {
 
             // let res: any = []
 
-            const githubCollectionOutput = JSON.parse(remote_data.data) as GithubCollectionOutput;
+            var githubCollectionOutput = JSON.parse(remote_data.data) as GithubCollectionOutput;
 
-            const resp = await axios.post(
+            var resp = await axios.post(
                 `${connection.account_url}/repos/${githubCollectionOutput.owner.login}/${githubCollectionOutput.name}/issues`,
                 JSON.stringify(DATA),
                 {
@@ -66,7 +66,7 @@ export class GithubService implements ITicketService {
             );
             //insert comment
             if (comment) {
-                const resp_ = await axios.post(
+                var resp_ = await axios.post(
                     `${connection.account_url}/repos/${githubCollectionOutput.owner.login}/${githubCollectionOutput.name}/issues/${resp.data.number}/comments`,
                     JSON.stringify(comment),
                     {
@@ -90,9 +90,9 @@ export class GithubService implements ITicketService {
     }
     async sync(data: SyncParam): Promise<ApiResponse<GithubTicketOutput[]>> {
         try {
-            const { linkedUserId } = data;
+            var { linkedUserId } = data;
 
-            const connection = await this.prisma.connections.findFirst({
+            var connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'github',
@@ -100,7 +100,7 @@ export class GithubService implements ITicketService {
                 },
             });
 
-            const resp = await axios.get(
+            var resp = await axios.get(
                 `${connection.account_url}/issues?filter=all&state=open`,
                 {
                     headers: {
