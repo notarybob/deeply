@@ -30,7 +30,7 @@ export class MicrosoftdynamicssalesService implements IContactService {
         linkedUserId: string,
     ): Promise<ApiResponse<MicrosoftdynamicssalesContactOutput>> {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -38,7 +38,7 @@ export class MicrosoftdynamicssalesService implements IContactService {
                 },
             });
 
-            const respToPost = await axios.post(
+            let respToPost = await axios.post(
                 `${connection.account_url}/api/data/v9.2/contacts`,
                 JSON.stringify(contactData),
                 {
@@ -51,9 +51,9 @@ export class MicrosoftdynamicssalesService implements IContactService {
                 },
             );
 
-            const postContactId = respToPost.headers['location'].split("/").pop();
+            let postContactId = respToPost.headers['location'].split("/").pop();
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/${postContactId}`,
                 {
                     headers: {
@@ -77,9 +77,9 @@ export class MicrosoftdynamicssalesService implements IContactService {
 
     async sync(data: SyncParam): Promise<ApiResponse<MicrosoftdynamicssalesContactOutput[]>> {
         try {
-            const { linkedUserId } = data;
+            let { linkedUserId } = data;
 
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -87,7 +87,7 @@ export class MicrosoftdynamicssalesService implements IContactService {
                 },
             });
 
-            const resp = await axios.get(
+            let resp = await axios.get(
                 `${connection.account_url}/api/data/v9.2/contacts`,
                 {
                     headers: {
