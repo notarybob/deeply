@@ -30,14 +30,14 @@ export class PipedriveService implements INoteService {
     linkedUserId: string,
   ): Promise<ApiResponse<PipedriveNoteOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/notes`,
         JSON.stringify(noteData),
         {
@@ -61,16 +61,16 @@ export class PipedriveService implements INoteService {
 
   async sync(data: SyncParam): Promise<ApiResponse<PipedriveNoteOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'pipedrive',
           vertical: 'crm',
         },
       });
-      let resp = await axios.get(`${connection.account_url}/v1/notes`, {
+      const resp = await axios.get(`${connection.account_url}/v1/notes`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
