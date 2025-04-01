@@ -21,7 +21,7 @@ export class ZohoCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<ZohoCompanyInput> {
-    let result: ZohoCompanyInput = {
+    const result: ZohoCompanyInput = {
       Account_Name: source.name,
     };
     if (source.number_of_employees) {
@@ -48,8 +48,8 @@ export class ZohoCompanyMapper implements ICompanyMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (let [k, v] of Object.entries(source.field_mappings)) {
-        let mapping = customFieldMappings.find(
+      for (const [k, v] of Object.entries(source.field_mappings)) {
+        const mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -96,13 +96,13 @@ export class ZohoCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmCompanyOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = company[mapping.remote_id];
       }
     }
-    let opts: any = {};
+    const opts: any = {};
     if (company.Owner && company.Owner.id) {
       opts.user_id = await this.utils.getUserUuidFromRemoteId(
         company.Owner.id,
