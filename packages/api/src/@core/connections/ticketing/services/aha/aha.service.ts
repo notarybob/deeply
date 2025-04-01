@@ -54,10 +54,10 @@ export class AhaConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -93,8 +93,8 @@ export class AhaConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'aha',
@@ -102,25 +102,25 @@ export class AhaConnectionService extends AbstractBaseConnectionService {
         },
       });
 
-      const REDIRECT_URI = `${
+      var REDIRECT_URI = `${
         this.env.getDistributionMode() == 'selfhost'
           ? this.env.getTunnelIngress()
           : this.env.getPanoraBaseUrl()
       }/connections/oauth/callback`;
 
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         client_id: CREDENTIALS.CLIENT_ID,
         client_secret: CREDENTIALS.CLIENT_SECRET,
         redirect_uri: REDIRECT_URI,
         code: code,
         grant_type: 'authorization_code',
       });
-      const res = await axios.post(
+      var res = await axios.post(
         `https://${CREDENTIALS.SUBDOMAIN}.aha.io/oauth/token`,
         formData.toString(),
         {
@@ -129,15 +129,15 @@ export class AhaConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: AhaOAuthResponse = res.data;
+      var data: AhaOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : aha ticketing ' + JSON.stringify(data),
       );
 
       let db_res;
-      const connection_token = uuidv4();
+      var connection_token = uuidv4();
 
-      const BASE_API_URL = (
+      var BASE_API_URL = (
         CONNECTORS_METADATA['ticketing']['aha'].urls.apiUrl as DynamicApiUrl
       )(CREDENTIALS.SUBDOMAIN);
 
