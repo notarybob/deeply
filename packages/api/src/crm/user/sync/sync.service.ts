@@ -45,15 +45,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = CRM_PROVIDERS;
-          for (const provider of providers) {
+          var providers = CRM_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -75,8 +75,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IUserService =
+      var { integrationId, linkedUserId } = param;
+      var service: IUserService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -103,20 +103,20 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<CrmUser[]> {
     try {
-      const users_results: CrmUser[] = [];
+      var users_results: CrmUser[] = [];
 
-      const updateOrCreateUser = async (
+      var updateOrCreateUser = async (
         user: UnifiedCrmUserOutput,
         originId: string,
       ) => {
-        const existingUser = await this.prisma.crm_users.findFirst({
+        var existingUser = await this.prisma.crm_users.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        const baseData: any = {
+        var baseData: any = {
           email: user.email ?? null,
           name: user.name ?? null,
           modified_at: new Date(),
@@ -143,15 +143,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        const user = data[i];
-        const originId = user.remote_id;
+        var user = data[i];
+        var originId = user.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        const res = await updateOrCreateUser(user, originId);
-        const user_id = res.id_crm_user;
+        var res = await updateOrCreateUser(user, originId);
+        var user_id = res.id_crm_user;
         users_results.push(res);
 
         // Process field mappings
