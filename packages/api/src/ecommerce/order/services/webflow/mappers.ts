@@ -59,7 +59,7 @@ export class WebflowOrderMapper implements IOrderMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceOrderOutput> {
-    const result: UnifiedEcommerceOrderOutput = {
+    let result: UnifiedEcommerceOrderOutput = {
       remote_id: source.orderId,
       remote_data: source,
       created_at: source.acceptedOn,
@@ -101,7 +101,7 @@ export class WebflowOrderMapper implements IOrderMapper {
       .reduce((acc, curr) => acc + curr.price.value, 0);
 
     if (customFieldMappings && source.customData) {
-      for (const [key, value] of Object.entries(source.customData)) {
+      for (let [key, value] of Object.entries(source.customData)) {
         if (customFieldMappings.find((m) => m.slug === key)) {
           result.field_mappings[key] = value;
         }
