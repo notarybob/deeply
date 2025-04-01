@@ -29,7 +29,7 @@ export class ZohoDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<ZohoDealInput> {
-    const result: ZohoDealInput = {
+    let result: ZohoDealInput = {
       Description: source.description,
       Deal_Name: source.name,
       Amount: source.amount,
@@ -52,8 +52,8 @@ export class ZohoDealMapper implements IDealMapper {
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (let [k, v] of Object.entries(source.field_mappings)) {
+        let mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -96,13 +96,13 @@ export class ZohoDealMapper implements IDealMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmDealOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    let field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (let mapping of customFieldMappings) {
         field_mappings[mapping.slug] = deal[mapping.remote_id];
       }
     }
-    const res: UnifiedCrmDealOutput = {
+    let res: UnifiedCrmDealOutput = {
       remote_id: deal.id,
       remote_data: deal,
       name: deal.Deal_Name,
@@ -113,7 +113,7 @@ export class ZohoDealMapper implements IDealMapper {
 
     if (deal.Stage) {
       // we insert right way inside our db as there are no endpoint to do so in the Zoho api
-      const stage = await this.ingestService.ingestData<
+      let stage = await this.ingestService.ingestData<
         UnifiedCrmStageOutput,
         ZohoStageOutput
       >(
