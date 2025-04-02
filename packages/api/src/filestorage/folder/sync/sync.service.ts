@@ -40,15 +40,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = FILESTORAGE_PROVIDERS;
-          for (var provider of providers) {
+          const providers = FILESTORAGE_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -69,8 +69,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: IFolderService =
+      const { integrationId, linkedUserId } = param;
+      const service: IFolderService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -92,14 +92,14 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<FileStorageFolder[]> {
     try {
-      var folders_results: FileStorageFolder[] = [];
-      var driveLookupCache = new Map<string, string | null>();
+      const folders_results: FileStorageFolder[] = [];
+      const driveLookupCache = new Map<string, string | null>();
 
-      var updateOrCreateFolder = async (
+      const updateOrCreateFolder = async (
         folder: UnifiedFilestorageFolderOutput,
         originId: string,
       ) => {
-        var existingFolder = await this.prisma.fs_folders.findFirst({
+        const existingFolder = await this.prisma.fs_folders.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
@@ -113,7 +113,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
               folder.remote_drive_id,
             );
           } else {
-            var drive = await this.prisma.fs_drives.findFirst({
+            const drive = await this.prisma.fs_drives.findFirst({
               where: {
                 remote_id: folder.remote_drive_id,
                 id_connection: connection_id,
@@ -130,7 +130,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           }
         }
 
-        var baseData: any = {
+        const baseData: any = {
           name: folder.name ?? null,
           size: folder.size ?? null,
           folder_url: folder.folder_url ?? null,
@@ -145,7 +145,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
         };
 
         // remove null values
-        var cleanData = Object.fromEntries(
+        const cleanData = Object.fromEntries(
           Object.entries(baseData).filter(([_, value]) => value !== null),
         );
 
@@ -170,15 +170,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < folders.length; i++) {
-        var folder = folders[i];
-        var originId = folder.remote_id;
+        const folder = folders[i];
+        const originId = folder.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateFolder(folder, originId);
-        var folder_id = res.id_fs_folder;
+        const res = await updateOrCreateFolder(folder, originId);
+        const folder_id = res.id_fs_folder;
         folders_results.push(res);
 
         if (folder.shared_link) {
@@ -217,7 +217,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           if (typeof folder.permissions[0] === 'string') {
             permission_ids = folder.permissions;
           } else {
-            var perms = await this.registry
+            const perms = await this.registry
               .getService('filestorage', 'permission')
               .saveToDb(
                 connection_id,
