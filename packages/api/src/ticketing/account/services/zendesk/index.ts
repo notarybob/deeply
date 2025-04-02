@@ -29,20 +29,20 @@ export class ZendeskService implements IAccountService {
 
   async sync(data: SyncParam): Promise<ApiResponse<ZendeskAccountOutput[]>> {
     try {
-      const { linkedUserId, webhook_remote_identifier } = data;
+      let { linkedUserId, webhook_remote_identifier } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
           vertical: 'ticketing',
         },
       });
-      const remote_account_id = webhook_remote_identifier as string;
-      const request_url = remote_account_id
+      let remote_account_id = webhook_remote_identifier as string;
+      let request_url = remote_account_id
         ? `${connection.account_url}/v2/organizations/${remote_account_id}.json`
         : `${connection.account_url}/v2/organizations.json`;
-      const resp = await axios.get(request_url, {
+      let resp = await axios.get(request_url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -52,7 +52,7 @@ export class ZendeskService implements IAccountService {
       });
       this.logger.log(`Synced zendesk accounts !`);
 
-      const result = remote_account_id
+      let result = remote_account_id
         ? [resp.data.organization]
         : resp.data.organizations;
 
