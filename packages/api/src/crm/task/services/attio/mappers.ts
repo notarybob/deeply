@@ -21,7 +21,7 @@ export class AttioTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<AttioTaskInput> {
-    var result: AttioTaskInput = {
+    const result: AttioTaskInput = {
       data: {
         content: source?.content ?? '',
         format: 'plaintext',
@@ -33,7 +33,7 @@ export class AttioTaskMapper implements ITaskMapper {
     };
 
     if (source.user_id) {
-      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.data.assignees.push({
           referenced_actor_type: 'workspace-member',
@@ -43,7 +43,7 @@ export class AttioTaskMapper implements ITaskMapper {
     }
 
     if (source.company_id) {
-      var company_id = await this.utils.getRemoteIdFromCompanyUuid(
+      const company_id = await this.utils.getRemoteIdFromCompanyUuid(
         source.company_id,
       );
       if (company_id) {
@@ -55,7 +55,7 @@ export class AttioTaskMapper implements ITaskMapper {
     }
 
     if (source.deal_id) {
-      var deal_id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
+      const deal_id = await this.utils.getRemoteIdFromDealUuid(source.deal_id);
       if (deal_id) {
         result.data.linked_records.push({
           target_object: 'deals',
@@ -98,16 +98,16 @@ export class AttioTaskMapper implements ITaskMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmTaskOutput> {
-    var field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (var mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         field_mappings[mapping.slug] = task[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (task.assignees && task.assignees.length > 0) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         task.assignees[0].referenced_actor_id,
         connectionId,
       );
@@ -120,7 +120,7 @@ export class AttioTaskMapper implements ITaskMapper {
     }
 
     if (task.assignees && task.assignees.length > 0) {
-      var owner_id = await this.utils.getUserUuidFromRemoteId(
+      const owner_id = await this.utils.getUserUuidFromRemoteId(
         task.assignees[0].referenced_actor_id,
         connectionId,
       );
@@ -133,10 +133,10 @@ export class AttioTaskMapper implements ITaskMapper {
     }
 
     if (task.linked_records && task.linked_records.length > 0) {
-      for (var record of task.linked_records) {
+      for (const record of task.linked_records) {
         switch (record.target_object_id) {
           case 'companies':
-            var company_id = await this.utils.getCompanyUuidFromRemoteId(
+            const company_id = await this.utils.getCompanyUuidFromRemoteId(
               record.target_record_id,
               connectionId,
             );
@@ -148,7 +148,7 @@ export class AttioTaskMapper implements ITaskMapper {
             }
             break;
           case 'deals':
-            var deal_id = await this.utils.getDealUuidFromRemoteId(
+            const deal_id = await this.utils.getDealUuidFromRemoteId(
               record.target_record_id,
               connectionId,
             );
