@@ -30,16 +30,16 @@ export class SquarespaceService implements IProductService {
     data: SyncParam,
   ): Promise<ApiResponse<SquarespaceProductOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'squarespace',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.get(
+      const resp = await axios.get(
         `${connection.account_url}/1.1/commerce/products?type=PHYSICAL,DIGITAL`,
         {
           headers: {
@@ -50,7 +50,7 @@ export class SquarespaceService implements IProductService {
           },
         },
       );
-      let products: SquarespaceProductOutput[] = resp.data.products;
+      const products: SquarespaceProductOutput[] = resp.data.products;
       this.logger.log(`Synced squarespace products !`);
 
       return {
