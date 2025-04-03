@@ -33,7 +33,7 @@ export class CompanyInfoService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingCompanyinfoOutput> {
     try {
-      let companyInfo = await this.prisma.acc_company_infos.findUnique({
+      const companyInfo = await this.prisma.acc_company_infos.findUnique({
         where: { id_acc_company_info: id_acc_company_info },
       });
 
@@ -43,18 +43,18 @@ export class CompanyInfoService {
         );
       }
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: companyInfo.id_acc_company_info },
         },
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedCompanyInfo: UnifiedAccountingCompanyinfoOutput = {
+      const unifiedCompanyInfo: UnifiedAccountingCompanyinfoOutput = {
         id: companyInfo.id_acc_company_info,
         name: companyInfo.name,
         legal_name: companyInfo.legal_name,
@@ -72,7 +72,7 @@ export class CompanyInfoService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: companyInfo.id_acc_company_info },
         });
         unifiedCompanyInfo.remote_data = remoteDataRecord
@@ -116,30 +116,30 @@ export class CompanyInfoService {
     previous_cursor: string | null;
   }> {
     try {
-      let companyInfos = await this.prisma.acc_company_infos.findMany({
+      const companyInfos = await this.prisma.acc_company_infos.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_company_info: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      let hasNextPage = companyInfos.length > limit;
+      const hasNextPage = companyInfos.length > limit;
       if (hasNextPage) companyInfos.pop();
 
-      let unifiedCompanyInfos = await Promise.all(
+      const unifiedCompanyInfos = await Promise.all(
         companyInfos.map(async (companyInfo) => {
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: companyInfo.id_acc_company_info },
             },
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedCompanyInfo: UnifiedAccountingCompanyinfoOutput = {
+          const unifiedCompanyInfo: UnifiedAccountingCompanyinfoOutput = {
             id: companyInfo.id_acc_company_info,
             name: companyInfo.name,
             legal_name: companyInfo.legal_name,
@@ -157,7 +157,7 @@ export class CompanyInfoService {
           };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: companyInfo.id_acc_company_info },
             });
             unifiedCompanyInfo.remote_data = remoteDataRecord
