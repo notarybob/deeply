@@ -30,7 +30,7 @@ export class AttioService implements IDealService {
     linkedUserId: string,
   ): Promise<ApiResponse<AttioDealOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
@@ -38,7 +38,7 @@ export class AttioService implements IDealService {
         },
       });
 
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v2/objects/deals/records`,
         JSON.stringify({
           data: dealData,
@@ -64,16 +64,16 @@ export class AttioService implements IDealService {
 
   async sync(data: SyncParam): Promise<ApiResponse<AttioDealOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      let { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      let connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
           vertical: 'crm',
         },
       });
-      const resp = await axios.post(
+      let resp = await axios.post(
         `${connection.account_url}/v2/objects/deals/records/query`,
         {},
         {
