@@ -32,7 +32,7 @@ export class JiraService implements ITicketService {
     linkedUserId: string,
   ): Promise<ApiResponse<JiraTicketOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'jira',
@@ -42,7 +42,7 @@ export class JiraService implements ITicketService {
 
       //first check if issueType is the right one
 
-      var a = await axios.get(
+      const a = await axios.get(
         `${connection.account_url}/3/issuetype/project?projectId=${ticketData.fields.project.id}`,
         {
           headers: {
@@ -54,7 +54,7 @@ export class JiraService implements ITicketService {
         },
       );
 
-      var item = a.data.find(
+      const item = a.data.find(
         (element) =>
           element.untranslatedName === ticketData.fields.issuetype.name,
       );
@@ -65,7 +65,7 @@ export class JiraService implements ITicketService {
         };
       } else {
         //insert the issuetype
-        var resp = await axios.post(
+        const resp = await axios.post(
           `${connection.account_url}/3/issuetype`,
           JSON.stringify({
             description: ticketData.fields.issuetype.name,
@@ -90,7 +90,7 @@ export class JiraService implements ITicketService {
       };
 
       //now handle priority
-      /*var c = await axios.get(`${connection.account_url}/priority`, {
+      /*const c = await axios.get(`${connection.account_url}/priority`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -98,17 +98,17 @@ export class JiraService implements ITicketService {
           )}`,
         },
       });
-      var priority_ = c.data.find(
+      const priority_ = c.data.find(
         (element) => element.name === ticketData.fields.priority.name,
       );
-      var { priority, ...baseFields } = ticketData.fields;
+      const { priority, ...baseFields } = ticketData.fields;
       if (priority_) {
         ticketData.fields.priority = {
           id: priority.id,
         };
       } else {
         //create priority
-        /*var resp = await axios.post(
+        /*const resp = await axios.post(
           `${connection.account_url}/priority`,
           JSON.stringify({
             name: ticketData.fields.priority.name,
@@ -127,14 +127,14 @@ export class JiraService implements ITicketService {
           ...baseFields,
         };
       }*/
-      var { comment, ...baseFields } = ticketData.fields;
+      const { comment, ...baseFields } = ticketData.fields;
 
       ticketData = {
         fields: {
           ...baseFields,
         },
       };
-      var resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/3/issue`,
         JSON.stringify(ticketData),
         {
@@ -149,7 +149,7 @@ export class JiraService implements ITicketService {
 
       if (comment && comment[0]) {
         // Add comment if someone wants to add one when creation of the ticket
-        var resp_comment = await axios.post(
+        const resp_comment = await axios.post(
           `${connection.account_url}/3/issue/${resp.data.id}/comment`,
           JSON.stringify(comment[0]),
           {
@@ -165,11 +165,11 @@ export class JiraService implements ITicketService {
 
       // Process attachments
       let uploads = [];
-      var uuids = ticketData.attachments;
+      const uuids = ticketData.attachments;
       if (uuids && uuids.length > 0) {
         uploads = await Promise.all(
           uuids.map(async (uuid) => {
-            var attachment = await this.prisma.tcg_attachments.findUnique({
+            const attachment = await this.prisma.tcg_attachments.findUnique({
               where: {
                 id_tcg_attachment: uuid,
               },
@@ -188,16 +188,16 @@ export class JiraService implements ITicketService {
       }
 
       if (uploads.length > 0) {
-        var formData = new FormData();
+        const formData = new FormData();
 
         uploads.forEach((fileStream, index) => {
-          var stats = fs.statSync(fileStream);
-          var fileSizeInBytes = stats.size;
+          const stats = fs.statSync(fileStream);
+          const fileSizeInBytes = stats.size;
           formData.append('file', fileStream, { knownLength: fileSizeInBytes });
         });
 
         // Send request with attachments
-        var resp_ = await axios.post(
+        const resp_ = await axios.post(
           `${connection.account_url}/3/issue/${resp.data.id}/attachments`,
           formData,
           {
@@ -212,7 +212,7 @@ export class JiraService implements ITicketService {
         );
       }
 
-      var final_res = await axios.get(resp.data.self, {
+      const final_res = await axios.get(resp.data.self, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
@@ -231,16 +231,16 @@ export class JiraService implements ITicketService {
   }
   async sync(data: SyncParam): Promise<ApiResponse<JiraTicketOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'jira',
           vertical: 'ticketing',
         },
       });
-      var resp = await axios.get(`${connection.account_url}/3/search`, {
+      const resp = await axios.get(`${connection.account_url}/3/search`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
