@@ -82,7 +82,7 @@ export type ICrmService =
   | IStageService
   | ICompanyService;
 
-export let ENGAGEMENTS_TYPE = ['CALL', 'MEETING', 'EMAIL'];
+export const ENGAGEMENTS_TYPE = ['CALL', 'MEETING', 'EMAIL'];
 
 export enum Industry {
   ACCOUNTING = 'ACCOUNTING',
@@ -234,7 +234,7 @@ export enum Industry {
   WRITING_AND_EDITING = 'WRITING_AND_EDITING',
 }
 
-export let countryPhoneFormats: { [countryCode: string]: string } = {
+export const countryPhoneFormats: { [countryCode: string]: string } = {
   '+1': 'NNN-NNN-NNNN', // USA
   '+44': 'NNNN NNNNNN', // UK
   '+49': 'NNN NNNNNNN', // Germany
