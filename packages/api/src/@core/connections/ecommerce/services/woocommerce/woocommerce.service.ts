@@ -45,20 +45,20 @@ export class WoocommerceConnectionService extends AbstractBaseConnectionService 
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
       });
 
-      var decryptedData = JSON.parse(
+      const decryptedData = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
 
-      var { username, password } = decryptedData;
+      const { username, password } = decryptedData;
 
       config.headers = {
         ...config.headers,
@@ -85,9 +85,9 @@ export class WoocommerceConnectionService extends AbstractBaseConnectionService 
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, body } = opts;
-      var { username, password, store_url } = body;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, body } = opts;
+      const { username, password, store_url } = body;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'woocommerce',
@@ -96,8 +96,8 @@ export class WoocommerceConnectionService extends AbstractBaseConnectionService 
       });
 
       let db_res;
-      var connection_token = uuidv4();
-      var BASE_API_URL = (
+      const connection_token = uuidv4();
+      const BASE_API_URL = (
         CONNECTORS_METADATA['ecommerce']['woocommerce'].urls
           .apiUrl as DynamicApiUrl
       )(store_url);
