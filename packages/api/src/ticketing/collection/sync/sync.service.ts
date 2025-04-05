@@ -37,15 +37,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = TICKETING_PROVIDERS;
-          for (var provider of providers) {
+          const providers = TICKETING_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -67,8 +67,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: ICollectionService =
+      const { integrationId, linkedUserId } = param;
+      const service: ICollectionService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -96,22 +96,22 @@ export class SyncService implements OnModuleInit, IBaseSync {
     id_ticket?: string,
   ): Promise<TicketingCollection[]> {
     try {
-      var collections_results: TicketingCollection[] = [];
+      const collections_results: TicketingCollection[] = [];
 
-      var updateOrCreateCollection = async (
+      const updateOrCreateCollection = async (
         collection: UnifiedTicketingCollectionOutput,
         originId: string,
         connection_id: string,
         id_ticket?: string,
       ) => {
-        var existingCollection = await this.prisma.tcg_collections.findFirst({
+        const existingCollection = await this.prisma.tcg_collections.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        var baseData: any = {
+        const baseData: any = {
           name: collection.name ?? null,
           description: collection.description ?? null,
           collection_type: collection.collection_type ?? null,
@@ -143,16 +143,16 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        var collection = data[i];
-        var originId = collection.remote_id;
+        const collection = data[i];
+        const originId = collection.remote_id;
 
-        var res = await updateOrCreateCollection(
+        const res = await updateOrCreateCollection(
           collection,
           originId,
           connection_id,
           id_ticket,
         );
-        var collection_id = res.id_tcg_collection;
+        const collection_id = res.id_tcg_collection;
         collections_results.push(res);
 
         await this.ingestService.processRemoteData(
