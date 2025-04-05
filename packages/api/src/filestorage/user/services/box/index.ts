@@ -26,17 +26,17 @@ export class BoxService implements IUserService {
 
   async sync(data: SyncParam): Promise<ApiResponse<BoxUserOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
       // to sync all users we start from root user ("0") and recurse through it
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'box',
           vertical: 'filestorage',
         },
       });
-      let resp = await axios.get(`${connection.account_url}/2.0/users`, {
+      const resp = await axios.get(`${connection.account_url}/2.0/users`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.cryptoService.decrypt(
