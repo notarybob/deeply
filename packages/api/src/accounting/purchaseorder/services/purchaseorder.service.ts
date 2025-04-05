@@ -32,13 +32,13 @@ export class PurchaseOrderService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingPurchaseorderOutput> {
     try {
-      let service = this.serviceRegistry.getService(integrationId);
-      let resp = await service.addPurchaseOrder(
+      const service = this.serviceRegistry.getService(integrationId);
+      const resp = await service.addPurchaseOrder(
         unifiedPurchaseOrderData,
         linkedUserId,
       );
 
-      let savedPurchaseOrder = await this.prisma.acc_purchase_orders.create({
+      const savedPurchaseOrder = await this.prisma.acc_purchase_orders.create({
         data: {
           id_acc_purchase_order: uuidv4(),
           ...unifiedPurchaseOrderData,
@@ -79,7 +79,7 @@ export class PurchaseOrderService {
         );
       }
 
-      let result: UnifiedAccountingPurchaseorderOutput = {
+      const result: UnifiedAccountingPurchaseorderOutput = {
         ...savedPurchaseOrder,
         currency: savedPurchaseOrder.currency as CurrencyCode,
         id: savedPurchaseOrder.id_acc_purchase_order,
@@ -108,7 +108,7 @@ export class PurchaseOrderService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingPurchaseorderOutput> {
     try {
-      let purchaseOrder = await this.prisma.acc_purchase_orders.findUnique({
+      const purchaseOrder = await this.prisma.acc_purchase_orders.findUnique({
         where: { id_acc_purchase_order: id_acc_purchase_order },
       });
 
@@ -118,23 +118,23 @@ export class PurchaseOrderService {
         );
       }
 
-      let lineItems =
+      const lineItems =
         await this.prisma.acc_purchase_orders_line_items.findMany({
           where: { id_acc_purchase_order: id_acc_purchase_order },
         });
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: purchaseOrder.id_acc_purchase_order },
         },
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedPurchaseOrder: UnifiedAccountingPurchaseorderOutput = {
+      const unifiedPurchaseOrder: UnifiedAccountingPurchaseorderOutput = {
         id: purchaseOrder.id_acc_purchase_order,
         status: purchaseOrder.status,
         issue_date: purchaseOrder.issue_date,
@@ -179,7 +179,7 @@ export class PurchaseOrderService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: purchaseOrder.id_acc_purchase_order },
         });
         unifiedPurchaseOrder.remote_data = remoteDataRecord
@@ -223,26 +223,26 @@ export class PurchaseOrderService {
     previous_cursor: string | null;
   }> {
     try {
-      let purchaseOrders = await this.prisma.acc_purchase_orders.findMany({
+      const purchaseOrders = await this.prisma.acc_purchase_orders.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_purchase_order: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      let hasNextPage = purchaseOrders.length > limit;
+      const hasNextPage = purchaseOrders.length > limit;
       if (hasNextPage) purchaseOrders.pop();
 
-      let unifiedPurchaseOrders = await Promise.all(
+      const unifiedPurchaseOrders = await Promise.all(
         purchaseOrders.map(async (purchaseOrder) => {
-          let lineItems =
+          const lineItems =
             await this.prisma.acc_purchase_orders_line_items.findMany({
               where: {
                 id_acc_purchase_order: purchaseOrder.id_acc_purchase_order,
               },
             });
 
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: purchaseOrder.id_acc_purchase_order,
@@ -251,11 +251,11 @@ export class PurchaseOrderService {
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedPurchaseOrder: UnifiedAccountingPurchaseorderOutput = {
+          const unifiedPurchaseOrder: UnifiedAccountingPurchaseorderOutput = {
             id: purchaseOrder.id_acc_purchase_order,
             status: purchaseOrder.status,
             issue_date: purchaseOrder.issue_date,
@@ -300,7 +300,7 @@ export class PurchaseOrderService {
           };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: purchaseOrder.id_acc_purchase_order,
               },
