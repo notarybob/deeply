@@ -73,7 +73,7 @@ export class DropboxFileMapper implements IFileMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageFileOutput> {
-    let result: UnifiedFilestorageFileOutput = {
+    const result: UnifiedFilestorageFileOutput = {
       remote_id: file.id,
       remote_data: file,
       name: file.name,
@@ -87,7 +87,7 @@ export class DropboxFileMapper implements IFileMapper {
     };
 
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         result.field_mappings[mapping.slug] = file[mapping.remote_id];
       }
     }
