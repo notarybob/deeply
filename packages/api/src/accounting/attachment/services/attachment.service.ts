@@ -33,13 +33,13 @@ export class AttachmentService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingAttachmentOutput> {
     try {
-      let service = this.serviceRegistry.getService(integrationId);
-      let resp = await service.addAttachment(
+      const service = this.serviceRegistry.getService(integrationId);
+      const resp = await service.addAttachment(
         unifiedAttachmentData,
         linkedUserId,
       );
 
-      let savedAttachment = await this.prisma.acc_attachments.create({
+      const savedAttachment = await this.prisma.acc_attachments.create({
         data: {
           id_acc_attachment: uuidv4(),
           ...unifiedAttachmentData,
@@ -50,7 +50,7 @@ export class AttachmentService {
         },
       });
 
-      let result: UnifiedAccountingAttachmentOutput = {
+      const result: UnifiedAccountingAttachmentOutput = {
         ...savedAttachment,
         id: savedAttachment.id_acc_attachment,
       };
@@ -74,7 +74,7 @@ export class AttachmentService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingAttachmentOutput> {
     try {
-      let attachment = await this.prisma.acc_attachments.findUnique({
+      const attachment = await this.prisma.acc_attachments.findUnique({
         where: { id_acc_attachment: id_acc_attachment },
       });
 
@@ -82,18 +82,18 @@ export class AttachmentService {
         throw new Error(`Attachment with ID ${id_acc_attachment} not found.`);
       }
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: attachment.id_acc_attachment },
         },
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedAttachment: UnifiedAccountingAttachmentOutput = {
+      const unifiedAttachment: UnifiedAccountingAttachmentOutput = {
         id: attachment.id_acc_attachment,
         file_name: attachment.file_name,
         file_url: attachment.file_url,
@@ -105,7 +105,7 @@ export class AttachmentService {
       };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: attachment.id_acc_attachment },
         });
         unifiedAttachment.remote_data = remoteDataRecord
@@ -149,30 +149,30 @@ export class AttachmentService {
     previous_cursor: string | null;
   }> {
     try {
-      let attachments = await this.prisma.acc_attachments.findMany({
+      const attachments = await this.prisma.acc_attachments.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_attachment: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      let hasNextPage = attachments.length > limit;
+      const hasNextPage = attachments.length > limit;
       if (hasNextPage) attachments.pop();
 
-      let unifiedAttachments = await Promise.all(
+      const unifiedAttachments = await Promise.all(
         attachments.map(async (attachment) => {
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: attachment.id_acc_attachment },
             },
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedAttachment: UnifiedAccountingAttachmentOutput = {
+          const unifiedAttachment: UnifiedAccountingAttachmentOutput = {
             id: attachment.id_acc_attachment,
             file_name: attachment.file_name,
             file_url: attachment.file_url,
@@ -184,7 +184,7 @@ export class AttachmentService {
           };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: attachment.id_acc_attachment },
             });
             unifiedAttachment.remote_data = remoteDataRecord
