@@ -27,7 +27,7 @@ export class AttachmentService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingAttachmentOutput> {
     try {
-      var linkedUser = await this.prisma.linked_users.findUnique({
+      const linkedUser = await this.prisma.linked_users.findUnique({
         where: {
           id_linked_user: linkedUserId,
         },
@@ -39,7 +39,7 @@ export class AttachmentService {
 
       // add the attachment inside our db
 
-      var existingAttachment = await this.prisma.tcg_attachments.findFirst({
+      const existingAttachment = await this.prisma.tcg_attachments.findFirst({
         where: {
           file_name: unifiedAttachmentData.file_name,
           id_connection: connection_id,
@@ -50,7 +50,7 @@ export class AttachmentService {
 
       if (existingAttachment) {
         // Update the existing attachment
-        var res = await this.prisma.tcg_attachments.update({
+        const res = await this.prisma.tcg_attachments.update({
           where: {
             id_tcg_attachment: existingAttachment.id_tcg_attachment,
           },
@@ -64,7 +64,7 @@ export class AttachmentService {
       } else {
         // Create a new attachment
         this.logger.log('not existing attachment ');
-        var data = {
+        const data = {
           id_tcg_attachment: uuidv4(),
           file_name: unifiedAttachmentData.file_name,
           uploader: linkedUserId,
@@ -73,13 +73,13 @@ export class AttachmentService {
           id_connection: connection_id,
         };
 
-        var res = await this.prisma.tcg_attachments.create({
+        const res = await this.prisma.tcg_attachments.create({
           data: data,
         });
         unique_ticketing_attachment_id = res.id_tcg_attachment;
       }
 
-      var result_attachment = await this.getAttachment(
+      const result_attachment = await this.getAttachment(
         unique_ticketing_attachment_id,
         undefined,
         undefined,
@@ -88,7 +88,7 @@ export class AttachmentService {
         remote_data,
       );
 
-      var event = await this.prisma.events.create({
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -125,14 +125,14 @@ export class AttachmentService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingAttachmentOutput> {
     try {
-      var attachment = await this.prisma.tcg_attachments.findUnique({
+      const attachment = await this.prisma.tcg_attachments.findUnique({
         where: {
           id_tcg_attachment: id_ticketing_attachment,
         },
       });
 
       // Fetch field mappings for the attachment
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: attachment.id_tcg_attachment,
@@ -144,14 +144,14 @@ export class AttachmentService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedTicketingAttachmentOutput format
       let unifiedAttachment: UnifiedTicketingAttachmentOutput = {
@@ -180,12 +180,12 @@ export class AttachmentService {
       let res: UnifiedTicketingAttachmentOutput = unifiedAttachment;
 
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: attachment.id_tcg_attachment,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -234,7 +234,7 @@ export class AttachmentService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.tcg_attachments.findFirst({
+        const isCursorPresent = await this.prisma.tcg_attachments.findFirst({
           where: {
             id_connection: connection_id,
             id_tcg_attachment: cursor,
@@ -244,7 +244,7 @@ export class AttachmentService {
           throw new ReferenceError(`The provided cursor does not exist!`);
         }
       }
-      var attachments = await this.prisma.tcg_attachments.findMany({
+      const attachments = await this.prisma.tcg_attachments.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -270,11 +270,11 @@ export class AttachmentService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedAttachments: UnifiedTicketingAttachmentOutput[] =
+      const unifiedAttachments: UnifiedTicketingAttachmentOutput[] =
         await Promise.all(
           attachments.map(async (attachment) => {
             // Fetch field mappings for the attachment
-            var values = await this.prisma.value.findMany({
+            const values = await this.prisma.value.findMany({
               where: {
                 entity: {
                   ressource_owner_id: attachment.id_tcg_attachment,
@@ -285,14 +285,14 @@ export class AttachmentService {
               },
             });
             // Create a map to store unique field mappings
-            var fieldMappingsMap = new Map();
+            const fieldMappingsMap = new Map();
 
             values.forEach((value) => {
               fieldMappingsMap.set(value.attribute.slug, value.data);
             });
 
             // Convert the map to an array of objects
-            var field_mappings = Array.from(
+            const field_mappings = Array.from(
               fieldMappingsMap,
               ([key, value]) => ({ [key]: value }),
             );
@@ -327,15 +327,15 @@ export class AttachmentService {
       let res: UnifiedTicketingAttachmentOutput[] = unifiedAttachments;
 
       if (remote_data) {
-        var remote_array_data: UnifiedTicketingAttachmentOutput[] =
+        const remote_array_data: UnifiedTicketingAttachmentOutput[] =
           await Promise.all(
             res.map(async (attachment) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: attachment.id,
                 },
               });
-              var remote_data = JSON.parse(resp.data);
+              const remote_data = JSON.parse(resp.data);
               return { ...attachment, remote_data };
             }),
           );
