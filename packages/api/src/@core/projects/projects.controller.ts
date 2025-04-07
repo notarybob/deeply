@@ -39,7 +39,7 @@ export class ProjectsController {
   @UseGuards(ApiKeyAuthGuard)
   @Get()
   getProjects(@Request() req: any) {
-    const user_id = req.user.id_user;
+    let user_id = req.user.id_user;
     return this.projectsService.getProjectsByUser(user_id);
   }
 
@@ -49,7 +49,7 @@ export class ProjectsController {
   @Get('internal')
   @ApiExcludeEndpoint()
   getProjectsInternal(@Request() req: any) {
-    const user_id = req.user.id_user;
+    let user_id = req.user.id_user;
     return this.projectsService.getProjectsByUser(user_id);
   }
 
