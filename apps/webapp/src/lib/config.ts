@@ -1,4 +1,4 @@
-let config = {
+const config = {
     API_URL: process.env.NEXT_PUBLIC_BACKEND_DOMAIN,
     WEBAPP_URL: process.env.NEXT_PUBLIC_WEBAPP_DOMAIN,
     MAGIC_LINK_DOMAIN: process.env.NEXT_PUBLIC_MAGIC_LINK_DOMAIN,
