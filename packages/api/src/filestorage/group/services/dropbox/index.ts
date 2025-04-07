@@ -26,8 +26,8 @@ export class DropboxService implements IGroupService {
 
   async sync(data: SyncParam): Promise<ApiResponse<DropboxGroupOutput[]>> {
     try {
-      let { linkedUserId } = data;
-      let connection = await this.prisma.connections.findFirst({
+      const { linkedUserId } = data;
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'dropbox',
@@ -36,7 +36,7 @@ export class DropboxService implements IGroupService {
       });
 
       // ref: https://www.dropbox.com/developers/documentation/http/teams#team-groups-list
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/team/groups/list`,
         {
           headers: {
