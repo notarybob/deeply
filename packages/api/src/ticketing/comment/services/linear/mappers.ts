@@ -78,7 +78,7 @@ export class LinearCommentMapper implements ICommentMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingCommentOutput> {
-    let user_id: string;
+    const user_id: string;
 
     if (comment.user.id) {
       user_id = await this.utils.getUserUuidFromRemoteId(
