@@ -38,15 +38,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      const linkedUsers = await this.prisma.linked_users.findMany({
+      var linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          const providers = TICKETING_PROVIDERS;
-          for (const provider of providers) {
+          var providers = TICKETING_PROVIDERS;
+          for (var provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -68,8 +68,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(data: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId, id_ticket } = data;
-      const service: ICommentService =
+      var { integrationId, linkedUserId, id_ticket } = data;
+      var service: ICommentService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -104,29 +104,29 @@ export class SyncService implements OnModuleInit, IBaseSync {
     id_ticket?: string,
   ): Promise<TicketingComment[]> {
     try {
-      const comments_results: TicketingComment[] = [];
+      var comments_results: TicketingComment[] = [];
 
-      const updateOrCreateComment = async (
+      var updateOrCreateComment = async (
         comment: UnifiedTicketingCommentOutput,
         originId: string,
         connection_id: string,
         id_ticket?: string,
       ) => {
-        const existingComment = await this.prisma.tcg_comments.findFirst({
+        var existingComment = await this.prisma.tcg_comments.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        const opts =
+        var opts =
           comment.creator_type === 'CONTACT' && comment.contact_id
             ? { id_tcg_contact: comment.contact_id }
             : comment.creator_type === 'USER' && comment.user_id
             ? { id_tcg_user: comment.user_id }
             : {};
 
-        const baseData: any = {
+        var baseData: any = {
           id_tcg_ticket: id_ticket ?? null,
           modified_at: new Date(),
           body: comment.body ?? null,
@@ -158,20 +158,20 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < comments.length; i++) {
-        const comment = comments[i];
-        const originId = comment.remote_id;
+        var comment = comments[i];
+        var originId = comment.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        const res = await updateOrCreateComment(
+        var res = await updateOrCreateComment(
           comment,
           originId,
           connection_id,
           id_ticket,
         );
-        const comment_id = res.id_tcg_comment;
+        var comment_id = res.id_tcg_comment;
         comments_results.push(res);
 
         // Save attachments if present
