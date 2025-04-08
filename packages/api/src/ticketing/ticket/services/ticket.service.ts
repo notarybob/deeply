@@ -41,7 +41,7 @@ export class TicketService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingTicketOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
       await this.validateAccountId(unifiedTicketData.account_id);
       await this.validateContactId(unifiedTicketData.contact_id);
       await this.validateAssignees(unifiedTicketData.assigned_to);
@@ -54,14 +54,14 @@ export class TicketService {
 
       // Retrieve custom field mappings
       // get potential fieldMappings and extract the original properties name
-      var customFieldMappings =
+      const customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           'ticketing.ticket',
         );
       //desunify the data according to the target obj wanted
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedTicketingTicketInput>({
           sourceObject: unifiedTicketData,
           targetType: TicketingObject.ticket,
@@ -77,15 +77,15 @@ export class TicketService {
         'ticket desunified is ' + JSON.stringify(desunifiedObject),
       );
 
-      var service: ITicketService =
+      const service: ITicketService =
         this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalTicketOutput> = await service.addTicket(
+      const resp: ApiResponse<OriginalTicketOutput> = await service.addTicket(
         desunifiedObject,
         linkedUserId,
       );
 
       //unify the data according to the target obj wanted
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalTicketOutput[]
       >({
         sourceObject: [resp.data],
@@ -97,10 +97,10 @@ export class TicketService {
       })) as UnifiedTicketingTicketOutput[];
 
       // add the ticket inside our db
-      var source_ticket = resp.data;
-      var target_ticket = unifiedObject[0];
+      const source_ticket = resp.data;
+      const target_ticket = unifiedObject[0];
 
-      var unique_ticketing_ticket_id = await this.saveOrUpdateTicket(
+      const unique_ticketing_ticket_id = await this.saveOrUpdateTicket(
         target_ticket,
         connection_id,
       );
@@ -117,7 +117,7 @@ export class TicketService {
         source_ticket,
       );
 
-      var result_ticket = await this.getTicket(
+      const result_ticket = await this.getTicket(
         unique_ticketing_ticket_id,
         undefined,
         undefined,
@@ -126,8 +126,8 @@ export class TicketService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -155,7 +155,7 @@ export class TicketService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -164,7 +164,7 @@ export class TicketService {
 
   async validateAccountId(accountId?: string) {
     if (accountId) {
-      var account = await this.prisma.tcg_accounts.findUnique({
+      const account = await this.prisma.tcg_accounts.findUnique({
         where: { id_tcg_account: accountId },
       });
       if (!account)
@@ -176,7 +176,7 @@ export class TicketService {
 
   async validateContactId(contactId?: string) {
     if (contactId) {
-      var contact = await this.prisma.tcg_contacts.findUnique({
+      const contact = await this.prisma.tcg_contacts.findUnique({
         where: { id_tcg_contact: contactId },
       });
       if (!contact)
@@ -190,7 +190,7 @@ export class TicketService {
     if (assignees && assignees.length > 0) {
       await Promise.all(
         assignees.map(async (assignee) => {
-          var user = await this.prisma.tcg_users.findUnique({
+          const user = await this.prisma.tcg_users.findUnique({
             where: { id_tcg_user: assignee },
           });
           if (!user)
@@ -212,7 +212,7 @@ export class TicketService {
       if (typeof attachments[0] === 'string') {
         await Promise.all(
           attachments.map(async (uuid: string) => {
-            var attachment = await this.prisma.tcg_attachments.findUnique({
+            const attachment = await this.prisma.tcg_attachments.findUnique({
               where: { id_tcg_attachment: uuid },
             });
             if (!attachment)
@@ -223,7 +223,7 @@ export class TicketService {
         );
         return attachments;
       } else {
-        var attchms_res = await this.registry
+        const attchms_res = await this.registry
           .getService('ticketing', 'attachment')
           .saveToDb(
             connection_id,
@@ -242,11 +242,11 @@ export class TicketService {
     ticket: UnifiedTicketingTicketOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingTicket = await this.prisma.tcg_tickets.findFirst({
+    const existingTicket = await this.prisma.tcg_tickets.findFirst({
       where: { remote_id: ticket.remote_id, id_connection: connection_id },
     });
 
-    var data: any = {
+    const data: any = {
       id_tcg_ticket: uuidv4(),
       modified_at: new Date(),
       name: ticket.name,
@@ -263,7 +263,7 @@ export class TicketService {
     };
 
     if (existingTicket) {
-      var res = await this.prisma.tcg_tickets.update({
+      const res = await this.prisma.tcg_tickets.update({
         where: { id_tcg_ticket: existingTicket.id_tcg_ticket },
         data: data,
       });
@@ -273,7 +273,7 @@ export class TicketService {
       data.remote_id = ticket.remote_id;
       data.id_connection = connection_id;
 
-      var res = await this.prisma.tcg_tickets.create({ data: data });
+      const res = await this.prisma.tcg_tickets.create({ data: data });
       return res.id_tcg_ticket;
     }
   }
@@ -287,14 +287,14 @@ export class TicketService {
     remote_data?: boolean,
   ): Promise<UnifiedTicketingTicketOutput> {
     try {
-      var ticket = await this.prisma.tcg_tickets.findUnique({
+      const ticket = await this.prisma.tcg_tickets.findUnique({
         where: {
           id_tcg_ticket: id_ticketing_ticket,
         },
       });
 
       // Fetch field mappings for the ticket
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: ticket.id_tcg_ticket,
@@ -306,20 +306,20 @@ export class TicketService {
       });
 
       // Create a map to store unique field mappings
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       let tagsArray;
       if (ticket.tags) {
-        var fetchedTags = await Promise.all(
+        const fetchedTags = await Promise.all(
           ticket.tags.map(async (tagUuid) => {
-            var tag = await this.prisma.tcg_tags.findUnique({
+            const tag = await this.prisma.tcg_tags.findUnique({
               where: {
                 id_tcg_tag: tagUuid,
               },
@@ -332,9 +332,9 @@ export class TicketService {
 
       let collectionsArray;
       if (ticket.collections) {
-        var fetchedCollections = await Promise.all(
+        const fetchedCollections = await Promise.all(
           ticket.collections.map(async (collUuid) => {
-            var coll = await this.prisma.tcg_collections.findUnique({
+            const coll = await this.prisma.tcg_collections.findUnique({
               where: {
                 id_tcg_collection: collUuid,
               },
@@ -346,14 +346,14 @@ export class TicketService {
       }
 
       // Fetch attachment IDs associated with the ticket
-      var attachments = await this.prisma.tcg_attachments.findMany({
+      const attachments = await this.prisma.tcg_attachments.findMany({
         where: {
           id_tcg_ticket: ticket.id_tcg_ticket,
         },
       });
 
       // Transform to UnifiedTicketingTicketOutput format
-      var unifiedTicket: UnifiedTicketingTicketOutput = {
+      const unifiedTicket: UnifiedTicketingTicketOutput = {
         id: ticket.id_tcg_ticket,
         name: ticket.name || null,
         status: ticket.status || null,
@@ -373,12 +373,12 @@ export class TicketService {
         modified_at: ticket.modified_at,
       };
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: ticket.id_tcg_ticket,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
         unifiedTicket.remote_data = remote_data;
       }
       if (linkedUserId && integrationId) {
@@ -424,7 +424,7 @@ export class TicketService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.tcg_tickets.findFirst({
+        const isCursorPresent = await this.prisma.tcg_tickets.findFirst({
           where: {
             id_connection: connection_id,
             id_tcg_ticket: cursor,
@@ -435,7 +435,7 @@ export class TicketService {
         }
       }
 
-      var tickets = await this.prisma.tcg_tickets.findMany({
+      const tickets = await this.prisma.tcg_tickets.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -465,10 +465,10 @@ export class TicketService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedTickets: UnifiedTicketingTicketOutput[] = await Promise.all(
+      const unifiedTickets: UnifiedTicketingTicketOutput[] = await Promise.all(
         tickets.map(async (ticket) => {
           // Fetch field mappings for the ticket
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: ticket.id_tcg_ticket,
@@ -479,7 +479,7 @@ export class TicketService {
             },
           });
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -487,13 +487,13 @@ export class TicketService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-          var field_mappings = Object.fromEntries(fieldMappingsMap);
+          const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           let tagsArray;
           if (ticket.tags) {
-            var fetchedTags = await Promise.all(
+            const fetchedTags = await Promise.all(
               ticket.tags.map(async (tagUuid) => {
-                var tag = await this.prisma.tcg_tags.findUnique({
+                const tag = await this.prisma.tcg_tags.findUnique({
                   where: {
                     id_tcg_tag: tagUuid,
                   },
@@ -506,9 +506,9 @@ export class TicketService {
 
           let collectionsArray;
           if (ticket.collections) {
-            var fetchedCollections = await Promise.all(
+            const fetchedCollections = await Promise.all(
               ticket.collections.map(async (collUuid) => {
-                var coll = await this.prisma.tcg_collections.findUnique({
+                const coll = await this.prisma.tcg_collections.findUnique({
                   where: {
                     id_tcg_collection: collUuid,
                   },
@@ -520,13 +520,13 @@ export class TicketService {
           }
 
           // Fetch attachment IDs associated with the ticket
-          var attachments = await this.prisma.tcg_attachments.findMany({
+          const attachments = await this.prisma.tcg_attachments.findMany({
             where: {
               id_tcg_ticket: ticket.id_tcg_ticket,
             },
           });
           // Transform to UnifiedTicketingTicketOutput format
-          var unifiedTicket: UnifiedTicketingTicketOutput = {
+          const unifiedTicket: UnifiedTicketingTicketOutput = {
             id: ticket.id_tcg_ticket,
             name: ticket.name || null,
             status: ticket.status || null,
@@ -551,10 +551,10 @@ export class TicketService {
 
       let res: UnifiedTicketingTicketOutput[] = unifiedTickets;
       if (remote_data) {
-        var remote_array_data: UnifiedTicketingTicketOutput[] =
+        const remote_array_data: UnifiedTicketingTicketOutput[] =
           await Promise.all(
             res.map(async (ticket) => {
-              var resp = await this.prisma.remote_data.findFirst({
+              const resp = await this.prisma.remote_data.findFirst({
                 where: {
                   ressource_owner_id: ticket.id,
                 },
