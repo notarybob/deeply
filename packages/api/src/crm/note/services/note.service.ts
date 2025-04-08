@@ -39,20 +39,20 @@ export class NoteService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmNoteOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
       await this.validateUserId(unifiedNoteData.user_id);
       await this.validateCompanyId(unifiedNoteData.company_id);
       await this.validateContactId(unifiedNoteData.contact_id);
       await this.validateDealId(unifiedNoteData.deal_id);
 
-      var customFieldMappings =
+      const customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           'crm.note',
         );
 
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedCrmNoteInput>({
           sourceObject: unifiedNoteData,
           targetType: CrmObject.note,
@@ -61,14 +61,14 @@ export class NoteService {
           customFieldMappings: [],
         });
 
-      var service: INoteService =
+      const service: INoteService =
         this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalNoteOutput> = await service.addNote(
+      const resp: ApiResponse<OriginalNoteOutput> = await service.addNote(
         desunifiedObject,
         linkedUserId,
       );
 
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalNoteOutput[]
       >({
         sourceObject: [resp.data],
@@ -79,10 +79,10 @@ export class NoteService {
         customFieldMappings: [],
       })) as UnifiedCrmNoteOutput[];
 
-      var source_note = resp.data;
-      var target_note = unifiedObject[0];
+      const source_note = resp.data;
+      const target_note = unifiedObject[0];
 
-      var unique_crm_note_id = await this.saveOrUpdateNote(
+      const unique_crm_note_id = await this.saveOrUpdateNote(
         target_note,
         connection_id,
       );
@@ -99,7 +99,7 @@ export class NoteService {
         source_note,
       );
 
-      var result_note = await this.getNote(
+      const result_note = await this.getNote(
         unique_crm_note_id,
         undefined,
         undefined,
@@ -108,8 +108,8 @@ export class NoteService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -137,7 +137,7 @@ export class NoteService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -146,7 +146,7 @@ export class NoteService {
 
   async validateUserId(userId?: string) {
     if (userId) {
-      var user = await this.prisma.crm_users.findUnique({
+      const user = await this.prisma.crm_users.findUnique({
         where: { id_crm_user: userId },
       });
       if (!user)
@@ -156,7 +156,7 @@ export class NoteService {
 
   async validateCompanyId(companyId?: string) {
     if (companyId) {
-      var company = await this.prisma.crm_companies.findUnique({
+      const company = await this.prisma.crm_companies.findUnique({
         where: { id_crm_company: companyId },
       });
       if (!company)
@@ -168,7 +168,7 @@ export class NoteService {
 
   async validateContactId(contactId?: string) {
     if (contactId) {
-      var contact = await this.prisma.crm_contacts.findUnique({
+      const contact = await this.prisma.crm_contacts.findUnique({
         where: { id_crm_contact: contactId },
       });
       if (!contact)
@@ -180,7 +180,7 @@ export class NoteService {
 
   async validateDealId(dealId?: string) {
     if (dealId) {
-      var deal = await this.prisma.crm_deals.findUnique({
+      const deal = await this.prisma.crm_deals.findUnique({
         where: { id_crm_deal: dealId },
       });
       if (!deal)
@@ -192,11 +192,11 @@ export class NoteService {
     note: UnifiedCrmNoteOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingNote = await this.prisma.crm_notes.findFirst({
+    const existingNote = await this.prisma.crm_notes.findFirst({
       where: { remote_id: note.remote_id, id_connection: connection_id },
     });
 
-    var data: any = {
+    const data: any = {
       modified_at: new Date(),
       content: note.content,
       id_crm_contact: note.contact_id,
@@ -206,7 +206,7 @@ export class NoteService {
     };
 
     if (existingNote) {
-      var res = await this.prisma.crm_notes.update({
+      const res = await this.prisma.crm_notes.update({
         where: { id_crm_note: existingNote.id_crm_note },
         data: data,
       });
@@ -217,7 +217,7 @@ export class NoteService {
       data.id_connection = connection_id;
       data.id_crm_note = uuidv4();
 
-      var newNote = await this.prisma.crm_notes.create({ data: data });
+      const newNote = await this.prisma.crm_notes.create({ data: data });
       return newNote.id_crm_note;
     }
   }
@@ -231,14 +231,14 @@ export class NoteService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmNoteOutput> {
     try {
-      var note = await this.prisma.crm_notes.findUnique({
+      const note = await this.prisma.crm_notes.findUnique({
         where: {
           id_crm_note: id_note,
         },
       });
 
       // Fetch field mappings for the note
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: note.id_crm_note,
@@ -249,17 +249,17 @@ export class NoteService {
         },
       });
 
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedCrmNoteOutput format
-      var unifiedNote: UnifiedCrmNoteOutput = {
+      const unifiedNote: UnifiedCrmNoteOutput = {
         id: note.id_crm_note,
         content: note.content,
         company_id: note.id_crm_company,
@@ -277,12 +277,12 @@ export class NoteService {
       };
 
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: note.id_crm_note,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -330,7 +330,7 @@ export class NoteService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.crm_notes.findFirst({
+        const isCursorPresent = await this.prisma.crm_notes.findFirst({
           where: {
             id_connection: connection_id,
             id_crm_note: cursor,
@@ -341,7 +341,7 @@ export class NoteService {
         }
       }
 
-      var notes = await this.prisma.crm_notes.findMany({
+      const notes = await this.prisma.crm_notes.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -367,10 +367,10 @@ export class NoteService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedNotes: UnifiedCrmNoteOutput[] = await Promise.all(
+      const unifiedNotes: UnifiedCrmNoteOutput[] = await Promise.all(
         notes.map(async (note) => {
           // Fetch field mappings for the ticket
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: note.id_crm_note,
@@ -381,7 +381,7 @@ export class NoteService {
             },
           });
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -389,7 +389,7 @@ export class NoteService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-var field_mappings = Object.fromEntries(fieldMappingsMap);
+const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedCrmNoteOutput format
           return {
@@ -410,14 +410,14 @@ var field_mappings = Object.fromEntries(fieldMappingsMap);
       let res: UnifiedCrmNoteOutput[] = unifiedNotes;
 
       if (remote_data) {
-        var remote_array_data: UnifiedCrmNoteOutput[] = await Promise.all(
+        const remote_array_data: UnifiedCrmNoteOutput[] = await Promise.all(
           res.map(async (note) => {
-            var resp = await this.prisma.remote_data.findFirst({
+            const resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: note.id,
               },
             });
-            var remote_data = JSON.parse(resp.data);
+            const remote_data = JSON.parse(resp.data);
             return { ...note, remote_data };
           }),
         );
