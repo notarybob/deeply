@@ -60,7 +60,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
   /*async kickstartSync(user_id?: string) {
     try {
       this.logger.log('Syncing fulfillmentorderss...');
-      const users = user_id
+      var users = user_id
         ? [
             await this.prisma.users.findUnique({
               where: {
@@ -70,23 +70,23 @@ export class SyncService implements OnModuleInit, IBaseSync {
           ]
         : await this.prisma.users.findMany();
       if (users && users.length > 0) {
-        for (const user of users) {
-          const projects = await this.prisma.projects.findMany({
+        for (var user of users) {
+          var projects = await this.prisma.projects.findMany({
             where: {
               id_user: user.id_user,
             },
           });
-          for (const project of projects) {
-            const id_project = project.id_project;
-            const linkedUsers = await this.prisma.linked_users.findMany({
+          for (var project of projects) {
+            var id_project = project.id_project;
+            var linkedUsers = await this.prisma.linked_users.findMany({
               where: {
                 id_project: id_project,
               },
             });
             linkedUsers.map(async (linkedUser) => {
               try {
-                const providers = ECOMMERCE_PROVIDERS;
-                for (const provider of providers) {
+                var providers = ECOMMERCE_PROVIDERS;
+                for (var provider of providers) {
                   try {
                     await this.syncForLinkedUser({
                       integrationId: provider,
@@ -110,8 +110,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      const { integrationId, linkedUserId } = param;
-      const service: IFulfillmentOrdersService =
+      var { integrationId, linkedUserId } = param;
+      var service: IFulfillmentOrdersService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -140,9 +140,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<EcommerceFulfillmentOrders[]> {
     try {
-      const fulfillmentorderss_results: EcommerceFulfillmentOrders[] = [];
+      var fulfillmentorderss_results: EcommerceFulfillmentOrders[] = [];
 
-      const updateOrCreateFulfillmentOrders = async (
+      var updateOrCreateFulfillmentOrders = async (
         fulfillmentorders: UnifiedEcommerceFulfillmentOrdersOutput,
         originId: string,
       ) => {
@@ -165,7 +165,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
             });
         }
 
-        const baseData: any = {
+        var baseData: any = {
           name: fulfillmentorders.name ?? null,
           modified_at: new Date(),
         };
@@ -192,14 +192,14 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < fulfillmentorderss.length; i++) {
-        const fulfillmentorders = fulfillmentorderss[i];
-        const originId = fulfillmentorders.remote_id;
+        var fulfillmentorders = fulfillmentorderss[i];
+        var originId = fulfillmentorders.remote_id;
 
-        const res = await updateOrCreateFulfillmentOrders(
+        var res = await updateOrCreateFulfillmentOrders(
           fulfillmentorders,
           originId,
         );
-        const fulfillmentorders_id = res.id_ecommerce_fulfillmentorders;
+        var fulfillmentorders_id = res.id_ecommerce_fulfillmentorders;
         fulfillmentorderss_results.push(res);
 
         // Process field mappings
