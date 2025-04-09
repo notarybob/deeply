@@ -26,9 +26,9 @@ export class MicrosoftdynamicssalesService implements IUserService {
 
     async sync(data: SyncParam): Promise<ApiResponse<MicrosoftdynamicssalesUserOutput[]>> {
         try {
-            const { linkedUserId } = data;
+            let { linkedUserId } = data;
 
-            const connection = await this.prisma.connections.findFirst({
+            let connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'microsoftdynamicssales',
@@ -43,8 +43,8 @@ export class MicrosoftdynamicssalesService implements IUserService {
             this.logger.log("===========");
 
 
-            const baseURL = `${connection.account_url}/api/data/v9.2/systemusers`;
-            const resp = await axios.get(baseURL, {
+            let baseURL = `${connection.account_url}/api/data/v9.2/systemusers`;
+            let resp = await axios.get(baseURL, {
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${this.cryptoService.decrypt(
