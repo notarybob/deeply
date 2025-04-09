@@ -32,7 +32,7 @@ export class FrontService implements ITicketService {
     linkedUserId: string,
   ): Promise<ApiResponse<FrontTicketOutput>> {
     try {
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'front',
@@ -41,13 +41,13 @@ export class FrontService implements ITicketService {
       });
 
       //We deconstruct as tags must be added separately
-      var { tags, custom_fields, ...restOfTicketData } = ticketData;
+      const { tags, custom_fields, ...restOfTicketData } = ticketData;
 
       let uploads = [];
-      var uuids = restOfTicketData.comment.attachments;
+      const uuids = restOfTicketData.comment.attachments;
       if (uuids && uuids.length > 0) {
-        for (var uuid of uuids) {
-          var res = await this.prisma.tcg_attachments.findUnique({
+        for (const uuid of uuids) {
+          const res = await this.prisma.tcg_attachments.findUnique({
             where: {
               id_tcg_attachment: uuid,
             },
@@ -59,7 +59,7 @@ export class FrontService implements ITicketService {
           //TODO: construct the right binary attachment
           //get the AWS s3 right file
           //TODO: check how to send a stream of a url
-          var fileStream = await this.utils.fetchFileStreamFromURL(
+          const fileStream = await this.utils.fetchFileStreamFromURL(
             res.file_url,
           );
 
@@ -69,11 +69,11 @@ export class FrontService implements ITicketService {
 
       let resp;
       if (uploads.length > 0) {
-        var dataBody = {
+        const dataBody = {
           ...restOfTicketData,
           comment: { ...restOfTicketData.comment },
         };
-        var formData = new FormData();
+        const formData = new FormData();
 
         formData.append('type', dataBody.type);
 
@@ -82,7 +82,7 @@ export class FrontService implements ITicketService {
         }
         if (dataBody.teammate_ids && dataBody.teammate_ids.length > 0) {
           for (let i = 0; i < dataBody.teammate_ids.length; i++) {
-            var item = dataBody.teammate_ids[i];
+            const item = dataBody.teammate_ids[i];
             formData.append(`teammate_ids[${i}]`, item);
           }
         }
@@ -92,7 +92,7 @@ export class FrontService implements ITicketService {
         formData.append('comment[body]', dataBody.comment.body);
 
         for (let i = 0; i < uploads.length; i++) {
-          var up = uploads[i];
+          const up = uploads[i];
           formData.append(`comment[attachments][${i}]`, up);
         }
 
@@ -131,7 +131,7 @@ export class FrontService implements ITicketService {
         if (custom_fields) {
           final = { ...final, custom_fields: custom_fields };
         }
-        var tag_resp = await axios.patch(
+        const tag_resp = await axios.patch(
           `${connection.account_url}/conversations/${resp.data.id}`,
           JSON.stringify(final),
           {
@@ -156,9 +156,9 @@ export class FrontService implements ITicketService {
 
   async sync(data: SyncParam): Promise<ApiResponse<FrontTicketOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'front',
@@ -166,7 +166,7 @@ export class FrontService implements ITicketService {
         },
       });
 
-      var resp = await axios.get(`${connection.account_url}/conversations`, {
+      const resp = await axios.get(`${connection.account_url}/conversations`, {
         headers: {
           Authorization: `Bearer ${this.cryptoService.decrypt(
             connection.access_token,
