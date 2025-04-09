@@ -29,7 +29,7 @@ export class BalanceSheetService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingBalancesheetOutput> {
     try {
-      const balanceSheet = await this.prisma.acc_balance_sheets.findUnique({
+      let balanceSheet = await this.prisma.acc_balance_sheets.findUnique({
         where: { id_acc_balance_sheet: id_acc_balance_sheet },
       });
 
@@ -39,23 +39,23 @@ export class BalanceSheetService {
         );
       }
 
-      const lineItems =
+      let lineItems =
         await this.prisma.acc_balance_sheets_report_items.findMany({
           where: { id_acc_company_info: balanceSheet.id_acc_company_info },
         });
 
-      const values = await this.prisma.value.findMany({
+      let values = await this.prisma.value.findMany({
         where: {
           entity: { ressource_owner_id: balanceSheet.id_acc_balance_sheet },
         },
         include: { attribute: true },
       });
 
-      const field_mappings = Object.fromEntries(
+      let field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      const unifiedBalanceSheet: UnifiedAccountingBalancesheetOutput = {
+      let unifiedBalanceSheet: UnifiedAccountingBalancesheetOutput = {
         id: balanceSheet.id_acc_balance_sheet,
         name: balanceSheet.name,
         currency: balanceSheet.currency as CurrencyCode,
@@ -84,7 +84,7 @@ export class BalanceSheetService {
       };
 
       if (remote_data) {
-        const remoteDataRecord = await this.prisma.remote_data.findFirst({
+        let remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: { ressource_owner_id: balanceSheet.id_acc_balance_sheet },
         });
         unifiedBalanceSheet.remote_data = remoteDataRecord
@@ -128,35 +128,35 @@ export class BalanceSheetService {
     previous_cursor: string | null;
   }> {
     try {
-      const balanceSheets = await this.prisma.acc_balance_sheets.findMany({
+      let balanceSheets = await this.prisma.acc_balance_sheets.findMany({
         take: limit + 1,
         cursor: cursor ? { id_acc_balance_sheet: cursor } : undefined,
         where: { id_connection: connectionId },
         orderBy: { created_at: 'asc' },
       });
 
-      const hasNextPage = balanceSheets.length > limit;
+      let hasNextPage = balanceSheets.length > limit;
       if (hasNextPage) balanceSheets.pop();
 
-      const unifiedBalanceSheets = await Promise.all(
+      let unifiedBalanceSheets = await Promise.all(
         balanceSheets.map(async (balanceSheet) => {
-          const lineItems =
+          let lineItems =
             await this.prisma.acc_balance_sheets_report_items.findMany({
               where: { id_acc_company_info: balanceSheet.id_acc_company_info },
             });
 
-          const values = await this.prisma.value.findMany({
+          let values = await this.prisma.value.findMany({
             where: {
               entity: { ressource_owner_id: balanceSheet.id_acc_balance_sheet },
             },
             include: { attribute: true },
           });
 
-          const field_mappings = Object.fromEntries(
+          let field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          const unifiedBalanceSheet: UnifiedAccountingBalancesheetOutput = {
+          let unifiedBalanceSheet: UnifiedAccountingBalancesheetOutput = {
             id: balanceSheet.id_acc_balance_sheet,
             name: balanceSheet.name,
             currency: balanceSheet.currency as CurrencyCode,
@@ -185,7 +185,7 @@ export class BalanceSheetService {
           };
 
           if (remote_data) {
-            const remoteDataRecord = await this.prisma.remote_data.findFirst({
+            let remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: { ressource_owner_id: balanceSheet.id_acc_balance_sheet },
             });
             unifiedBalanceSheet.remote_data = remoteDataRecord
