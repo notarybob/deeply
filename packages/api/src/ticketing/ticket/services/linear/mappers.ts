@@ -35,11 +35,11 @@ export class LinearTicketMapper implements ITicketMapper {
         }[],
         connectionId?: string,
     ): Promise<LinearTicketInput> {
-        // const remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
+        // var remote_project_id = await this.utils.getCollectionRemoteIdFromUuid(
         //     source.collections[0] as string,
         // );
 
-        const result: LinearTicketInput = {
+        var result: LinearTicketInput = {
             title: source.name,
             description: source.description ? source.description : null,
             // Passing new Field to retreive repositroy info to add ticket to that repo
@@ -49,20 +49,20 @@ export class LinearTicketMapper implements ITicketMapper {
         };
 
         if (source.assigned_to && source.assigned_to.length > 0) {
-            const data = await this.utils.getAsigneeRemoteIdFromUserUuid(
+            var data = await this.utils.getAsigneeRemoteIdFromUserUuid(
                 source.assigned_to[0],
             );
             if (data) {
                 result.assignee = { id: data };
             }
         }
-        const tags = source.tags as LinearTagInput[];
+        var tags = source.tags as LinearTagInput[];
         if (tags) {
             result.labels.nodes = tags;
         }
 
         if (source.comment) {
-            const comment =
+            var comment =
                 (await this.coreUnificationService.desunify<UnifiedTicketingCommentOutput>({
                     sourceObject: source.comment,
                     targetType: TicketingObject.comment,
@@ -77,8 +77,8 @@ export class LinearTicketMapper implements ITicketMapper {
         // TODO - Custom fields mapping
         // if (customFieldMappings && source.field_mappings) {
         //   result.meta = {}; // Ensure meta exists
-        //   for (const [k, v] of Object.entries(source.field_mappings)) {
-        //     const mapping = customFieldMappings.find(
+        //   for (var [k, v] of Object.entries(source.field_mappings)) {
+        //     var mapping = customFieldMappings.find(
         //       (mapping) => mapping.slug === k,
         //     );
         //     if (mapping) {
@@ -98,7 +98,7 @@ export class LinearTicketMapper implements ITicketMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedTicketingTicketOutput | UnifiedTicketingTicketOutput[]> {
-        const sourcesArray = Array.isArray(source) ? source : [source];
+        var sourcesArray = Array.isArray(source) ? source : [source];
         return Promise.all(
             sourcesArray.map(async (ticket) =>
                 this.mapSingleTicketToUnified(
@@ -118,9 +118,9 @@ export class LinearTicketMapper implements ITicketMapper {
             remote_id: string;
         }[],
     ): Promise<UnifiedTicketingTicketOutput> {
-        const field_mappings: { [key: string]: any } = {};
+        var field_mappings: { [key: string]: any } = {};
         if (customFieldMappings) {
-            for (const mapping of customFieldMappings) {
+            for (var mapping of customFieldMappings) {
                 field_mappings[mapping.slug] = ticket[mapping.remote_id];
             }
         }
@@ -132,7 +132,7 @@ export class LinearTicketMapper implements ITicketMapper {
 
         if (ticket.assignee) {
             //fetch the right assignee uuid from remote id
-            const user_id = await this.utils.getUserUuidFromRemoteId(
+            var user_id = await this.utils.getUserUuidFromRemoteId(
                 String(ticket.assignee.id),
                 connectionId,
             );
@@ -142,7 +142,7 @@ export class LinearTicketMapper implements ITicketMapper {
         }
 
         if (ticket.labels.nodes.length > 0) {
-            const tags = await this.ingestService.ingestData<
+            var tags = await this.ingestService.ingestData<
                 UnifiedTicketingTagOutput,
                 LinearTagOutput
             >(
@@ -165,7 +165,7 @@ export class LinearTicketMapper implements ITicketMapper {
         }
 
         if (ticket.project) {
-            const tcg_collection_id = await this.utils.getCollectionUuidFromRemoteId(
+            var tcg_collection_id = await this.utils.getCollectionUuidFromRemoteId(
                 String(ticket.project.id),
                 connectionId,
             );
@@ -174,7 +174,7 @@ export class LinearTicketMapper implements ITicketMapper {
             }
         }
 
-        const unifiedTicket: UnifiedTicketingTicketOutput = {
+        var unifiedTicket: UnifiedTicketingTicketOutput = {
             remote_id: ticket.id,
             remote_data: ticket,
             name: ticket.title,
