@@ -40,19 +40,19 @@ export class TaskService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmTaskOutput> {
     try {
-      var linkedUser = await this.validateLinkedUser(linkedUserId);
+      const linkedUser = await this.validateLinkedUser(linkedUserId);
       await this.validateCompanyId(unifiedTaskData.company_id);
       await this.validateUserId(unifiedTaskData.user_id);
       await this.validateDealId(unifiedTaskData.deal_id);
 
-      var customFieldMappings =
+      const customFieldMappings =
         await this.fieldMappingService.getCustomFieldMappings(
           integrationId,
           linkedUserId,
           'crm.task',
         );
 
-      var desunifiedObject =
+      const desunifiedObject =
         await this.coreUnification.desunify<UnifiedCrmTaskInput>({
           sourceObject: unifiedTaskData,
           targetType: CrmObject.task,
@@ -61,14 +61,14 @@ export class TaskService {
           customFieldMappings: [],
         });
 
-      var service: ITaskService =
+      const service: ITaskService =
         this.serviceRegistry.getService(integrationId);
-      var resp: ApiResponse<OriginalTaskOutput> = await service.addTask(
+      const resp: ApiResponse<OriginalTaskOutput> = await service.addTask(
         desunifiedObject,
         linkedUserId,
       );
 
-      var unifiedObject = (await this.coreUnification.unify<
+      const unifiedObject = (await this.coreUnification.unify<
         OriginalTaskOutput[]
       >({
         sourceObject: [resp.data],
@@ -79,10 +79,10 @@ export class TaskService {
         customFieldMappings: [],
       })) as UnifiedCrmTaskOutput[];
 
-      var source_task = resp.data;
-      var target_task = unifiedObject[0];
+      const source_task = resp.data;
+      const target_task = unifiedObject[0];
 
-      var unique_crm_task_id = await this.saveOrUpdateTask(
+      const unique_crm_task_id = await this.saveOrUpdateTask(
         target_task,
         connection_id,
       );
@@ -92,7 +92,7 @@ export class TaskService {
         source_task,
       );
 
-      var result_task = await this.getTask(
+      const result_task = await this.getTask(
         unique_crm_task_id,
         undefined,
         undefined,
@@ -101,8 +101,8 @@ export class TaskService {
         remote_data,
       );
 
-      var status_resp = resp.statusCode === 201 ? 'success' : 'fail';
-      var event = await this.prisma.events.create({
+      const status_resp = resp.statusCode === 201 ? 'success' : 'fail';
+      const event = await this.prisma.events.create({
         data: {
           id_connection: connection_id,
           id_project: project_id,
@@ -130,7 +130,7 @@ export class TaskService {
   }
 
   async validateLinkedUser(linkedUserId: string) {
-    var linkedUser = await this.prisma.linked_users.findUnique({
+    const linkedUser = await this.prisma.linked_users.findUnique({
       where: { id_linked_user: linkedUserId },
     });
     if (!linkedUser) throw new ReferenceError('Linked User Not Found');
@@ -139,7 +139,7 @@ export class TaskService {
 
   async validateCompanyId(companyId?: string) {
     if (companyId) {
-      var company = await this.prisma.crm_companies.findUnique({
+      const company = await this.prisma.crm_companies.findUnique({
         where: { id_crm_company: companyId },
       });
       if (!company)
@@ -151,7 +151,7 @@ export class TaskService {
 
   async validateUserId(userId?: string) {
     if (userId) {
-      var user = await this.prisma.crm_users.findUnique({
+      const user = await this.prisma.crm_users.findUnique({
         where: { id_crm_user: userId },
       });
       if (!user)
@@ -161,7 +161,7 @@ export class TaskService {
 
   async validateDealId(dealId?: string) {
     if (dealId) {
-      var deal = await this.prisma.crm_deals.findUnique({
+      const deal = await this.prisma.crm_deals.findUnique({
         where: { id_crm_deal: dealId },
       });
       if (!deal)
@@ -173,10 +173,10 @@ export class TaskService {
     task: UnifiedCrmTaskOutput,
     connection_id: string,
   ): Promise<string> {
-    var existingTask = await this.prisma.crm_tasks.findFirst({
+    const existingTask = await this.prisma.crm_tasks.findFirst({
       where: { remote_id: task.remote_id, id_connection: connection_id },
     });
-    var data: any = {
+    const data: any = {
       modified_at: new Date(),
       subject: task.subject,
       content: task.content,
@@ -189,7 +189,7 @@ export class TaskService {
     };
 
     if (existingTask) {
-      var res = await this.prisma.crm_tasks.update({
+      const res = await this.prisma.crm_tasks.update({
         where: { id_crm_task: existingTask.id_crm_task },
         data: data,
       });
@@ -200,7 +200,7 @@ export class TaskService {
       data.id_connection = connection_id;
       data.id_crm_task = uuidv4();
 
-      var newTask = await this.prisma.crm_tasks.create({ data: data });
+      const newTask = await this.prisma.crm_tasks.create({ data: data });
       return newTask.id_crm_task;
     }
   }
@@ -214,14 +214,14 @@ export class TaskService {
     remote_data?: boolean,
   ): Promise<UnifiedCrmTaskOutput> {
     try {
-      var task = await this.prisma.crm_tasks.findUnique({
+      const task = await this.prisma.crm_tasks.findUnique({
         where: {
           id_crm_task: id_task,
         },
       });
 
       // Fetch field mappings for the task
-      var values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: task.id_crm_task,
@@ -232,17 +232,17 @@ export class TaskService {
         },
       });
 
-      var fieldMappingsMap = new Map();
+      const fieldMappingsMap = new Map();
 
       values.forEach((value) => {
         fieldMappingsMap.set(value.attribute.slug, value.data);
       });
 
       // Convert the map to an array of objects
-      var field_mappings = Object.fromEntries(fieldMappingsMap);
+      const field_mappings = Object.fromEntries(fieldMappingsMap);
 
       // Transform to UnifiedCrmTaskOutput format
-      var unifiedTask: UnifiedCrmTaskOutput = {
+      const unifiedTask: UnifiedCrmTaskOutput = {
         id: task.id_crm_task,
         subject: task.subject,
         content: task.content,
@@ -262,12 +262,12 @@ export class TaskService {
       };
 
       if (remote_data) {
-        var resp = await this.prisma.remote_data.findFirst({
+        const resp = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: task.id_crm_task,
           },
         });
-        var remote_data = JSON.parse(resp.data);
+        const remote_data = JSON.parse(resp.data);
 
         res = {
           ...res,
@@ -316,7 +316,7 @@ export class TaskService {
       let next_cursor = null;
 
       if (cursor) {
-        var isCursorPresent = await this.prisma.crm_tasks.findFirst({
+        const isCursorPresent = await this.prisma.crm_tasks.findFirst({
           where: {
             id_connection: connection_id,
             id_crm_task: cursor,
@@ -327,7 +327,7 @@ export class TaskService {
         }
       }
 
-      var tasks = await this.prisma.crm_tasks.findMany({
+      const tasks = await this.prisma.crm_tasks.findMany({
         take: limit + 1,
         cursor: cursor
           ? {
@@ -353,10 +353,10 @@ export class TaskService {
         prev_cursor = Buffer.from(cursor).toString('base64');
       }
 
-      var unifiedTasks: UnifiedCrmTaskOutput[] = await Promise.all(
+      const unifiedTasks: UnifiedCrmTaskOutput[] = await Promise.all(
         tasks.map(async (task) => {
           // Fetch field mappings for the ticket
-          var values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id: task.id_crm_task,
@@ -367,7 +367,7 @@ export class TaskService {
             },
           });
           // Create a map to store unique field mappings
-          var fieldMappingsMap = new Map();
+          const fieldMappingsMap = new Map();
 
           values.forEach((value) => {
             fieldMappingsMap.set(value.attribute.slug, value.data);
@@ -375,7 +375,7 @@ export class TaskService {
 
           // Convert the map to an array of objects
           // Convert the map to an object
-var field_mappings = Object.fromEntries(fieldMappingsMap);
+const field_mappings = Object.fromEntries(fieldMappingsMap);
 
           // Transform to UnifiedCrmTaskOutput format
           return {
@@ -398,14 +398,14 @@ var field_mappings = Object.fromEntries(fieldMappingsMap);
       let res: UnifiedCrmTaskOutput[] = unifiedTasks;
 
       if (remote_data) {
-        var remote_array_data: UnifiedCrmTaskOutput[] = await Promise.all(
+        const remote_array_data: UnifiedCrmTaskOutput[] = await Promise.all(
           res.map(async (task) => {
-            var resp = await this.prisma.remote_data.findFirst({
+            const resp = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id: task.id,
               },
             });
-            var remote_data = JSON.parse(resp.data);
+            const remote_data = JSON.parse(resp.data);
             return { ...task, remote_data };
           }),
         );
