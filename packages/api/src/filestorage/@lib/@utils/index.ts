@@ -7,7 +7,7 @@ export class Utils {
   constructor(private readonly prisma: PrismaService) {}
   getMimeType(file_name: string): string {
     try {
-      let extension = getFileExtension(file_name);
+      const extension = getFileExtension(file_name);
       if (!extension) throw new Error('extension doesnt exist for your file');
       return MIME_TYPES[extension.toLowerCase()];
     } catch (error) {
@@ -16,7 +16,7 @@ export class Utils {
   }
   async getRemoteFolderParentId(id_folder: string) {
     try {
-      let res = await this.prisma.fs_folders.findFirst({
+      const res = await this.prisma.fs_folders.findFirst({
         where: {
           id_fs_folder: id_folder,
         },
@@ -29,7 +29,7 @@ export class Utils {
   }
   async getFolderIdFromRemote(remote_id: string, connection_id: string) {
     try {
-      let res = await this.prisma.fs_folders.findFirst({
+      const res = await this.prisma.fs_folders.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -44,7 +44,7 @@ export class Utils {
 
   async getFileIdFromRemote(remote_id: string, connection_id: string) {
     try {
-      let res = await this.prisma.fs_files.findFirst({
+      const res = await this.prisma.fs_files.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
