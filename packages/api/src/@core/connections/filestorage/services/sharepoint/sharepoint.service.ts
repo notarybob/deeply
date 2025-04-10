@@ -62,10 +62,10 @@ export class SharepointConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -97,8 +97,8 @@ export class SharepointConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code, site, tenant } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code, site, tenant } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'sharepoint',
@@ -106,19 +106,19 @@ export class SharepointConnectionService extends AbstractBaseConnectionService {
         },
       });
 
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
 
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         redirect_uri: REDIRECT_URI,
         code: code,
         grant_type: 'authorization_code',
       });
-      const res = await axios.post(
+      var res = await axios.post(
         `https://login.microsoftonline.com/common/oauth2/v2.0/token`,
         formData.toString(),
         {
@@ -130,13 +130,13 @@ export class SharepointConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: SharepointOAuthResponse = res.data;
+      var data: SharepointOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : sharepoint filestorage ' + JSON.stringify(data),
       );
 
       // get site_id from tenant and sitename
-      const site_details = await axios.get(
+      var site_details = await axios.get(
         `https://graph.microsoft.com/v1.0/sites/${site}.sharepoint.com:/sites/${tenant}`,
         {
           headers: {
@@ -144,10 +144,10 @@ export class SharepointConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const site_id = site_details.data.id;
+      var site_id = site_details.data.id;
 
       let db_res;
-      const connection_token = uuidv4();
+      var connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -208,20 +208,20 @@ export class SharepointConnectionService extends AbstractBaseConnectionService {
   }
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      const { connectionId, refreshToken, projectId } = opts;
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var { connectionId, refreshToken, projectId } = opts;
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
         redirect_uri: REDIRECT_URI,
       });
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const res = await axios.post(
+      var res = await axios.post(
         `https://login.microsoftonline.com/common/oauth2/v2.0/token`,
         formData.toString(),
         {
@@ -233,7 +233,7 @@ export class SharepointConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: SharepointOAuthResponse = res.data;
+      var data: SharepointOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
