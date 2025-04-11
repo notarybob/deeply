@@ -16,8 +16,8 @@ export class RetryHandler {
     linkedUserId: string,
   ): Promise<PassthroughResponse> {
     try {
-      let response: AxiosResponse = await axios(config);
-      let responseInfo = {
+      const response: AxiosResponse = await axios(config);
+      const responseInfo = {
         status: response.status,
         statusText: response.statusText,
         headers: response.headers,
@@ -26,7 +26,7 @@ export class RetryHandler {
       return responseInfo;
     } catch (error) {
       if (this.isRateLimitError(error)) {
-        let retryId = uuidv4();
+        const retryId = uuidv4();
         await this.queues
           .getFailedPassthroughRequestsQueue()
           .add(
@@ -49,11 +49,11 @@ export class RetryHandler {
     return backOff(
       async () => {
         try {
-          let response = await axios(config);
+          const response = await axios(config);
           return response;
         } catch (error) {
           if (error.response && error.response.status === 429) {
-            let retryAfter = this.getRetryAfterDelay(error.response);
+            const retryAfter = this.getRetryAfterDelay(error.response);
             if (retryAfter) {
               await new Promise((resolve) => setTimeout(resolve, retryAfter));
             }
@@ -77,8 +77,8 @@ export class RetryHandler {
   }
 
   private getRetryAfterDelay(response: AxiosResponse): number | null {
-    for (let header of RATE_LIMIT_HEADERS) {
-      let value = response.headers[header.toLowerCase()];
+    for (const header of RATE_LIMIT_HEADERS) {
+      const value = response.headers[header.toLowerCase()];
       if (value) {
         if (header.toLowerCase() === 'retry-after') {
           return this.parseRetryAfter(value);
@@ -95,7 +95,7 @@ export class RetryHandler {
 
     if (isNaN(Number(value))) {
       // If it's not a number, treat it as a date string
-      let retryDate = new Date(value);
+      const retryDate = new Date(value);
       return isNaN(retryDate.getTime())
         ? null
         : Math.max(0, retryDate.getTime() - Date.now());
@@ -108,12 +108,12 @@ export class RetryHandler {
   private parseRateLimitReset(value: string): number | null {
     if (!value) return null;
 
-    let resetTime = parseInt(value, 10);
+    const resetTime = parseInt(value, 10);
     return isNaN(resetTime) ? null : Math.max(0, resetTime * 1000 - Date.now());
   }
 
   async getRetryStatus(retryId: string): Promise<AxiosResponse | null> {
-    let job = await this.queues
+    const job = await this.queues
       .getFailedPassthroughRequestsQueue()
       .getJob(retryId);
     if (!job) {
