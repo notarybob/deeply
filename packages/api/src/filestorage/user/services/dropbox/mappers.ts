@@ -60,9 +60,9 @@ export class DropboxUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedFilestorageUserOutput> {
-    let field_mappings: { [key: string]: any } = {};
+    const field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (let mapping of customFieldMappings) {
+      for (const mapping of customFieldMappings) {
         if (user.profile.hasOwnProperty(mapping.slug)) {
           field_mappings[mapping.remote_id] =
             user.profile[mapping.slug] || null;
