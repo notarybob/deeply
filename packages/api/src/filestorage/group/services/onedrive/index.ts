@@ -35,9 +35,9 @@ export class OnedriveService implements IGroupService {
    */
   async sync(data: SyncParam): Promise<ApiResponse<OnedriveGroupOutput[]>> {
     try {
-      const { linkedUserId } = data;
+      var { linkedUserId } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'onedrive',
@@ -45,7 +45,7 @@ export class OnedriveService implements IGroupService {
         },
       });
 
-      const config: AxiosRequestConfig = {
+      var config: AxiosRequestConfig = {
         method: 'get',
         url: `${connection.account_url}/v1.0/groups`,
         headers: {
@@ -56,9 +56,9 @@ export class OnedriveService implements IGroupService {
         },
       };
 
-      const resp: AxiosResponse = await this.makeRequestWithRetry(config);
+      var resp: AxiosResponse = await this.makeRequestWithRetry(config);
 
-      const groups: OnedriveGroupOutput[] = resp.data.value;
+      var groups: OnedriveGroupOutput[] = resp.data.value;
       await this.assignUsersForGroups(groups, connection);
       this.logger.log(`Synced ${groups.length} OneDrive groups successfully.`);
 
@@ -80,16 +80,16 @@ export class OnedriveService implements IGroupService {
     groups: OnedriveGroupOutput[],
     connection: connections,
   ) {
-    const userLookupCache: Map<string, string> = new Map();
+    var userLookupCache: Map<string, string> = new Map();
 
-    for (const group of groups) {
-      const users = await this.fetchUsersForGroup(group, connection);
-      const internalUsers = await Promise.all(
+    for (var group of groups) {
+      var users = await this.fetchUsersForGroup(group, connection);
+      var internalUsers = await Promise.all(
         users.map(async (user) => {
           if (userLookupCache.has(user.id)) {
             return userLookupCache.get(user.id);
           }
-          const internalUser = await this.prisma.fs_users.findFirst({
+          var internalUser = await this.prisma.fs_users.findFirst({
             where: {
               remote_id: user.id,
             },
@@ -111,7 +111,7 @@ export class OnedriveService implements IGroupService {
     group: OnedriveGroupOutput,
     connection: connections,
   ) {
-    const config: AxiosRequestConfig = {
+    var config: AxiosRequestConfig = {
       timeout: 10000,
       method: 'get',
       url: `${connection.account_url}/v1.0/groups/${group.id}/members`,
@@ -123,7 +123,7 @@ export class OnedriveService implements IGroupService {
       },
     };
 
-    const resp: AxiosResponse = await this.makeRequestWithRetry(config);
+    var resp: AxiosResponse = await this.makeRequestWithRetry(config);
 
     return resp.data.value;
   }
@@ -141,7 +141,7 @@ export class OnedriveService implements IGroupService {
 
     while (attempts < this.MAX_RETRIES) {
       try {
-        const response: AxiosResponse = await axios(config);
+        var response: AxiosResponse = await axios(config);
         return response;
       } catch (error: any) {
         attempts++;
@@ -154,10 +154,10 @@ export class OnedriveService implements IGroupService {
           error.code === 'ETIMEDOUT' ||
           error.response?.code === 'ETIMEDOUT'
         ) {
-          const retryAfter = this.getRetryAfter(
+          var retryAfter = this.getRetryAfter(
             error.response?.headers['retry-after'],
           );
-          const delayTime: number = Math.max(retryAfter * 1000, backoff);
+          var delayTime: number = Math.max(retryAfter * 1000, backoff);
 
           this.logger.warn(
             `Request failed with ${
@@ -195,7 +195,7 @@ export class OnedriveService implements IGroupService {
       return 1; // Default to 1 second if header is missing
     }
 
-    const retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
+    var retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
     return isNaN(retryAfterSeconds) ? 1 : retryAfterSeconds;
   }
 
