@@ -13,7 +13,7 @@ export class Utils {
 
   async getTeamUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.tcg_teams.findFirst({
+      let res = await this.prisma.tcg_teams.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -29,7 +29,7 @@ export class Utils {
 
   async getTeamRemoteIdFromUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_teams.findFirst({
+      let res = await this.prisma.tcg_teams.findFirst({
         where: {
           id_tcg_team: uuid,
         },
@@ -43,7 +43,7 @@ export class Utils {
 
   async getRemoteIdFromTagName(name: string, connection_id: string) {
     try {
-      const res = await this.prisma.tcg_tags.findFirst({
+      let res = await this.prisma.tcg_tags.findFirst({
         where: {
           name: name,
           id_connection: connection_id,
@@ -59,7 +59,7 @@ export class Utils {
 
   async getCommentUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.tcg_comments.findFirst({
+      let res = await this.prisma.tcg_comments.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -75,7 +75,7 @@ export class Utils {
 
   async getUserUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.tcg_users.findFirst({
+      let res = await this.prisma.tcg_users.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -91,7 +91,7 @@ export class Utils {
 
   async getUserRemoteIdFromUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_users.findFirst({
+      let res = await this.prisma.tcg_users.findFirst({
         where: {
           id_tcg_user: uuid,
         },
@@ -105,7 +105,7 @@ export class Utils {
 
   async getContactUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.tcg_contacts.findFirst({
+      let res = await this.prisma.tcg_contacts.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -121,7 +121,7 @@ export class Utils {
 
   async getContactRemoteIdFromUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_contacts.findFirst({
+      let res = await this.prisma.tcg_contacts.findFirst({
         where: {
           id_tcg_contact: uuid,
         },
@@ -136,7 +136,7 @@ export class Utils {
 
   async getAsigneeRemoteIdFromUserUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_users.findFirst({
+      let res = await this.prisma.tcg_users.findFirst({
         where: {
           id_tcg_user: uuid,
         },
@@ -150,7 +150,7 @@ export class Utils {
 
   async getAssigneeMetadataFromUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_users.findUnique({
+      let res = await this.prisma.tcg_users.findUnique({
         where: {
           id_tcg_user: uuid,
         },
@@ -167,7 +167,7 @@ export class Utils {
     connection_id: string,
   ) {
     try {
-      const res = await this.prisma.tcg_collections.findFirst({
+      let res = await this.prisma.tcg_collections.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -183,7 +183,7 @@ export class Utils {
 
   async getCollectionRemoteIdFromUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_collections.findFirst({
+      let res = await this.prisma.tcg_collections.findFirst({
         where: {
           id_tcg_collection: uuid,
         },
@@ -198,7 +198,7 @@ export class Utils {
 
   async getCollectionNameFromUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_collections.findFirst({
+      let res = await this.prisma.tcg_collections.findFirst({
         where: {
           id_tcg_collection: uuid,
         },
@@ -213,7 +213,7 @@ export class Utils {
 
   async getTicketUuidFromRemoteId(remote_id: string, connection_id: string) {
     try {
-      const res = await this.prisma.tcg_tickets.findFirst({
+      let res = await this.prisma.tcg_tickets.findFirst({
         where: {
           remote_id: remote_id,
           id_connection: connection_id,
@@ -229,7 +229,7 @@ export class Utils {
 
   async getTicketRemoteIdFromUuid(uuid: string) {
     try {
-      const res = await this.prisma.tcg_tickets.findFirst({
+      let res = await this.prisma.tcg_tickets.findFirst({
         where: {
           id_tcg_ticket: uuid,
         },
@@ -244,7 +244,7 @@ export class Utils {
 
   getMimeType(file_name: string): string {
     try {
-      const extension = getFileExtension(file_name);
+      let extension = getFileExtension(file_name);
       if (!extension) throw new Error('extension doesnt exist for your file');
       return MIME_TYPES[extension.toLowerCase()];
     } catch (error) {
@@ -254,8 +254,8 @@ export class Utils {
 
   getFileExtensionFromMimeType(mimeType: string): string | undefined {
     try {
-      const normalizedMimeType = mimeType.toLowerCase();
-      for (const [extension, mime] of Object.entries(MIME_TYPES)) {
+      let normalizedMimeType = mimeType.toLowerCase();
+      for (let [extension, mime] of Object.entries(MIME_TYPES)) {
         if (mime.toLowerCase() === normalizedMimeType) {
           return extension;
         }
