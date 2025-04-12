@@ -65,11 +65,11 @@ export class AttachmentController {
     @Query() query: QueryDto,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
-      let { remote_data, limit, cursor } = query;
+      const { remote_data, limit, cursor } = query;
       return this.attachmentService.getAttachments(
         connectionId,
         projectId,
@@ -119,7 +119,7 @@ export class AttachmentController {
     @Param('id') id: string,
     @Query('remote_data') remote_data?: boolean,
   ) {
-    let { linkedUserId, remoteSource, connectionId, projectId } =
+    const { linkedUserId, remoteSource, connectionId, projectId } =
       await this.connectionUtils.getConnectionMetadataFromConnectionToken(
         connection_token,
       );
@@ -162,7 +162,7 @@ export class AttachmentController {
     @Query('remote_data') remote_data?: boolean,
   ) {
     try {
-      let { linkedUserId, remoteSource, connectionId, projectId } =
+      const { linkedUserId, remoteSource, connectionId, projectId } =
         await this.connectionUtils.getConnectionMetadataFromConnectionToken(
           connection_token,
         );
