@@ -56,10 +56,10 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      const { headers } = input;
-      const config = await this.constructPassthrough(input, connectionId);
+      var { headers } = input;
+      var config = await this.constructPassthrough(input, connectionId);
 
-      const connection = await this.prisma.connections.findUnique({
+      var connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -91,8 +91,8 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      const { linkedUserId, projectId, code } = opts;
-      const isNotUnique = await this.prisma.connections.findFirst({
+      var { linkedUserId, projectId, code } = opts;
+      var isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'zendesk',
@@ -100,18 +100,18 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
         },
       });
 
-      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const formData = new URLSearchParams({
+      var formData = new URLSearchParams({
         grant_type: 'authorization_code',
         redirect_uri: REDIRECT_URI,
         code: code,
       });
-      const res = await axios.post(
+      var res = await axios.post(
         'https://api.getbase.com/oauth2/token',
         formData.toString(),
         {
@@ -123,11 +123,11 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: ZendeskSellOAuthResponse = res.data;
+      var data: ZendeskSellOAuthResponse = res.data;
       this.logger.log('OAuth credentials : zendesk ' + JSON.stringify(data));
 
       let db_res;
-      const connection_token = uuidv4();
+      var connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -186,17 +186,17 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
   }
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      const { connectionId, refreshToken, projectId } = opts;
-      const formData = new URLSearchParams({
+      var { connectionId, refreshToken, projectId } = opts;
+      var formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
       });
-      const CREDENTIALS = (await this.cService.getCredentials(
+      var CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      const res = await axios.post(
+      var res = await axios.post(
         'https://api.getbase.com/oauth2/token',
         formData.toString(),
         {
@@ -208,7 +208,7 @@ export class ZendeskConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      const data: ZendeskSellOAuthResponse = res.data;
+      var data: ZendeskSellOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
