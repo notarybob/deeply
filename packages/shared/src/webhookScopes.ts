@@ -1,4 +1,4 @@
-export const scopes = [
+export let scopes = [
     'crm.contact.created',
     'crm.contact.pulled',
     'crm.company.created',
