@@ -31,7 +31,7 @@ export class AttioService implements ICompanyService {
     linkedUserId: string,
   ): Promise<ApiResponse<AttioCompanyOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
@@ -39,7 +39,7 @@ export class AttioService implements ICompanyService {
         },
       });
 
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v2/objects/companies/records`,
         JSON.stringify({
           data: companyData,
@@ -65,16 +65,16 @@ export class AttioService implements ICompanyService {
 
   async sync(data: SyncParam): Promise<ApiResponse<AttioCompanyOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'attio',
           vertical: 'crm',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v2/objects/companies/records/query`,
         {},
         {
