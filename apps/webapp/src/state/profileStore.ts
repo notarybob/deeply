@@ -14,7 +14,7 @@ interface ProfileState {
 }
 
 
-const useProfileStore = create<ProfileState>()((set) => ({
+let useProfileStore = create<ProfileState>()((set) => ({
   profile: null,
   setProfile: (profile_: User_ | null) => set({ profile: profile_ }),
 }));
