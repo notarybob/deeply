@@ -21,7 +21,7 @@ export class SalesforceCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<SalesforceCompanyInput> {
-    const result: any = {
+    var result: any = {
       Name: source.name,
       Industry: source.industry || null,
     };
@@ -35,7 +35,7 @@ export class SalesforceCompanyMapper implements ICompanyMapper {
     }
 
     if (source.addresses && source.addresses.length > 0) {
-      const address = source.addresses[0];
+      var address = source.addresses[0];
       result.BillingCity = address.city;
       result.BillingState = address.state;
       result.BillingPostalCode = address.postal_code;
@@ -44,15 +44,15 @@ export class SalesforceCompanyMapper implements ICompanyMapper {
     }
 
     if (source.user_id) {
-      const owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
+      var owner_id = await this.utils.getRemoteIdFromUserUuid(source.user_id);
       if (owner_id) {
         result.OwnerId = owner_id;
       }
     }
 
     if (customFieldMappings && source.field_mappings) {
-      for (const [k, v] of Object.entries(source.field_mappings)) {
-        const mapping = customFieldMappings.find(
+      for (var [k, v] of Object.entries(source.field_mappings)) {
+        var mapping = customFieldMappings.find(
           (mapping) => mapping.slug === k,
         );
         if (mapping) {
@@ -98,16 +98,16 @@ export class SalesforceCompanyMapper implements ICompanyMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedCrmCompanyOutput> {
-    const field_mappings: { [key: string]: any } = {};
+    var field_mappings: { [key: string]: any } = {};
     if (customFieldMappings) {
-      for (const mapping of customFieldMappings) {
+      for (var mapping of customFieldMappings) {
         field_mappings[mapping.slug] = company[mapping.remote_id];
       }
     }
 
     let opts: any = {};
     if (company.OwnerId) {
-      const owner_id = await this.utils.getUserUuidFromRemoteId(
+      var owner_id = await this.utils.getUserUuidFromRemoteId(
         company.OwnerId,
         connectionId,
       );
