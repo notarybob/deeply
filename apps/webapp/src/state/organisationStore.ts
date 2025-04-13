@@ -7,7 +7,7 @@ interface OrganisationState {
   setOrganisationName: (id: string) => void;
 }
 
-let useOrganisationStore = create<OrganisationState>()((set) => ({
+const useOrganisationStore = create<OrganisationState>()((set) => ({
   idOrg: '000',
   setIdOrg: (id) => set({ idOrg: id }),
   nameOrg: 'org',
