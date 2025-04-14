@@ -34,7 +34,7 @@ export class GithubService implements ICommentService {
         remoteIdTicket: string,
     ): Promise<ApiResponse<GithubCommentOutput>> {
         try {
-            const connection = await this.prisma.connections.findFirst({
+            var connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'github',
@@ -45,7 +45,7 @@ export class GithubService implements ICommentService {
             // Here Github represent Attachment as URL in body of comment as Markdown so we do not have to store in attachement unified object.
 
 
-            const ticket = await this.prisma.tcg_tickets.findFirst({
+            var ticket = await this.prisma.tcg_tickets.findFirst({
                 where: {
                     remote_id: remoteIdTicket,
                     id_connection: connection.id_connection,
@@ -59,7 +59,7 @@ export class GithubService implements ICommentService {
 
 
             // Retrieve the uuid of issue from remote_data
-            const remote_data = await this.prisma.remote_data.findFirst({
+            var remote_data = await this.prisma.remote_data.findFirst({
                 where: {
                     ressource_owner_id: ticket.id_tcg_ticket as string,
                 },
@@ -67,11 +67,11 @@ export class GithubService implements ICommentService {
 
             let res: any = []
 
-            const githubTicketOutput = JSON.parse(remote_data.data) as GithubTicketOutput;
+            var githubTicketOutput = JSON.parse(remote_data.data) as GithubTicketOutput;
 
 
             if (githubTicketOutput.number && githubTicketOutput.repository.name && githubTicketOutput.repository.owner.login) {
-                const resp = await axios.post(
+                var resp = await axios.post(
                     `${connection.account_url}/repos/${githubTicketOutput.repository.owner.login}/${githubTicketOutput.repository.name}/issues/${githubTicketOutput.number}/comments`,
                     JSON.stringify(commentData),
                     {
@@ -88,7 +88,7 @@ export class GithubService implements ICommentService {
             }
 
 
-            //   const resp = await axios.post(
+            //   var resp = await axios.post(
             //     `${connection.account_url}/projects/${remote_project_id}/issues/${iid}/notes`,
             //     JSON.stringify(data),
             //     {
@@ -112,9 +112,9 @@ export class GithubService implements ICommentService {
     }
     async sync(data: SyncParam): Promise<ApiResponse<GithubCommentOutput[]>> {
         try {
-            const { linkedUserId, id_ticket } = data;
+            var { linkedUserId, id_ticket } = data;
 
-            const connection = await this.prisma.connections.findFirst({
+            var connection = await this.prisma.connections.findFirst({
                 where: {
                     id_linked_user: linkedUserId,
                     provider_slug: 'github',
@@ -122,7 +122,7 @@ export class GithubService implements ICommentService {
                 },
             });
             //retrieve ticket remote id so we can retrieve the comments in the original software
-            const ticket = await this.prisma.tcg_tickets.findUnique({
+            var ticket = await this.prisma.tcg_tickets.findUnique({
                 where: {
                     id_tcg_ticket: id_ticket as string,
                 },
@@ -133,16 +133,16 @@ export class GithubService implements ICommentService {
             });
 
             // Retrieve the uuid of issue from remote_data
-            const remote_data = await this.prisma.remote_data.findFirst({
+            var remote_data = await this.prisma.remote_data.findFirst({
                 where: {
                     ressource_owner_id: id_ticket as string,
                 },
             });
-            const githubTicketOutput = JSON.parse(remote_data.data) as GithubTicketOutput;
+            var githubTicketOutput = JSON.parse(remote_data.data) as GithubTicketOutput;
 
             let res = [];
             if (githubTicketOutput.number && githubTicketOutput.repository.name && githubTicketOutput.repository.owner.login) {
-                const resp = await axios.get(
+                var resp = await axios.get(
                     `${connection.account_url}/repos/${githubTicketOutput.repository.owner.login}/${githubTicketOutput.repository.name}/issues/${githubTicketOutput.number}/comments`,
                     {
                         headers: {
