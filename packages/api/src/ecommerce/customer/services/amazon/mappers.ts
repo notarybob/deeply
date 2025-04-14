@@ -71,7 +71,7 @@ export class AmazonCustomerMapper implements ICustomerMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedEcommerceCustomerOutput> {
-    let result: UnifiedEcommerceCustomerOutput = {
+    const result: UnifiedEcommerceCustomerOutput = {
       remote_id: null,
       remote_data: customer,
       email: customer.BuyerEmail || null,
@@ -79,7 +79,7 @@ export class AmazonCustomerMapper implements ICustomerMapper {
       phone_number: null,
     };
     if (customer.Address) {
-      let add = customer.Address;
+      const add = customer.Address;
       result.addresses = [
         {
           street_1: add.AddressLine1,
