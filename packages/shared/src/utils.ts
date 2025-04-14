@@ -3,23 +3,23 @@ import { ACCOUNTING_PROVIDERS, CRM_PROVIDERS, ECOMMERCE_PROVIDERS, FILESTORAGE_P
 import { AuthStrategy, AuthType, DynamicApiUrl, DynamicAuthorization, StaticApiUrl, StringAuthorization, VerticalConfig } from './types';
 import { categoriesVerticals, ConnectorCategory } from './categories';
 
-export var randomString = () => {
-  var charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+export const randomString = () => {
+  const charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
-    var randomIndex = Math.floor(Math.random() * charSet.length);
+    const randomIndex = Math.floor(Math.random() * charSet.length);
     result += charSet[randomIndex];
   }
   return result;
 }
 function getActiveProvidersForVertical(vertical: string): VerticalConfig {
-  var verticalConfig = CONNECTORS_METADATA[vertical.toLowerCase()];
+  const verticalConfig = CONNECTORS_METADATA[vertical.toLowerCase()];
   if (!verticalConfig) {
     return {};
   }
 
-  var activeProviders: VerticalConfig = {};
-  for (var [providerName, config] of Object.entries(verticalConfig)) {
+  const activeProviders: VerticalConfig = {};
+  for (const [providerName, config] of Object.entries(verticalConfig)) {
     if (config.active !== false) { // Assuming undefined or true means active
       activeProviders[providerName] = config;
     }
@@ -28,13 +28,13 @@ function getActiveProvidersForVertical(vertical: string): VerticalConfig {
   return activeProviders;
 }
 
-export var getDescription = (name: string): string | null => {
-  var vertical = findConnectorCategory(name);
+export const getDescription = (name: string): string | null => {
+  const vertical = findConnectorCategory(name);
   if (vertical == null) {
     return null;
   }
-  var activeProviders = getActiveProvidersForVertical(vertical);
-  var provider = activeProviders[name];
+  const activeProviders = getActiveProvidersForVertical(vertical);
+  const provider = activeProviders[name];
   return provider ? provider.description : null;
 };
 
@@ -55,7 +55,7 @@ export interface Provider {
 export function providersArray(vertical?: string): Provider[] {
   if (vertical) {
     // If a specific vertical is provided, return providers for that vertical
-    var activeProviders = getActiveProvidersForVertical(vertical);
+    const activeProviders = getActiveProvidersForVertical(vertical);
     return Object.entries(activeProviders).map(([providerName, config]) => ({
       vertical: vertical.toLowerCase(),
       name: providerName,
@@ -76,8 +76,8 @@ export function providersArray(vertical?: string): Provider[] {
     // If no vertical is provided, return providers for all verticals
     let allProviders: Provider[] = [];
     categoriesVerticals.forEach(vertical => {
-      var activeProviders = getActiveProvidersForVertical(vertical);
-      var providersForVertical = Object.entries(activeProviders).map(([providerName, config]) => ({
+      const activeProviders = getActiveProvidersForVertical(vertical);
+      const providersForVertical = Object.entries(activeProviders).map(([providerName, config]) => ({
         vertical: vertical.toLowerCase(),
         name: providerName,
         urls: {
@@ -99,8 +99,8 @@ export function providersArray(vertical?: string): Provider[] {
   }
 }
 
-export var findConnectorCategory = (providerName: string): string | null => {
-  for (var [vertical, providers] of Object.entries(CONNECTORS_METADATA)) {
+export const findConnectorCategory = (providerName: string): string | null => {
+  for (const [vertical, providers] of Object.entries(CONNECTORS_METADATA)) {
     if (providers.hasOwnProperty.call(providers, providerName.toLowerCase())) {
       return vertical;
     }
@@ -109,11 +109,11 @@ export var findConnectorCategory = (providerName: string): string | null => {
 };
 
 export function findProviderByName(providerName: string): Provider | null {
-  for (var vertical in CONNECTORS_METADATA) {
+  for (const vertical in CONNECTORS_METADATA) {
     if (CONNECTORS_METADATA.hasOwnProperty.call(CONNECTORS_METADATA, vertical)) {
-      var activeProviders = getActiveProvidersForVertical(vertical);
+      const activeProviders = getActiveProvidersForVertical(vertical);
       if (activeProviders.hasOwnProperty.call(activeProviders, providerName)) {
-        var providerDetails = activeProviders[providerName];
+        const providerDetails = activeProviders[providerName];
         return {
           name: providerName,
           ...providerDetails,
@@ -125,7 +125,7 @@ export function findProviderByName(providerName: string): Provider | null {
 }
 
 export function getLogoURL(providerName: string): string {
-  var vertical = findConnectorCategory(providerName);
+  const vertical = findConnectorCategory(providerName);
   if (vertical !== null) {
     return CONNECTORS_METADATA[vertical][providerName].logoPath
   }
@@ -135,9 +135,9 @@ export function getLogoURL(providerName: string): string {
 }
 
 export function mergeAllProviders(...arrays: string[][]): { vertical: string, value: string }[] {
-  var result: { vertical: string, value: string }[] = [];
+  const result: { vertical: string, value: string }[] = [];
   arrays.forEach((arr, index) => {
-    var arrayName = Object.keys({ CRM_PROVIDERS, ACCOUNTING_PROVIDERS, TICKETING_PROVIDERS, MARKETINGAUTOMATION_PROVIDERS, FILESTORAGE_PROVIDERS, ECOMMERCE_PROVIDERS})[index];
+    const arrayName = Object.keys({ CRM_PROVIDERS, ACCOUNTING_PROVIDERS, TICKETING_PROVIDERS, MARKETINGAUTOMATION_PROVIDERS, FILESTORAGE_PROVIDERS, ECOMMERCE_PROVIDERS})[index];
     arr.forEach(item => {
       if (item !== '') {
         result.push({ vertical: arrayName.split('_')[0], value: item });
@@ -147,7 +147,7 @@ export function mergeAllProviders(...arrays: string[][]): { vertical: string, va
   return result;
 }
 
-export var ALL_PROVIDERS: { vertical: string, value: string }[] = mergeAllProviders(CRM_PROVIDERS,  ACCOUNTING_PROVIDERS, TICKETING_PROVIDERS, MARKETINGAUTOMATION_PROVIDERS, FILESTORAGE_PROVIDERS, ECOMMERCE_PROVIDERS)
+export const ALL_PROVIDERS: { vertical: string, value: string }[] = mergeAllProviders(CRM_PROVIDERS,  ACCOUNTING_PROVIDERS, TICKETING_PROVIDERS, MARKETINGAUTOMATION_PROVIDERS, FILESTORAGE_PROVIDERS, ECOMMERCE_PROVIDERS)
 
 export function slugFromCategory(category: ConnectorCategory) {
   switch(category) {
