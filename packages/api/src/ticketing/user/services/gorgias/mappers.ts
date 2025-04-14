@@ -31,7 +31,7 @@ export class GorgiasUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): Promise<UnifiedTicketingUserOutput | UnifiedTicketingUserOutput[]> {
-    const sourcesArray = Array.isArray(source) ? source : [source];
+    let sourcesArray = Array.isArray(source) ? source : [source];
     return Promise.all(
       sourcesArray.map((user) =>
         this.mapSingleUserToUnified(user, connectionId, customFieldMappings),
@@ -47,7 +47,7 @@ export class GorgiasUserMapper implements IUserMapper {
       remote_id: string;
     }[],
   ): UnifiedTicketingUserOutput {
-    const field_mappings = customFieldMappings
+    let field_mappings = customFieldMappings
       ? customFieldMappings
           .map((mapping) => ({
             key: mapping.slug,
@@ -56,7 +56,7 @@ export class GorgiasUserMapper implements IUserMapper {
           .filter((mapping) => mapping.value !== undefined)
       : [];
 
-    const unifiedUser: UnifiedTicketingUserOutput = {
+    let unifiedUser: UnifiedTicketingUserOutput = {
       remote_id: String(user.id),
       remote_data: user,
       name: `${user.firstname} ${user.lastname}`,
