@@ -36,7 +36,7 @@ export interface HubspotCompanyOutput {
   archived: boolean;
 }
 
-export let commonCompanyHubspotProperties = {
+export const commonCompanyHubspotProperties = {
   city: '',
   createdate: '',
   domain: '',
