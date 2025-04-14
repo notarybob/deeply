@@ -18,7 +18,7 @@ export class ConnectionUtils {
     token: string,
   ): Promise<ConnectionMetadata> {
     try {
-      var res = await this.prisma.connections.findFirst({
+      const res = await this.prisma.connections.findFirst({
         where: {
           connection_token: token,
         },
@@ -39,7 +39,7 @@ export class ConnectionUtils {
 
   async getConnectionMetadataFromConnectionId(uuid: string) {
     try {
-      var conn = await this.prisma.connections.findUnique({
+      const conn = await this.prisma.connections.findUnique({
         where: {
           id_connection: uuid,
         },
@@ -55,7 +55,7 @@ export class ConnectionUtils {
     projectId: string,
     linkedUserId: string,
   ): Promise<string> {
-    var linked_user = await this.prisma.linked_users.findFirst({
+    const linked_user = await this.prisma.linked_users.findFirst({
       where: {
         id_linked_user: linkedUserId,
       },
@@ -63,7 +63,7 @@ export class ConnectionUtils {
     let id_linked_user: string;
     if (!linked_user) {
       //create a linked-user out of remote_id
-      var res = await this.prisma.linked_users.create({
+      const res = await this.prisma.linked_users.create({
         data: {
           id_linked_user: uuidv4(),
           id_project: projectId,
