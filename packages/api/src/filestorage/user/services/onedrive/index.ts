@@ -34,9 +34,9 @@ export class OnedriveService implements IUserService {
    */
   async sync(data: SyncParam): Promise<ApiResponse<OnedriveUserOutput[]>> {
     try {
-      var { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      var connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'onedrive',
@@ -44,7 +44,7 @@ export class OnedriveService implements IUserService {
         },
       });
 
-      var config: AxiosRequestConfig = {
+      const config: AxiosRequestConfig = {
         method: 'get',
         url: `${connection.account_url}/v1.0/users`,
         headers: {
@@ -55,9 +55,9 @@ export class OnedriveService implements IUserService {
         },
       };
 
-      var resp: AxiosResponse = await this.makeRequestWithRetry(config);
+      const resp: AxiosResponse = await this.makeRequestWithRetry(config);
 
-      var users: OnedriveUserOutput[] = resp.data.value;
+      const users: OnedriveUserOutput[] = resp.data.value;
       this.logger.log(`Synchronized OneDrive users successfully.`);
 
       return {
@@ -88,7 +88,7 @@ export class OnedriveService implements IUserService {
 
     while (attempts < this.MAX_RETRIES) {
       try {
-        var response: AxiosResponse = await axios(config);
+        const response: AxiosResponse = await axios(config);
         return response;
       } catch (error: any) {
         attempts++;
@@ -101,10 +101,10 @@ export class OnedriveService implements IUserService {
           error.code === 'ETIMEDOUT' ||
           error.response?.code === 'ETIMEDOUT'
         ) {
-          var retryAfter = this.getRetryAfter(
+          const retryAfter = this.getRetryAfter(
             error.response?.headers['retry-after'],
           );
-          var delayTime: number = Math.max(retryAfter * 1000, backoff);
+          const delayTime: number = Math.max(retryAfter * 1000, backoff);
 
           this.logger.warn(
             `Request failed with ${
@@ -146,7 +146,7 @@ export class OnedriveService implements IUserService {
       return 1; // Default to 1 second if header is missing
     }
 
-    var retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
+    const retryAfterSeconds: number = parseInt(retryAfterHeader, 10);
     return isNaN(retryAfterSeconds) ? 1 : retryAfterSeconds;
   }
 
