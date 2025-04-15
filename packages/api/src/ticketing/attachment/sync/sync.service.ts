@@ -42,9 +42,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     },
   ): Promise<TicketingAttachment[]> {
     try {
-      const attachments_results: TicketingAttachment[] = [];
+      var attachments_results: TicketingAttachment[] = [];
 
-      const updateOrCreateAttachment = async (
+      var updateOrCreateAttachment = async (
         attachment: UnifiedTicketingAttachmentOutput,
         originId: string,
         connection_id: string,
@@ -67,7 +67,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        const baseData: any = {
+        var baseData: any = {
           file_name: attachment.file_name ?? null,
           file_url: attachment.file_url ?? null,
           uploader: attachment.uploader ?? null,
@@ -105,15 +105,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        const attachment = data[i];
-        const originId = attachment.remote_id;
+        var attachment = data[i];
+        var originId = attachment.remote_id;
 
-        const res = await updateOrCreateAttachment(
+        var res = await updateOrCreateAttachment(
           attachment,
           originId,
           connection_id,
         );
-        const attachment_id = res.id_tcg_attachment;
+        var attachment_id = res.id_tcg_attachment;
         attachments_results.push(res);
 
         await this.ingestService.processFieldMappings(
