@@ -14,7 +14,7 @@ export class ServiceRegistry {
   }
 
   getService(integrationId: string): IFulfillmentOrdersService {
-    let service = this.serviceMap.get(integrationId);
+    const service = this.serviceMap.get(integrationId);
     if (!service) {
       return null;
     }
