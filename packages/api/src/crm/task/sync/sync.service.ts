@@ -46,15 +46,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = CRM_PROVIDERS;
-          for (var provider of providers) {
+          const providers = CRM_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -76,8 +76,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
   //todo: HANDLE DATA REMOVED FROM PROVIDER
   async syncForLinkedUser(param: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId } = param;
-      var service: ITaskService =
+      const { integrationId, linkedUserId } = param;
+      const service: ITaskService =
         this.serviceRegistry.getService(integrationId);
       if (!service) {
         this.logger.log(
@@ -104,9 +104,9 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<CrmTask[]> {
     try {
-      var tasks_results: CrmTask[] = [];
+      const tasks_results: CrmTask[] = [];
 
-      var updateOrCreateTask = async (
+      const updateOrCreateTask = async (
         task: UnifiedCrmTaskOutput,
         originId: string,
       ) => {
@@ -128,7 +128,7 @@ export class SyncService implements OnModuleInit, IBaseSync {
           });
         }
 
-        var baseData: any = {
+        const baseData: any = {
           subject: task.subject ?? null,
           content: task.content ?? null,
           status: task.status ?? null,
@@ -161,11 +161,11 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < data.length; i++) {
-        var task = data[i];
-        var originId = task.remote_id;
+        const task = data[i];
+        const originId = task.remote_id;
 
-        var res = await updateOrCreateTask(task, originId);
-        var task_id = res.id_crm_task;
+        const res = await updateOrCreateTask(task, originId);
+        const task_id = res.id_crm_task;
         tasks_results.push(res);
 
         // Process field mappings
