@@ -14,7 +14,7 @@ export interface SalesforceNoteOutput extends SalesforceNoteInput {
   ContentSize: number;
 }
 
-export const commonNoteSalesforceProperties = {
+export let commonNoteSalesforceProperties = {
   Id: '',
   Title: '',
   Content: '',
