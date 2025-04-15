@@ -121,7 +121,7 @@ interface Lead {
 
 export type CloseCompanyOutput = Partial<Lead>;
 
-export let commonCompanyCloseProperties = {
+export const commonCompanyCloseProperties = {
   city: '',
   createdate: '',
   domain: '',
