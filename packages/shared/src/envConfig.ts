@@ -29,27 +29,27 @@ export type AuthData = BasicAuthData | ApiAuthData | OAuth2AuthData
 
 export function extractProvider(type: string): string {
     // Split the string at the first underscore
-    let parts = type.split('_');
+    const parts = type.split('_');
     // Return the first part of the split string
     return parts[0];
 }
 
 export function extractVertical(type: string): string {
     // Split the string at the first underscore
-    let parts = type.split('_');
+    const parts = type.split('_');
     // Return the second part of the split string
     return parts[1];
 }
 
 export function extractSoftwareMode(type: string): string {
     // Split the string at the first underscore
-    let parts = type.split('_');
+    const parts = type.split('_');
     // Return the first part of the split string
     return parts[2];
 }
 
 export function providerToType(providerName: string, vertical: string, authMode: AuthStrategy, softwareMode?: SoftwareMode) {
-    let software = softwareMode ? softwareMode.toUpperCase() : SoftwareMode.cloud;
+    const software = softwareMode ? softwareMode.toUpperCase() : SoftwareMode.cloud;
     switch (authMode) {
         case AuthStrategy.api_key:
             return `${providerName.toUpperCase()}_${vertical.toUpperCase()}_${software}_APIKEY`
@@ -62,8 +62,8 @@ export function providerToType(providerName: string, vertical: string, authMode:
 
 export function extractAuthMode(type: string): AuthStrategy {
     // Split the string at the first underscore
-    let parts = type.split('_');
-    let authMode = parts[parts.length - 1];
+    const parts = type.split('_');
+    const authMode = parts[parts.length - 1];
 
     switch (authMode)  {
         case 'OAUTH':
@@ -91,7 +91,7 @@ export function needsSubdomain(provider: string, vertical: string): boolean {
     }
 
     // Extract the provider's config
-    let providerConfig = CONNECTORS_METADATA[vertical][provider];
+    const providerConfig = CONNECTORS_METADATA[vertical][provider];
     if(providerConfig.options && providerConfig.options.company_subdomain) {
         return providerConfig.options.company_subdomain;
     }
@@ -112,7 +112,7 @@ export function needsScope(provider: string, vertical: string): boolean {
     }
 
     // Extract the provider's config
-    let providerConfig = CONNECTORS_METADATA[vertical][provider];
+    const providerConfig = CONNECTORS_METADATA[vertical][provider];
     if(!providerConfig.scopes) {
         return false;
     }
@@ -133,7 +133,7 @@ export function needsEndUserSubdomain(provider: string, vertical: string): boole
     }
 
     // Extract the provider's config
-    let providerConfig = CONNECTORS_METADATA[vertical][provider];
+    const providerConfig = CONNECTORS_METADATA[vertical][provider];
     if(providerConfig.options && providerConfig.options.end_user_domain) {
         return providerConfig.options.end_user_domain;
     }
