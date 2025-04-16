@@ -34,15 +34,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
   @Cron('0 */8 * * *') // every 8 hours
   async kickstartSync(id_project?: string) {
     try {
-      var linkedUsers = await this.prisma.linked_users.findMany({
+      const linkedUsers = await this.prisma.linked_users.findMany({
         where: {
           id_project: id_project,
         },
       });
       linkedUsers.map(async (linkedUser) => {
         try {
-          var providers = FILESTORAGE_PROVIDERS;
-          for (var provider of providers) {
+          const providers = FILESTORAGE_PROVIDERS;
+          for (const provider of providers) {
             try {
               await this.syncForLinkedUser({
                 integrationId: provider,
@@ -63,8 +63,8 @@ export class SyncService implements OnModuleInit, IBaseSync {
 
   async syncForLinkedUser(data: SyncLinkedUserType) {
     try {
-      var { integrationId, linkedUserId, group_id } = data;
-      var service: IUserService =
+      const { integrationId, linkedUserId, group_id } = data;
+      const service: IUserService =
         this.serviceRegistry.getService(integrationId);
       if (!service) return;
 
@@ -93,20 +93,20 @@ export class SyncService implements OnModuleInit, IBaseSync {
     remote_data: Record<string, any>[],
   ): Promise<FileStorageUser[]> {
     try {
-      var users_results: FileStorageUser[] = [];
+      const users_results: FileStorageUser[] = [];
 
-      var updateOrCreateUser = async (
+      const updateOrCreateUser = async (
         user: UnifiedFilestorageUserOutput,
         originId: string,
       ) => {
-        var existingUser = await this.prisma.fs_users.findFirst({
+        const existingUser = await this.prisma.fs_users.findFirst({
           where: {
             remote_id: originId,
             id_connection: connection_id,
           },
         });
 
-        var baseData: any = {
+        const baseData: any = {
           name: user.name ?? null,
           email: user.email ?? null,
           is_me: user.is_me ?? false,
@@ -134,15 +134,15 @@ export class SyncService implements OnModuleInit, IBaseSync {
       };
 
       for (let i = 0; i < users.length; i++) {
-        var user = users[i];
-        var originId = user.remote_id;
+        const user = users[i];
+        const originId = user.remote_id;
 
         if (!originId || originId === '') {
           throw new ReferenceError(`Origin id not there, found ${originId}`);
         }
 
-        var res = await updateOrCreateUser(user, originId);
-        var user_id = res.id_fs_user;
+        const res = await updateOrCreateUser(user, originId);
+        const user_id = res.id_fs_user;
         users_results.push(res);
 
         // Process field mappings
