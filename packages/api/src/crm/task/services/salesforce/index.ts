@@ -33,7 +33,7 @@ export class SalesforceService implements ITaskService {
     linkedUserId: string,
   ): Promise<ApiResponse<SalesforceTaskOutput>> {
     try {
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -41,8 +41,8 @@ export class SalesforceService implements ITaskService {
         },
       });
 
-      const instanceUrl = connection.account_url;
-      const resp = await axios.post(
+      var instanceUrl = connection.account_url;
+      var resp = await axios.post(
         `${instanceUrl}/services/data/v56.0/sobjects/Task/`,
         JSON.stringify(taskData),
         {
@@ -56,8 +56,8 @@ export class SalesforceService implements ITaskService {
       );
 
       // Fetch the created task to get all details
-      const taskId = resp.data.id;
-      const final_resp = await axios.get(
+      var taskId = resp.data.id;
+      var final_resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/sobjects/Task/${taskId}`,
         {
           headers: {
@@ -81,9 +81,9 @@ export class SalesforceService implements ITaskService {
 
   async sync(data: SyncParam): Promise<ApiResponse<SalesforceTaskOutput[]>> {
     try {
-      const { linkedUserId, custom_properties, pageSize, cursor } = data;
+      var { linkedUserId, custom_properties, pageSize, cursor } = data;
 
-      const connection = await this.prisma.connections.findFirst({
+      var connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'salesforce',
@@ -91,7 +91,7 @@ export class SalesforceService implements ITaskService {
         },
       });
 
-      const instanceUrl = connection.account_url;
+      var instanceUrl = connection.account_url;
       let pagingString = `${pageSize ? `ORDER BY Id DESC LIMIT ${pageSize} ` : ''}${
         cursor ? `OFFSET ${cursor}` : ''
       }`;
@@ -99,13 +99,13 @@ export class SalesforceService implements ITaskService {
         pagingString = 'LIMIT 200';
       }
 
-      const commonPropertyNames = Object.keys(commonTaskSalesforceProperties);
-      const allProperties = [...commonPropertyNames, ...custom_properties];
-      const fields = allProperties.join(',');
+      var commonPropertyNames = Object.keys(commonTaskSalesforceProperties);
+      var allProperties = [...commonPropertyNames, ...custom_properties];
+      var fields = allProperties.join(',');
 
-      const query = `SELECT ${fields} FROM Task ${pagingString}`;
+      var query = `SELECT ${fields} FROM Task ${pagingString}`;
 
-      const resp = await axios.get(
+      var resp = await axios.get(
         `${instanceUrl}/services/data/v56.0/query/?q=${encodeURIComponent(query)}`,
         {
           headers: {
