@@ -31,14 +31,14 @@ export class WebflowService implements IProductService {
     linkedUserId: string,
   ): Promise<ApiResponse<WebflowProductOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'webflow',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.post(
+      const resp = await axios.post(
         // https://api.webflow.com/v2/sites/{site_id}/products
         `${connection.account_url}/products`,
         productData,
@@ -64,16 +64,16 @@ export class WebflowService implements IProductService {
 
   async sync(data: SyncParam): Promise<ApiResponse<WebflowProductOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'webflow',
           vertical: 'ecommerce',
         },
       });
-      let resp = await axios.get(
+      const resp = await axios.get(
         // https://api.webflow.com/v2/sites/{site_id}/products
         `${connection.account_url}/products`,
         {
@@ -85,7 +85,7 @@ export class WebflowService implements IProductService {
           },
         },
       );
-      let products: WebflowProductOutput[] = resp.data.items;
+      const products: WebflowProductOutput[] = resp.data.items;
       this.logger.log(`Synced webflow products !`);
 
       return {
