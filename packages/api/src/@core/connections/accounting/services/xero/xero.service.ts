@@ -47,7 +47,7 @@ type DecodedJWTToken = {
 
 function decodeJWT(token: string): DecodedJWTToken {
   try {
-    var decoded = jwtDecode<DecodedJWTToken>(token);
+    const decoded = jwtDecode<DecodedJWTToken>(token);
     return decoded;
   } catch (error) {
     throw new Error('Invalid token');
@@ -79,10 +79,10 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
     connectionId: string,
   ): Promise<PassthroughResponse> {
     try {
-      var { headers } = input;
-      var config = await this.constructPassthrough(input, connectionId);
+      const { headers } = input;
+      const config = await this.constructPassthrough(input, connectionId);
 
-      var connection = await this.prisma.connections.findUnique({
+      const connection = await this.prisma.connections.findUnique({
         where: {
           id_connection: connectionId,
         },
@@ -114,8 +114,8 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
 
   async handleCallback(opts: OAuthCallbackParams) {
     try {
-      var { linkedUserId, projectId, code } = opts;
-      var isNotUnique = await this.prisma.connections.findFirst({
+      const { linkedUserId, projectId, code } = opts;
+      const isNotUnique = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'xero',
@@ -124,13 +124,13 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
       });
 
       //reconstruct the redirect URI that was passed in the githubend it must be the same
-      var REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const REDIRECT_URI = `${this.env.getPanoraBaseUrl()}/connections/oauth/callback`;
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var formData = new URLSearchParams({
+      const formData = new URLSearchParams({
         grant_type: 'authorization_code',
         code: code,
         redirect_uri: REDIRECT_URI,
@@ -140,7 +140,7 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
           `${CREDENTIALS.CLIENT_ID}:${CREDENTIALS.CLIENT_SECRET}`,
         ).toString('base64')}`,
       );
-      var res = await axios.post(
+      const res = await axios.post(
         'https://identity.xero.com/connect/token',
         formData.toString(),
         {
@@ -152,15 +152,15 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: XeroOAuthResponse = res.data;
+      const data: XeroOAuthResponse = res.data;
       this.logger.log(
         'OAuth credentials : xero accounting ' + JSON.stringify(data),
       );
 
       //TODO: decode the access_token and extract the authEventId used to retrieve tenantId, we'll use the first one by default
-      var decodedJWT: DecodedJWTToken = decodeJWT(data.access_token);
+      const decodedJWT: DecodedJWTToken = decodeJWT(data.access_token);
 
-      var res_ = await axios.get(
+      const res_ = await axios.get(
         `https://api.xero.com/connections?=authEventId${decodedJWT.authentication_event_id}`,
         {
           headers: {
@@ -171,12 +171,12 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
       );
 
       //Important Note: Xero asks for a tenantId for which the token is valid for so we append it as a param and it MUST be extracted when making the calls in unified requests
-      var CUSTOM_ACCOUNT_URL = `${
+      const CUSTOM_ACCOUNT_URL = `${
         CONNECTORS_METADATA['accounting']['xero'].urls.apiUrl as string
       }?xeroTenantId=${res_.data[0].tenantId}`;
 
       let db_res;
-      var connection_token = uuidv4();
+      const connection_token = uuidv4();
 
       if (isNotUnique) {
         db_res = await this.prisma.connections.update({
@@ -232,17 +232,17 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
 
   async handleTokenRefresh(opts: RefreshParams) {
     try {
-      var { connectionId, refreshToken, projectId } = opts;
-      var formData = new URLSearchParams({
+      const { connectionId, refreshToken, projectId } = opts;
+      const formData = new URLSearchParams({
         grant_type: 'refresh_token',
         refresh_token: this.cryptoService.decrypt(refreshToken),
       });
-      var CREDENTIALS = (await this.cService.getCredentials(
+      const CREDENTIALS = (await this.cService.getCredentials(
         projectId,
         this.type,
       )) as OAuth2AuthData;
 
-      var res = await axios.post(
+      const res = await axios.post(
         'https://identity.xero.com/connect/token',
         formData.toString(),
         {
@@ -254,7 +254,7 @@ export class XeroConnectionService extends AbstractBaseConnectionService {
           },
         },
       );
-      var data: XeroOAuthResponse = res.data;
+      const data: XeroOAuthResponse = res.data;
       await this.prisma.connections.update({
         where: {
           id_connection: connectionId,
