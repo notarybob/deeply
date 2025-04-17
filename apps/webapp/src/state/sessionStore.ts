@@ -19,7 +19,7 @@ interface SessionState {
   setSession: (session: Session) => void;
 }
 
-export let useSessionStore = create(
+export const useSessionStore = create(
   persist<SessionState>(
     (set) => ({
       session: null,
