@@ -29,7 +29,7 @@ export class CashflowStatementService {
     remote_data?: boolean,
   ): Promise<UnifiedAccountingCashflowstatementOutput> {
     try {
-      let cashFlowStatement =
+      const cashFlowStatement =
         await this.prisma.acc_cash_flow_statements.findUnique({
           where: { id_acc_cash_flow_statement: id_acc_cash_flow_statement },
         });
@@ -40,12 +40,12 @@ export class CashflowStatementService {
         );
       }
 
-      let lineItems =
+      const lineItems =
         await this.prisma.acc_cash_flow_statement_report_items.findMany({
           where: { id_acc_cash_flow_statement: id_acc_cash_flow_statement },
         });
 
-      let values = await this.prisma.value.findMany({
+      const values = await this.prisma.value.findMany({
         where: {
           entity: {
             ressource_owner_id: cashFlowStatement.id_acc_cash_flow_statement,
@@ -54,11 +54,11 @@ export class CashflowStatementService {
         include: { attribute: true },
       });
 
-      let field_mappings = Object.fromEntries(
+      const field_mappings = Object.fromEntries(
         values.map((value) => [value.attribute.slug, value.data]),
       );
 
-      let unifiedCashFlowStatement: UnifiedAccountingCashflowstatementOutput =
+      const unifiedCashFlowStatement: UnifiedAccountingCashflowstatementOutput =
         {
           id: cashFlowStatement.id_acc_cash_flow_statement,
           name: cashFlowStatement.name,
@@ -92,7 +92,7 @@ export class CashflowStatementService {
         };
 
       if (remote_data) {
-        let remoteDataRecord = await this.prisma.remote_data.findFirst({
+        const remoteDataRecord = await this.prisma.remote_data.findFirst({
           where: {
             ressource_owner_id: cashFlowStatement.id_acc_cash_flow_statement,
           },
@@ -138,7 +138,7 @@ export class CashflowStatementService {
     previous_cursor: string | null;
   }> {
     try {
-      let cashFlowStatements =
+      const cashFlowStatements =
         await this.prisma.acc_cash_flow_statements.findMany({
           take: limit + 1,
           cursor: cursor ? { id_acc_cash_flow_statement: cursor } : undefined,
@@ -146,12 +146,12 @@ export class CashflowStatementService {
           orderBy: { created_at: 'asc' },
         });
 
-      let hasNextPage = cashFlowStatements.length > limit;
+      const hasNextPage = cashFlowStatements.length > limit;
       if (hasNextPage) cashFlowStatements.pop();
 
-      let unifiedCashFlowStatements = await Promise.all(
+      const unifiedCashFlowStatements = await Promise.all(
         cashFlowStatements.map(async (cashFlowStatement) => {
-          let lineItems =
+          const lineItems =
             await this.prisma.acc_cash_flow_statement_report_items.findMany({
               where: {
                 id_acc_cash_flow_statement:
@@ -159,7 +159,7 @@ export class CashflowStatementService {
               },
             });
 
-          let values = await this.prisma.value.findMany({
+          const values = await this.prisma.value.findMany({
             where: {
               entity: {
                 ressource_owner_id:
@@ -169,11 +169,11 @@ export class CashflowStatementService {
             include: { attribute: true },
           });
 
-          let field_mappings = Object.fromEntries(
+          const field_mappings = Object.fromEntries(
             values.map((value) => [value.attribute.slug, value.data]),
           );
 
-          let unifiedCashFlowStatement: UnifiedAccountingCashflowstatementOutput =
+          const unifiedCashFlowStatement: UnifiedAccountingCashflowstatementOutput =
             {
               id: cashFlowStatement.id_acc_cash_flow_statement,
               name: cashFlowStatement.name,
@@ -207,7 +207,7 @@ export class CashflowStatementService {
             };
 
           if (remote_data) {
-            let remoteDataRecord = await this.prisma.remote_data.findFirst({
+            const remoteDataRecord = await this.prisma.remote_data.findFirst({
               where: {
                 ressource_owner_id:
                   cashFlowStatement.id_acc_cash_flow_statement,
