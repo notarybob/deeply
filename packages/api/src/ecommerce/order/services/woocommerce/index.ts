@@ -29,20 +29,20 @@ export class WoocommerceService implements IOrderService {
     linkedUserId: string,
   ): Promise<ApiResponse<WoocommerceOrderOutput>> {
     try {
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'woocommerce',
           vertical: 'ecommerce',
         },
       });
-      let decryptedData = JSON.parse(
+      const decryptedData = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
 
-      let { username, password } = decryptedData;
+      const { username, password } = decryptedData;
 
-      let resp = await axios.post(
+      const resp = await axios.post(
         `${connection.account_url}/v3/orders`,
         {
           order: orderData,
@@ -69,22 +69,22 @@ export class WoocommerceService implements IOrderService {
 
   async sync(data: SyncParam): Promise<ApiResponse<WoocommerceOrderOutput[]>> {
     try {
-      let { linkedUserId } = data;
+      const { linkedUserId } = data;
 
-      let connection = await this.prisma.connections.findFirst({
+      const connection = await this.prisma.connections.findFirst({
         where: {
           id_linked_user: linkedUserId,
           provider_slug: 'woocommerce',
           vertical: 'ecommerce',
         },
       });
-      let decryptedData = JSON.parse(
+      const decryptedData = JSON.parse(
         this.cryptoService.decrypt(connection.access_token),
       );
 
-      let { username, password } = decryptedData;
+      const { username, password } = decryptedData;
 
-      let resp = await axios.get(`${connection.account_url}/v3/orders`, {
+      const resp = await axios.get(`${connection.account_url}/v3/orders`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Basic ${Buffer.from(
@@ -92,7 +92,7 @@ export class WoocommerceService implements IOrderService {
           ).toString('base64')}`,
         },
       });
-      let orders: WoocommerceOrderOutput[] = resp.data;
+      const orders: WoocommerceOrderOutput[] = resp.data;
       this.logger.log(`Synced woocommerce orders !`);
 
       return {
