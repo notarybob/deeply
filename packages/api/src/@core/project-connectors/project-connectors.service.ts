@@ -16,7 +16,7 @@ export class ProjectConnectorsService {
     id_project: string,
   ) {
     try {
-      let project = await this.prisma.projects.findFirst({
+      const project = await this.prisma.projects.findFirst({
         where: {
           id_project: id_project,
         },
@@ -25,7 +25,7 @@ export class ProjectConnectorsService {
       if (!project) {
         throw new ReferenceError('Project undefined!');
       }
-      let existingPConnectors = await this.prisma.connector_sets.findFirst({
+      const existingPConnectors = await this.prisma.connector_sets.findFirst({
         where: {
           id_connector_set: project.id_connector_set,
         },
@@ -37,11 +37,11 @@ export class ProjectConnectorsService {
         );
       }
 
-      let updateData: any = {
+      const updateData: any = {
         [column]: status, // Use computed property names to set the column dynamically
       };
 
-      let res = await this.prisma.connector_sets.update({
+      const res = await this.prisma.connector_sets.update({
         where: {
           id_connector_set: existingPConnectors.id_connector_set,
         },
@@ -55,7 +55,7 @@ export class ProjectConnectorsService {
 
   /*async createProjectConnectors(data: TypeCustom) {
     try {
-      let updateData: any = {
+      const updateData: any = {
         id_connector_set: uuidv4(),
         crm_hubspot: data.crm_hubspot,
         crm_zoho: data.crm_zoho,
@@ -70,7 +70,7 @@ export class ProjectConnectorsService {
         crm_close: data.crm_close,
       };
 
-      let res = await this.prisma.connector_sets.create({
+      const res = await this.prisma.connector_sets.create({
         data: updateData,
       });
       return res;
@@ -82,7 +82,7 @@ export class ProjectConnectorsService {
 
   async getConnectorsByProjectId(id_project: string) {
     try {
-      let project = await this.prisma.projects.findFirst({
+      const project = await this.prisma.projects.findFirst({
         where: {
           id_project,
         },
@@ -92,7 +92,7 @@ export class ProjectConnectorsService {
         throw new ReferenceError('Project undefined!');
       }
 
-      let res = await this.prisma.connector_sets.findFirst({
+      const res = await this.prisma.connector_sets.findFirst({
         where: {
           id_connector_set: project.id_connector_set,
         },
