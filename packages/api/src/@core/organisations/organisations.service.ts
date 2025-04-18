@@ -16,7 +16,7 @@ export class OrganisationsService {
   }
   async createOrganization(data: CreateOrganizationDto) {
     try {
-      let res = await this.prisma.organizations.create({
+      const res = await this.prisma.organizations.create({
         data: {
           ...data,
           id_organization: uuidv4(),
