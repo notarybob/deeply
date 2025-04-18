@@ -1,0 +1,3 @@
+export class UnifiedMarketingautomationActionInput {}
+
+export class UnifiedMarketingautomationActionOutput extends UnifiedMarketingautomationActionInput {}

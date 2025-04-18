@@ -1,0 +1,673 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "layout": "topnav",
+  "analytics": {
+    "hotjar": {
+      "hjid": "5154921",
+      "hjsv": "e2Bs3cIPcF08ngtrjwX+JBB8"
+    },
+    "posthog": {
+      "apiKey": "phc_WhWJfNPOHAuWVdyTacGxrPa9JW54scnofA9KVEjFcFw"
+    }
+  },
+  "anchors": [],
+  "api": {
+     "auth": {
+        "method": "key",
+        "name": "x-api-key"
+    },
+    "baseUrl": "https://api.panora.dev"
+  },
+  "colors": {
+    "anchors": {
+      "from": "#000000",
+      "to": "#000000"
+    },
+    "dark": "#000000",
+    "light": "#FFFFFF",
+    "primary": "#000000"
+  },
+  "favicon": "logo/fav.png",
+  "feedback": {
+    "raiseIssue": true,
+    "suggestEdit": true,
+    "thumbsRating": true
+  },
+  "footerSocials": {
+    "discord": "https://discord.gg/G7fr4HNyTb",
+    "github": "https://github.com/panoratech/Panora",
+    "twitter": "https://twitter.com/panoradotdev"
+  },
+  "integrations": {
+    "intercom": "kjwzw97u"
+  },
+  "logo": {
+    "dark": "logo/white_logo.png",
+    "light": "logo/black_logo.png"
+  },
+  "modeToggle": {
+    "default": "light",
+    "isHidden": false
+  },
+  "name": "Panora Documentation",
+  "navigation": [
+    {
+      "group": "Documentation",
+      "pages": [
+        "quick-start",
+        "catalog",
+        "what-is-panora"
+      ]
+    },
+    {
+      "group": "",
+      "pages": [
+        "crm/quickstart",
+        "crm/overview"
+      ]
+    },
+    {
+      "group": "CRM Objects",
+      "pages": [
+        {
+          "group": "Contacts",
+          "pages": [
+            "crm/contacts/overview",
+            "crm/contacts/api/list",
+            "crm/contacts/api/get",
+            "crm/contacts/api/create",
+            "crm/contacts/api/update"
+          ]
+        },
+        {
+          "group": "Companies",
+          "pages": [
+            "crm/companies/overview",
+            "crm/companies/api/list",
+            "crm/companies/api/get",
+            "crm/companies/api/create",
+            "crm/companies/api/update"
+          ]
+        },
+        {
+          "group": "Deals",
+          "pages": [
+            "crm/deals/overview",
+            "crm/deals/api/list",
+            "crm/deals/api/get",
+            "crm/deals/api/create",
+            "crm/deals/api/update"
+          ]
+        },
+        {
+          "group": "Notes",
+          "pages": [
+            "crm/notes/overview",
+            "crm/notes/api/list",
+            "crm/notes/api/get",
+            "crm/notes/api/create"
+          ]
+        },
+        {
+          "group": "Engagements",
+          "pages": [
+            "crm/engagements/overview",
+            "crm/engagements/api/list",
+            "crm/engagements/api/get",
+            "crm/engagements/api/create",
+            "crm/engagements/api/update"
+          ]
+        },
+        {
+          "group": "Tasks",
+          "pages": [
+            "crm/tasks/overview",
+            "crm/tasks/api/list",
+            "crm/tasks/api/get"
+          ]
+        },
+        {
+          "group": "Users",
+          "pages": [
+            "crm/users/overview",
+            "crm/users/api/list",
+            "crm/users/api/get"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "",
+      "pages": [
+        "file-storage/quickstart",
+        "file-storage/overview"
+      ]
+    },
+    {
+      "group": "File Storage Objects",
+      "pages": [
+        {
+          "group": "Drives",
+          "pages": [
+            "file-storage/drives/list-drives",
+            "file-storage/drives/retrieve-a-drive"
+          ]
+        },
+        {
+          "group": "Files",
+          "pages": [
+            "file-storage/files/create-a-file",
+            "file-storage/files/list-files",
+            "file-storage/files/retrieve-a-file"
+          ]
+        },
+        {
+          "group": "Folders",
+          "pages": [
+            "file-storage/olders/create-a-folder",
+            "file-storage/olders/list-folders",
+            "file-storage/olders/retrieve-a-folder"
+          ]
+        },
+        {
+          "group": "Groups",
+          "pages": [
+            "file-storage/groups/list-groups",
+            "file-storage/groups/retrieve-a-group"
+          ]
+        },
+        {
+          "group": "Users",
+          "pages": [
+            "file-storage/users/list-users",
+            "file-storage/users/retrieve-a-user"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "",
+      "pages": [
+        "accounting/quickstart",
+        "accounting/overview"
+      ]
+    },
+    {
+      "group": "Accounting Objects",
+      "pages": [
+        {
+          "group": "Accounts",
+          "pages": [
+            "accounting/accounts/create-a-account",
+            "accounting/accounts/list-accounts",
+            "accounting/accounts/retrieve-a-account"
+          ]
+        },
+        {
+          "group": "Addresses",
+          "pages": [
+            "accounting/addresses/list-addresss",
+            "accounting/addresses/retrieve-a-address"
+          ]
+        },
+        {
+          "group": "Attachments",
+          "pages": [
+            "accounting/attachments/list-attachments",
+            "accounting/attachments/retrieve-a-attachment",
+            "accounting/attachments/create-a-attachment"
+          ]
+        },
+        {
+          "group": "Balance Sheets",
+          "pages": [
+            "accounting/balancesheets/list-balancesheets",
+            "accounting/balancesheets/retrieve-a-balancesheet"
+          ]
+        },
+        {
+          "group": "Cash Flow Statements",
+          "pages": [
+            "accounting/cashflowstatements/list-cashflowstatements",
+            "accounting/cashflowstatements/retrieve-a-cashflowstatement"
+          ]
+        },
+        {
+          "group": "Company Infos",
+          "pages": [
+            "accounting/companyinfos/list-companyinfos",
+            "accounting/companyinfos/retrieve-a-companyinfo"
+          ]
+        },
+        {
+          "group": "Contacts",
+          "pages": [
+            "accounting/contacts/create-a-contact",
+            "accounting/contacts/list-contacts",
+            "accounting/contacts/retrieve-a-contact"
+          ]
+        },
+        {
+          "group": "Credit Notes",
+          "pages": [
+            "accounting/creditnotes/list-creditnotes",
+            "accounting/creditnotes/retrieve-a-creditnote"
+          ]
+        },
+        {
+          "group": "Expenses",
+          "pages": [
+            "accounting/expenses/create-a-expense",
+            "accounting/expenses/list-expenses",
+            "accounting/expenses/retrieve-a-expense"
+          ]
+        },
+        {
+          "group": "Income Statements",
+          "pages": [
+            "accounting/incomestatements/list-incomestatements",
+            "accounting/incomestatements/retrieve-a-incomestatement"
+          ]
+        },
+        {
+          "group": "Invoices",
+          "pages": [
+            "accounting/invoices/list-invoices",
+            "accounting/invoices/retrieve-a-invoice",
+            "accounting/invoices/create-a-invoice"
+          ]
+        },
+        {
+          "group": "Items",
+          "pages": [
+            "accounting/items/retrieve-a-item",
+            "accounting/items/list-items"
+          ]
+        },
+        {
+          "group": "Journal Entries",
+          "pages": [
+            "accounting/journalentries/create-a-journalentry",
+            "accounting/journalentries/retrieve-a-journalentry",
+            "accounting/journalentries/list-journalentrys"
+          ]
+        },
+        {
+          "group": "Payments",
+          "pages": [
+            "accounting/payments/create-a-payment",
+            "accounting/payments/list-payments",
+            "accounting/payments/retrieve-a-payment"
+          ]
+        },
+        {
+          "group": "Phone Numbers",
+          "pages": [
+            "accounting/phonenumbers/retrieve-a-phonenumber",
+            "accounting/phonenumbers/list-phonenumbers"
+          ]
+        },
+        {
+          "group": "Purchase Orders",
+          "pages": [
+            "accounting/purchaseorders/list-purchaseorders",
+            "accounting/purchaseorders/retrieve-a-purchaseorder",
+            "accounting/purchaseorders/create-a-purchaseorder"
+          ]
+        },
+        {
+          "group": "Tax Rates",
+          "pages": [
+            "accounting/taxrates/list-taxrates",
+            "accounting/taxrates/retrieve-a-taxrate"
+          ]
+        },
+        {
+          "group": "Tracking Categories",
+          "pages": [
+            "accounting/trackingcategories/list-trackingcategorys",
+            "accounting/trackingcategories/retrieve-a-trackingcategory"
+          ]
+        },
+        {
+          "group": "Transactions",
+          "pages": [
+            "accounting/transactions/list-transactions",
+            "accounting/transactions/retrieve-a-transaction"
+          ]
+        },
+        {
+          "group": "Vendor Credits",
+          "pages": [
+            "accounting/vendorcredits/retrieve-a-vendorcredit",
+            "accounting/vendorcredits/list-vendorcredits"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "",
+      "pages": [
+        "ecommerce/quickstart",
+        "ecommerce/overview"
+      ]
+    },
+    {
+      "group": "Ecommerce Objects",
+      "pages": [
+        {
+          "group": "Products",
+          "pages": [
+            "ecommerce/products/list",
+            "ecommerce/products/retrieve",
+            "ecommerce/products/create"
+          ]
+        },
+        {
+          "group": "Orders",
+          "pages": [
+            "ecommerce/orders/list",
+            "ecommerce/orders/create",
+            "ecommerce/orders/retrieve"
+          ]
+        },
+        {
+          "group": "Fulfillments",
+          "pages": [
+            "ecommerce/fulfillments/list",
+            "ecommerce/fulfillments/retrieve"
+          ]
+        },
+        {
+          "group": "Customers",
+          "pages": [
+            "ecommerce/customers/list",
+            "ecommerce/customers/retrieve"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "",
+      "pages": [
+        "ticketing/quickstart",
+        "ticketing/overview"
+      ]
+    },
+    {
+      "group": "Ticketing Objects",
+      "pages": [
+        {
+          "group": "Accounts",
+          "pages": [
+            "ticketing/accounts/list-accounts",
+            "ticketing/accounts/retrieve-an-account"
+          ]
+        },
+        {
+          "group": "Attachments",
+          "pages": [
+            "ticketing/attachments/create-a-attachment",
+            "ticketing/attachments/list-attachments",
+            "ticketing/attachments/retrieve-a-attachment"
+          ]
+        },
+        {
+          "group": "Collections",
+          "pages": [
+            "ticketing/collections/list-collections",
+            "ticketing/collections/retrieve-a-collection"
+          ]
+        },
+        {
+          "group": "Comments",
+          "pages": [
+            "ticketing/comments/create-a-comment",
+            "ticketing/comments/list-comments",
+            "ticketing/comments/retrieve-a-comment"
+          ]
+        },
+        {
+          "group": "Contacts",
+          "pages": [
+            "ticketing/contacts/list-all-contacts",
+            "ticketing/contacts/retrieve-a-contact"
+          ]
+        },
+        {
+          "group": "Tags",
+          "pages": [
+            "ticketing/tags/list-tags",
+            "ticketing/tags/retrieve-a-tag"
+          ]
+        },
+        {
+          "group": "Teams",
+          "pages": [
+            "ticketing/teams/list-teams",
+            "ticketing/teams/retrieve-a-team"
+          ]
+        },
+        {
+          "group": "Tickets",
+          "pages": [
+            "ticketing/tickets/create-a-ticket",
+            "ticketing/tickets/list-tickets",
+            "ticketing/tickets/retrieve-a-ticket"
+          ]
+        },
+        {
+          "group": "Users",
+          "pages": [
+            "ticketing/users/list-users",
+            "ticketing/users/retrieve-a-user"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "",
+      "pages": [
+        "api-reference/introduction",
+        "api-reference/authentication",
+        "api-reference/errors",
+        "api-reference/pagination",
+        "api-reference/postman"
+      ]
+    },
+    {
+      "group": "Core Resources",
+      "pages": [
+        {
+          "group": "Connections",
+          "pages": [
+            "api-reference/connections/list-connections"
+          ]
+        },
+        {
+          "group": "Webhooks",
+          "pages": [
+            "api-reference/webhooks/list",
+            "api-reference/webhooks/create",
+            "api-reference/webhooks/update"
+          ]
+        },
+        {
+          "group": "Field Mappings",
+          "pages": [
+            "api-reference/field_mappings/create-custom-field",
+            "api-reference/field_mappings/define-target-field",
+            "api-reference/field_mappings/map-custom-field",
+            "api-reference/field_mappings/retrieve-field-mappings-entities",
+            "api-reference/field_mappings/retrieve-field-mappings-values",
+            "api-reference/field_mappings/retrieve-field-mappings"
+          ]
+        },
+        {
+          "group": "Linked Users",
+          "pages": [
+            "api-reference/linked_users/create",
+            "api-reference/linked_users/list",
+            "api-reference/linked_users/retrieve"
+          ]
+        },
+        {
+          "group": "Projects",
+          "pages": [
+            "api-reference/projects/retrieve-projects",
+            "api-reference/projects/create-a-project"
+          ]
+        }, 
+        {
+          "group": "Events",
+          "pages": [
+            "api-reference/events/retrieve-events"
+          ]
+        },
+        {
+          "group": "Passthrough",
+          "pages": [
+            "api-reference/passthrough/make-a-passthrough-request"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "core-concepts/auth",
+        "core-concepts/magic-links",
+        "core-concepts/custom-fields",
+        "core-concepts/sync-strategies"
+      ]
+    },
+    {
+      "group": "RAG",
+      "pages": [
+        "rag/index"
+      ]
+    },
+    {
+      "group": "Recipes",
+      "pages": [
+        "recipes/embed-catalog",
+        "recipes/import-existing-users",
+        "recipes/catch-connection-token",
+        "recipes/add-custom-provider-creds"
+      ]
+    },
+    {
+      "group": "Glossary",
+      "pages": [
+        "glossary/connection-object",
+        "glossary/linked-account-object",
+        {
+          "group": "Metadata",
+          "pages": [
+            "glossary/metadata/category",
+            "glossary/metadata/connectors"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Devtools",
+      "pages": [
+        {
+          "group": "SDKs",
+          "pages": [
+            "backend-sdk/typescript",
+            "backend-sdk/python"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Webhooks",
+      "pages": [
+        "webhooks/overview",
+        {
+          "group": "Events",
+          "pages": [
+            "webhooks/events/overview",
+            "webhooks/events/event-types"
+          ]
+        }
+      ]
+    },
+    {
+      "group":"Open-Source",
+            "pages":[
+               {
+                  "group":"Selfhost",
+                  "icon":"house-laptop",
+                  "pages":[
+                     "open-source/self_hosting/guide",
+                     "open-source/self_hosting/envVariables",
+                     "open-source/self_hosting/ngrok"
+                  ]
+               },
+               {
+                  "group":"Build a connector",
+                  "icon":"star",
+                  "pages":[
+                     "open-source/contributors/setup",
+                     "open-source/contributors/metadata",
+                     "open-source/contributors/build",
+                     "open-source/contributors/test"
+                  ]
+               }
+            ]
+    },
+    {
+      "group": "Support",
+      "pages": [
+        "support/get_help"
+      ]
+    }
+  ],
+  "openapi": "https://raw.githubusercontent.com/panoratech/Panora/main/packages/api/swagger/openapi-with-code-samples.yaml",
+  "primaryTab": {
+    "name": "Home"
+  },
+  "tabs": [
+    {
+      "name": "Accounting",
+      "url": "accounting"
+    },
+    {
+      "name": "CRM",
+      "url": "crm"
+    },
+    {
+      "name": "E-Commerce",
+      "url": "ecommerce"
+    },
+    {
+      "name": "File Storage",
+      "url": "file-storage"
+    },
+    {
+      "name": "Ticketing",
+      "url": "ticketing"
+    },
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    }
+  ],
+  "topbarCtaButton": {
+    "type": "github",
+    "url": "https://github.com/panoratech/Panora"
+  },
+  "topbarLinks": [
+    {
+      "name": "Home",
+      "url": "https://panora.dev"
+    },
+    {
+      "name": "Blog",
+      "url": "https://panora.dev/blog"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+ngrok.yml
+**/node_modules/
+**/dist/
+node_modules
+pg_data/
+.turbo
+build/**
+dist/**
+redis-data
+redis_data
+.env
+.DS_Store
+.pnpm-store/
+.npmrc
+.vscode
+docs/objects
+.magicodeignore

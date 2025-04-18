@@ -1,0 +1,3 @@
+export class UnifiedMarketingautomationContactInput {}
+
+export class UnifiedMarketingautomationContactOutput extends UnifiedMarketingautomationContactInput {}

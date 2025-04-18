@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: Build and Test
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.32.2
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+#- name: Set script permissions
+#run: chmod +x ./scripts/pull-database.sh
+#working-directory: apps/api

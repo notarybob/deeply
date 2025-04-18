@@ -1,0 +1,41 @@
+{
+  "name": "Panora",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "packageManager": "pnpm@8.9.2",
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "echo \"Error: no test specified\"",
+    "prepare": "husky install",
+    "version": "changeset version",
+    "release": "pnpm run lint && pnpm run build && changeset publish",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.52.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.2"
+  },
+  "lint-staged": {
+    "!website-docs/**/*.{ts,tsx,js}": [],
+    "packages/*.{ts,tsx,js}": [
+      "eslint"
+    ]
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.27.10",
+    "gitmoji-cli": "^9.5.0",
+    "optional": "^0.1.4",
+    "sharp": "^0.33.2",
+    "turbo": "^1.10.16"
+  },
+  "private": true,
+  "engines": {
+    "node": "20.9.0"
+  }
+}

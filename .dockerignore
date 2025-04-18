@@ -1,0 +1,13 @@
+pg_data/
+redis-data/
+
+node_modules/
+
+apps/magic-link/node_modules
+apps/magic-link/dist
+
+apps/webapp/node_modules
+apps/webapp/.next
+
+packages/api/node_modules
+packages/api/dist
